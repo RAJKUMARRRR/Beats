@@ -10,6 +10,8 @@ public class OfflineAlbum implements Album {
     private String albumPath;
     private int albumId;
     private String albumTitle;
+    private String composer = "";
+    private String artist = "";
 
     public  OfflineAlbum(String albumPath,int albumId,String albumTitle){
         this.albumPath = albumPath;
@@ -28,5 +30,23 @@ public class OfflineAlbum implements Album {
 
     public String getAlbumPath(){
         return this.albumPath;
+    }
+
+    public String getComposer() {
+        if(composer == null){
+            return "unknown";
+        }
+        return composer;
+    }
+    public void setComposer(String composer) {
+        this.composer = composer;
+    }
+
+    public void setArtist(String artist) {
+        this.artist = artist;
+    }
+
+    public String getArtist() {
+        return artist;
     }
 }

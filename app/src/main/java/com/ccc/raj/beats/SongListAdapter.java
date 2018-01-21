@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.ccc.raj.beats.model.OfflineSong;
 import com.ccc.raj.beats.model.Song;
 
 import java.util.ArrayList;
@@ -18,9 +19,10 @@ import java.util.ArrayList;
  */
 
 public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.ViewHolder> {
-    private ArrayList<Song> songList;
+    public ArrayList<Song> songList;
     private Context mContext;
     private OnItemClickListener onItemClickListener;
+    private boolean maskTitleImage = true;
 
     public static  class ViewHolder extends RecyclerView.ViewHolder{
         private LinearLayout container;
@@ -39,8 +41,13 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.ViewHo
     }
 
     public SongListAdapter(Context context,ArrayList<Song> songList){
+        this.songList = songList;
+        this.mContext = context;
+    }
+    public SongListAdapter(Context context,ArrayList<Song> songList,boolean maskTitleImage){
        this.songList = songList;
        this.mContext = context;
+       this.maskTitleImage = maskTitleImage;
     }
 
     @Override
@@ -56,16 +63,23 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.ViewHo
         TextView songTitle = container.findViewById(R.id.titleSong);
         TextView artistTitle = container.findViewById(R.id.titleArtist);
         TextView songDuration = container.findViewById(R.id.duration);
-        songOrder.setText("1");
-        songTitle.setText(songList.get(position).getTitle());
-        artistTitle.setText(songList.get(position).getArtist());
-        songDuration.setText("4:50");
+        OfflineSong offlineSong = (OfflineSong) songList.get(position);
+        artistTitle.setText(Utitlity.formatString(offlineSong.getArtist()+"",35));
+        songDuration.setText(Utitlity.converMillisecondsToMMSS(offlineSong.getDuratio())+"");
         container.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 onItemClickListener.onItemClick(position);
             }
         });
+        if(!maskTitleImage){
+           songOrder.setBackgroundResource(R.drawable.music);
+           songOrder.setText("");
+           songTitle.setText(Utitlity.formatString(offlineSong.getTrackNumber()+"."+offlineSong.getDisplayName()+"",35));
+        }else{
+           songOrder.setText(offlineSong.getTrackNumber()+"");
+           songTitle.setText(Utitlity.formatString(offlineSong.getDisplayName()+"",35));
+        }
     }
 
     @Override

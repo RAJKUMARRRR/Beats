@@ -3,4 +3,23 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="inbox">Inbox</string>
+    <string name="sent">SentItems</string>
+    <string name="draft">Draft</string>
+    <string name="trash">Trash</string>
+    <string name="help">Help</string>
+    <string name="feedback">Feedback</string>
+
+    <string name="listen_now">Listen Now</string>
+    <string name="music_library">Music Library</string>
+
+    <string name="nav_open_drawer">Open Navigation Drawer</string>
+    <string name="nav_close_drawer">Close Navigation Drawer</string>
+
+    <string name="playlists">PLAYLISTS</string>
+    <string name="artists">ARTISTS</string>
+    <string name="albums">ALBUMS</string>
+    <string name="songs">SONGS</string>
+    <string name="genres">GENRES</string>
 </resources>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_listen_now"
+            android:title="@string/listen_now"
+            android:icon="@drawable/ic_music_listen_now"
+            android:checked="true"/>
+        <item
+            android:id="@+id/nav_music_library"
+            android:title="@string/music_library"
+            android:icon="@drawable/ic_music_library"
+            />
+   <!--     <item
+            android:id="@+id/nav_draft"
+            android:title="@string/draft"
+            android:icon="@android:drawable/ic_menu_edit"
+            />
+        <item
+            android:id="@+id/nav_trash"
+            android:title="@string/trash"
+            android:icon="@android:drawable/ic_menu_delete"
+            />
+     -->
+    </group>
+
+    <item android:title="Support">
+        <menu>
+            <item
+                android:id="@+id/help"
+                android:title="@string/help"
+                android:icon="@android:drawable/ic_menu_help"
+                />
+            <item
+                android:id="@+id/feedback"
+                android:title="@string/feedback"
+                android:icon="@android:drawable/sym_action_email"
+                />
+        </menu>
+    </item>
+
+</menu>

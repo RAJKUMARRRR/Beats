@@ -1,4 +1,4 @@
-package com.ccc.raj.beats;
+package com.ccc.raj.beats.listennow;
 
 
 import android.Manifest;
@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -17,6 +18,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.ccc.raj.beats.AlbumListAdapter;
+import com.ccc.raj.beats.AlbumSongsListActivity;
+import com.ccc.raj.beats.MusicPlayService;
+import com.ccc.raj.beats.MusicPlayServiceHolder;
+import com.ccc.raj.beats.R;
 import com.ccc.raj.beats.model.Album;
 import com.ccc.raj.beats.model.OfflineDataProvider;
 import com.ccc.raj.beats.model.Song;
@@ -28,7 +34,7 @@ import java.util.ArrayList;
  * A simple {@link Fragment} subclass.
  */
 public class OfflineFragment extends Fragment {
-    ArrayList<Album> mAlbumArrayList;
+    ArrayList<Album> mAlbumArrayList =null;
     RecyclerView songsListView;
     Context context;
     MusicPlayService musicPlayService;
@@ -43,6 +49,11 @@ public class OfflineFragment extends Fragment {
         super.onAttach(context);
         this.context = context;
     }
+    @Override
+    public void onStart() {
+        super.onStart();
+        musicPlayService = MusicPlayServiceHolder.getMusicPlayService();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -50,15 +61,17 @@ public class OfflineFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_offline, container, false);
         songsListView = view.findViewById(R.id.offlineTrackListView);
         if(checkPermission()){
-            mAlbumArrayList = OfflineDataProvider.getOfflineAlbums(context);
+            mAlbumArrayList = OfflineDataProvider.getOfflineAlbums(context,MediaStore.Audio.Media.ALBUM);
             AlbumListAdapter albumListAdapter = new AlbumListAdapter(mAlbumArrayList,context);
             albumListAdapter.setOnItemClickListener(new AlbumListAdapter.OnItemClickListener() {
                 @Override
                 public void onItemClick(int position) {
                     Intent intent = new Intent(getContext(),AlbumSongsListActivity.class);
                     Album album = mAlbumArrayList.get(position);
-                    intent.putExtra(AlbumSongsListActivity.ALBUM,album.getAlbumTitle());
+                    intent.putExtra(AlbumSongsListActivity.COLUMN, MediaStore.Audio.Media.ALBUM);
+                    intent.putExtra(AlbumSongsListActivity.COLUMN_VALUE,album.getAlbumTitle());
                     intent.putExtra(AlbumSongsListActivity.ALBUM_PATH,album.getAlbumPath());
+                    intent.putExtra(AlbumSongsListActivity.TITLE,album.getAlbumTitle());
                     startActivity(intent);
                 }
 
@@ -95,8 +108,10 @@ public class OfflineFragment extends Fragment {
 
     public void setMusicPlayService(MusicPlayService musicPlayService){
         this.musicPlayService = musicPlayService;
-        this.musicPlayService.setOfflineSongsList(OfflineDataProvider.getSongsFromAlbum(context,mAlbumArrayList.get(0).getAlbumTitle(),mAlbumArrayList.get(0).getAlbumPath()));
-        //this.musicPlayService.playOfflineSong();
+        if(mAlbumArrayList != null) {
+            this.musicPlayService.setOfflineSongsList(OfflineDataProvider.getSongsFromAlbum(context, mAlbumArrayList.get(0).getAlbumTitle(), mAlbumArrayList.get(0).getAlbumPath()));
+            //this.musicPlayService.playOfflineSong();
+        }
     }
 
 
@@ -116,15 +131,17 @@ public class OfflineFragment extends Fragment {
             case REQUEST_CODE: {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    mAlbumArrayList = OfflineDataProvider.getOfflineAlbums(context);
+                    mAlbumArrayList = OfflineDataProvider.getOfflineAlbums(context,MediaStore.Audio.Media.ALBUM);
                     AlbumListAdapter albumListAdapter = new AlbumListAdapter(mAlbumArrayList,context);
                     albumListAdapter.setOnItemClickListener(new AlbumListAdapter.OnItemClickListener() {
                         @Override
                         public void onItemClick(int position) {
                             Intent intent = new Intent(getContext(),AlbumSongsListActivity.class);
                             Album album = mAlbumArrayList.get(position);
-                            intent.putExtra(AlbumSongsListActivity.ALBUM,album.getAlbumTitle());
+                            intent.putExtra(AlbumSongsListActivity.COLUMN, MediaStore.Audio.Media.ALBUM);
+                            intent.putExtra(AlbumSongsListActivity.COLUMN_VALUE,album.getAlbumTitle());
                             intent.putExtra(AlbumSongsListActivity.ALBUM_PATH,album.getAlbumPath());
+                            intent.putExtra(AlbumSongsListActivity.TITLE,album.getAlbumTitle());
                             startActivity(intent);
                         }
 

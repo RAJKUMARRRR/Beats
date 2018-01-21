@@ -130,8 +130,10 @@ public class MusicPlayService extends Service implements MediaPlayer.OnPreparedL
 
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
-        mediaPlayer.reset();
-        playNext();
+        if(offlineSongsList.size()>1) {
+            mediaPlayer.reset();
+            playNext();
+        }
     }
 
     @Override

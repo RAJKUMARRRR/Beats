@@ -34,15 +34,23 @@ public class AlbumSongsListActivity extends AppCompatActivity implements MediaCo
     private ArrayList<Song> songList;
     private ImageView albumImage;
     private Toolbar toolbar;
-    public static final String ALBUM = "ALBUM";
+
+    public static final String COLUMN = "COLUMN";
+    public static final String COLUMN_VALUE = "COLUMN_VALUE";
+    public static final String TITLE = "TITLE";
     public static final String ALBUM_PATH = "ALBUM_PATH";
+
+
     MusicController controller;
     public static MusicPlayService musicPlayService;
     private boolean musicBound = false;
     private boolean paused=false, playbackPaused=false;
     private Intent playIntent;
-    private String album;
+    //private String album;
     private String albumPath;
+    private String column;
+    private String columnValue;
+    private String title;
 
     ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
@@ -83,9 +91,12 @@ public class AlbumSongsListActivity extends AppCompatActivity implements MediaCo
     public void setSongsListData(){
         albumSongListView = findViewById(R.id.albumSongListView);
         Intent intent = getIntent();
-        album = intent.getStringExtra(ALBUM);
+        column = intent.getStringExtra(COLUMN);
+        columnValue = intent.getStringExtra(COLUMN_VALUE);
+        title = intent.getStringExtra(TITLE);
         albumPath = intent.getStringExtra(ALBUM_PATH);
-        songList = OfflineDataProvider.getSongsFromAlbum(this,album,albumPath);
+        //songList = OfflineDataProvider.getSongsFromAlbum(this,album,albumPath);
+        songList = OfflineDataProvider.getSongsFromColumn(this,column,columnValue);
         SongListAdapter songListAdapter = new SongListAdapter(this,songList);
         songListAdapter.setOnItemClickListener(new SongListAdapter.OnItemClickListener() {
             @Override
@@ -97,11 +108,11 @@ public class AlbumSongsListActivity extends AppCompatActivity implements MediaCo
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this,1);
         albumSongListView.setLayoutManager(gridLayoutManager);
         albumImage.setImageBitmap(OfflineDataProvider.getBitmapByAlbumPath(this,albumPath));
-        setTitle(album);
+        setTitle(title);
     }
 
     public void onSongPicked(int position){
-        ArrayList<Song> songsAlbum = OfflineDataProvider.getSongsFromAlbum(this,album,albumPath);
+        ArrayList<Song> songsAlbum = OfflineDataProvider.getSongsFromColumn(this,column,columnValue);
         if(songsAlbum.size()>0) {
             musicPlayService.setOfflineSongsList(songsAlbum);
             musicPlayService.setOfflineSongPosition(position);
@@ -110,7 +121,7 @@ public class AlbumSongsListActivity extends AppCompatActivity implements MediaCo
     }
 
     public void onAllPlayClicked(View view){
-        ArrayList<Song> songsAlbum = OfflineDataProvider.getSongsFromAlbum(this,album,albumPath);
+        ArrayList<Song> songsAlbum = OfflineDataProvider.getSongsFromColumn(this,column,columnValue);
         if(songsAlbum.size()>0) {
             musicPlayService.setOfflineSongsList(songsAlbum);
             musicPlayService.setOfflineSongPosition(0);
@@ -138,6 +149,11 @@ public class AlbumSongsListActivity extends AppCompatActivity implements MediaCo
                 break;
         }
         return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
     }
 
     @Override

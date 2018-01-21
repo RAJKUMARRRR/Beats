@@ -10,4 +10,8 @@ public interface Album {
     public int getAlbumId();
     public String getAlbumTitle();
     public String getAlbumPath();
+    public String getComposer();
+    public void setComposer(String composer);
+    public void setArtist(String artist);
+    public String getArtist();
 }

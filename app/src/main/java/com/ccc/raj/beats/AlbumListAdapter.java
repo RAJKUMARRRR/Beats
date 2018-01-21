@@ -31,7 +31,7 @@ public class AlbumListAdapter extends RecyclerView.Adapter<AlbumListAdapter.View
         }
     }
 
-    interface OnItemClickListener{
+    public interface OnItemClickListener{
         public  void onItemClick(int position);
         public void onPlayButtonClick(int position);
     }
@@ -40,7 +40,7 @@ public class AlbumListAdapter extends RecyclerView.Adapter<AlbumListAdapter.View
         this.onItemClickListener = onItemClickListener;
     }
 
-    AlbumListAdapter(ArrayList<Album> albumList, Context context){
+    public AlbumListAdapter(ArrayList<Album> albumList, Context context){
         this.albumList = albumList;
         this.context = context;
     }
@@ -55,23 +55,11 @@ public class AlbumListAdapter extends RecyclerView.Adapter<AlbumListAdapter.View
         CardView cardView = holder.cardView;
         Album album = albumList.get(position);
         TextView textSong = cardView.findViewById(R.id.textSong);
-        textSong.setText(album.getAlbumTitle());
+        textSong.setText(Utitlity.formatString(album.getAlbumTitle(),20));
         TextView textArtist = cardView.findViewById(R.id.textArtist);
-        textArtist.setText(album.getAlbumId()+"");
+        textArtist.setText(Utitlity.formatString(album.getComposer()+"",20));
         ImageView imageSong = cardView.findViewById(R.id.imageSong);
-        //imageSong.setImageBitmap(OfflineDataProvider.getBitmapByAlbumPath(context,album.getAlbumPath()));
         imageSong.setImageBitmap(OfflineDataProvider.getBitmapByAlbumId(context,album.getAlbumId()));
-        /*MediaMetadataRetriever metaRetriver;
-        metaRetriver = new MediaMetadataRetriever();
-        metaRetriver.setDataSource(song.getImagePath());
-        byte[] art;
-        art = metaRetriver.getEmbeddedPicture();
-        if(art != null) {
-            Bitmap songImage = BitmapFactory.decodeByteArray(art, 0, art.length);
-            imageSong.setImageBitmap(songImage);
-        }else{
-            imageSong.setImageResource(R.drawable.music);
-        }*/
         cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
