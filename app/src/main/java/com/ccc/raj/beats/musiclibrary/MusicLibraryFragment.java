@@ -58,7 +58,7 @@ public class MusicLibraryFragment extends Fragment {
     }
 
 
-    private class PagerViewAdapter extends FragmentStatePagerAdapter {
+    private class PagerViewAdapter extends FragmentPagerAdapter {
         public PagerViewAdapter(FragmentManager fm) {
             super(fm);
         }
