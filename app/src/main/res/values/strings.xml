@@ -22,4 +22,6 @@
     <string name="albums">ALBUMS</string>
     <string name="songs">SONGS</string>
     <string name="genres">GENRES</string>
+    <string name="search_title">Search</string>
+    <string name="search_hint">Search Artist,Song and Album</string>
 </resources>

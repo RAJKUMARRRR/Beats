@@ -40,6 +40,54 @@ public class OfflineDataProvider {
         String sortOrder = MediaStore.Audio.Media.DATE_ADDED+" DESC";
         Cursor musicCursor = musicResolver.query(musicUri, columns, where, null, sortOrder);
         Log.i("BeatsAlbumCount",musicCursor.getCount()+"");
+        albumArrayList = getOfflineAlbumsFromCursor(musicCursor);
+        /*if (musicCursor != null && musicCursor.moveToFirst()) {
+            int titleColumn = musicCursor.getColumnIndex
+                    (MediaStore.Audio.Media.ALBUM);
+            int albumId = musicCursor.getColumnIndex
+                    (MediaStore.Audio.Media.ALBUM_ID);
+            int albumPath = musicCursor.getColumnIndex
+                    (MediaStore.Audio.Media.DATA);
+            int composerColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.COMPOSER);
+            int artistColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
+            int artistIdColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID);
+            do {
+                String thisTitle = musicCursor.getString(titleColumn);
+                String fullPath = musicCursor.getString(albumPath);
+                int thisAlbumId = musicCursor.getInt(albumId);
+                String composer = musicCursor.getString(composerColumn);
+                String artist = musicCursor.getString(artistColumn);
+                String artistId = musicCursor.getString(artistIdColumn);
+                Log.i("Beats", fullPath);
+                Log.i("Beats", thisTitle);
+                Log.i("Beats", thisAlbumId + "");
+                Log.i("BeatsArtist", artist + "");
+                Log.i("BeatsArtistID", "ID"+artistId);
+                Album album = new OfflineAlbum(fullPath, thisAlbumId, thisTitle);
+                album.setComposer(composer);
+                album.setArtist(artist);
+                albumArrayList.add(album);
+            }
+            while (musicCursor.moveToNext());
+        }*/
+        return albumArrayList;
+    }
+
+    public static ArrayList<Song> getSongsFromAlbum(Context context, String Album, String albumFullPath) {
+        ContentResolver musicResolver = context.getContentResolver();
+        Uri musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        String where = MediaStore.Audio.Media.ALBUM + "=?";
+        String whereVal[] = {
+                Album
+        };
+        String orderBy = MediaStore.Audio.Media.TRACK;
+        Cursor musicCursor = musicResolver.query(musicUri, null, where, whereVal, orderBy);
+        ArrayList<Song> songList = getSongsFromCursor(musicCursor);
+        return songList;
+    }
+
+    public static ArrayList<Album> getOfflineAlbumsFromCursor(Cursor musicCursor){
+        ArrayList<Album> albumArrayList = new ArrayList<>();
         if (musicCursor != null && musicCursor.moveToFirst()) {
             int titleColumn = musicCursor.getColumnIndex
                     (MediaStore.Audio.Media.ALBUM);
@@ -72,19 +120,6 @@ public class OfflineDataProvider {
         return albumArrayList;
     }
 
-    public static ArrayList<Song> getSongsFromAlbum(Context context, String Album, String albumFullPath) {
-        ContentResolver musicResolver = context.getContentResolver();
-        Uri musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-        String where = MediaStore.Audio.Media.ALBUM + "=?";
-        String whereVal[] = {
-                Album
-        };
-        String orderBy = MediaStore.Audio.Media.TRACK;
-        Cursor musicCursor = musicResolver.query(musicUri, null, where, whereVal, orderBy);
-        ArrayList<Song> songList = getSongsFromCursor(musicCursor);
-        return songList;
-    }
-
     public static ArrayList<Song> getSongsFromColumn(Context context, String column, String columnValue) {
         ContentResolver musicResolver = context.getContentResolver();
         Uri musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
@@ -106,7 +141,7 @@ public class OfflineDataProvider {
         return songList;
     }
 
-    private static ArrayList<Song> getSongsFromCursor(Cursor musicCursor) {
+    public static ArrayList<Song> getSongsFromCursor(Cursor musicCursor) {
         ArrayList<Song> songList = new ArrayList<>();
         if (musicCursor != null && musicCursor.moveToFirst()) {
             //get columns
@@ -199,4 +234,20 @@ public class OfflineDataProvider {
         }
     }
 
+    public static Bitmap getBitmapBySongId(Context context, long songId) {
+        Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                new String[]{MediaStore.Audio.Media._ID, MediaStore.Audio.Media.ALBUM_ID},
+                MediaStore.Audio.Media._ID + "=?",
+                new String[]{String.valueOf(songId)},
+                null);
+
+        if (cursor.moveToFirst()) {
+            int  albumId = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID));
+            Bitmap bm = getBitmapByAlbumId(context,albumId);
+            return bm;
+        } else {
+            Bitmap bm = BitmapFactory.decodeResource(context.getResources(), R.drawable.music);
+            return bm;
+        }
+    }
 }
