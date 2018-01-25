@@ -3,6 +3,7 @@ package com.ccc.raj.beats;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -54,47 +55,77 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     public void handleIntent(Intent intent){
+        SeachDataProvider seachDataProvider = new SeachDataProvider();
+        ArrayList<SearchRecord> searchRecords = new ArrayList<>();
         if(Intent.ACTION_SEARCH.equalsIgnoreCase(intent.getAction())){
             String query = intent.getStringExtra(SearchManager.QUERY);
             Toast.makeText(this,query,Toast.LENGTH_SHORT).show();
-            SeachDataProvider seachDataProvider = new SeachDataProvider();
-            ArrayList<Album> albumSearchData = seachDataProvider.searchAlbums(this,query, MediaStore.Audio.Media.ALBUM);
-            ArrayList<Song> songsSearchData = seachDataProvider.searchSongs(this,query,MediaStore.Audio.Media.TITLE);
-            ArrayList<Album> artistSearchData = seachDataProvider.searchAlbums(this,query, MediaStore.Audio.Media.COMPOSER);
-            ArrayList<SearchRecord> searchRecords = new ArrayList<>();
-            SearchRecord record;
-            record = new SearchRecord(SearchRecord.SECTION_VIEW);
-            if(songsSearchData.size()>0) {
-                record.setSectionData(new SearchRecord.Section("Songs",songsSearchData.size()+" more"));
-                searchRecords.add(record);
-                for (Song song : songsSearchData) {
-                    record = new SearchRecord(SearchRecord.SONG_VIEW);
-                    record.setSong(song);
-                    searchRecords.add(record);
-                }
-            }
-            if(albumSearchData.size()>0) {
-                record = new SearchRecord(SearchRecord.SECTION_VIEW);
-                record.setSectionData(new SearchRecord.Section("Albums",albumSearchData.size()+" more"));
-                searchRecords.add(record);
-                for (Album album : albumSearchData) {
-                    record = new SearchRecord(SearchRecord.ALBUM_VIEW);
-                    record.setOfflineAlbum(album);
-                    searchRecords.add(record);
-                }
-            }
-            if(artistSearchData.size()>0) {
-                record = new SearchRecord(SearchRecord.SECTION_VIEW);
-                record.setSectionData(new SearchRecord.Section("Artists",artistSearchData.size()+" more"));
-                searchRecords.add(record);
-                for (Album album : artistSearchData) {
-                    record = new SearchRecord(SearchRecord.ARTIST_VIEW);
-                    record.setOfflineAlbum(album);
-                    searchRecords.add(record);
-                }
-            }
-            populateSearchData(searchRecords);
+            searchRecords.addAll(getSongsSearchData(seachDataProvider,query));
+            searchRecords.addAll(getAlbumsSearchData(seachDataProvider,query));
+            searchRecords.addAll(getArtistsSearchData(seachDataProvider,query));
+        }else if("SONG".equalsIgnoreCase(intent.getAction())){
+            String query = intent.getDataString();
+            searchRecords.addAll(getSongsSearchData(seachDataProvider,query));
+            Toast.makeText(this,query,Toast.LENGTH_SHORT).show();
+        }else if("ALBUM".equalsIgnoreCase(intent.getAction())){
+            String query = intent.getDataString();
+            searchRecords.addAll(getAlbumsSearchData(seachDataProvider,query));
+            Toast.makeText(this,query,Toast.LENGTH_SHORT).show();
+        }else if("ARTIST".equalsIgnoreCase(intent.getAction())){
+            String query = intent.getDataString();
+            searchRecords.addAll(getArtistsSearchData(seachDataProvider,query));
+            Toast.makeText(this,query,Toast.LENGTH_SHORT).show();
         }
+        populateSearchData(searchRecords);
+    }
+
+    private ArrayList<SearchRecord> getSongsSearchData(SeachDataProvider seachDataProvider,String query){
+        ArrayList<Song> songsSearchData = seachDataProvider.searchSongs(this,query,MediaStore.Audio.Media.TITLE,false,null);
+        ArrayList<SearchRecord> searchRecords = new ArrayList<>();
+        SearchRecord record;
+        if(songsSearchData.size()>0) {
+            record = new SearchRecord(SearchRecord.SECTION_VIEW);
+            record.setSectionData(new SearchRecord.Section("Songs",songsSearchData.size()+" more"));
+            searchRecords.add(record);
+            for (Song song : songsSearchData) {
+                record = new SearchRecord(SearchRecord.SONG_VIEW);
+                record.setSong(song);
+                searchRecords.add(record);
+            }
+        }
+        return searchRecords;
+    }
+    private ArrayList<SearchRecord> getAlbumsSearchData(SeachDataProvider seachDataProvider,String query){
+        ArrayList<Album> albumSearchData = seachDataProvider.searchAlbums(this,query, MediaStore.Audio.Media.ALBUM,false,null);
+        ArrayList<SearchRecord> searchRecords = new ArrayList<>();
+        SearchRecord record;
+        if(albumSearchData.size()>0) {
+            record = new SearchRecord(SearchRecord.SECTION_VIEW);
+            record.setSectionData(new SearchRecord.Section("Albums",albumSearchData.size()+" more"));
+            searchRecords.add(record);
+            for (Album album : albumSearchData) {
+                record = new SearchRecord(SearchRecord.ALBUM_VIEW);
+                record.setOfflineAlbum(album);
+                searchRecords.add(record);
+            }
+        }
+        return searchRecords;
+    }
+    private ArrayList<SearchRecord> getArtistsSearchData(SeachDataProvider seachDataProvider,String query){
+        ArrayList<Album> artistSearchData = seachDataProvider.searchAlbums(this,query, MediaStore.Audio.Media.COMPOSER,false,null);
+        ArrayList<SearchRecord> searchRecords = new ArrayList<>();
+        SearchRecord record;
+        if(artistSearchData.size()>0) {
+            record = new SearchRecord(SearchRecord.SECTION_VIEW);
+            record.setSectionData(new SearchRecord.Section("Artists",artistSearchData.size()+" more"));
+            searchRecords.add(record);
+            for (Album album : artistSearchData) {
+                record = new SearchRecord(SearchRecord.ARTIST_VIEW);
+                record.setOfflineAlbum(album);
+                searchRecords.add(record);
+            }
+        }
+        return  searchRecords;
     }
 
     public  void populateSearchData(final ArrayList<SearchRecord> searchRecords){

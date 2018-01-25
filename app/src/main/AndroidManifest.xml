@@ -48,6 +48,12 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
+
+        <provider
+            android:name=".searchresult.CustomSuggestionsProvider"
+            android:authorities="in.wptrafficanalyzer.searchdialogdemo.CountryContentProvider"
+            android:exported="true"
+            />
     </application>
 
 </manifest>
