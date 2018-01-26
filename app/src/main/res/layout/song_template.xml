@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="165dp"
     android:layout_margin="5dp"
@@ -20,23 +21,48 @@
             android:scaleType="centerCrop"
             app:srcCompat="@drawable/ic_launcher_background" />
 
-        <TextView
-            android:id="@+id/textSong"
+        <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
-            android:layout_marginLeft="4dp"
-            android:text="TextView"
-            android:textColor="@android:color/black" />
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/textArtist"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
-            android:layout_marginLeft="4dp"
-            android:text="TextView"
-            android:textSize="12sp" />
+            <TextView
+                android:id="@+id/textSong"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:maxLines="1"
+                android:padding="2dp"
+                android:text="TextView"
+                android:textColor="@android:color/black"
+                app:layout_constraintEnd_toStartOf="@+id/imageOptions"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/textArtist"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:maxLines="1"
+                android:padding="2dp"
+                android:text="TextView"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/imageOptions"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textSong" />
+
+            <ImageButton
+                android:id="@+id/imageOptions"
+                android:layout_width="40dp"
+                android:layout_height="0dp"
+                android:background="@android:color/transparent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/textSong"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_more_b" />
+        </android.support.constraint.ConstraintLayout>
 
     </LinearLayout>
 
@@ -44,9 +70,9 @@
         android:id="@+id/albumPlayButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginBottom="30dp"
-        android:layout_marginRight="16dp"
+        android:layout_gravity="right|end"
+        android:layout_marginBottom="4dp"
+        android:layout_marginRight="4dp"
         android:background="@color/cardview_shadow_end_color"
         app:srcCompat="@drawable/play" />
 

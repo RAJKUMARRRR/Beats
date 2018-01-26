@@ -14,6 +14,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -21,6 +22,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.MediaController;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import com.ccc.raj.beats.model.OfflineDataProvider;
@@ -28,7 +30,7 @@ import com.ccc.raj.beats.model.Song;
 
 import java.util.ArrayList;
 
-public class AlbumSongsListActivity extends AppCompatActivity implements MediaController.MediaPlayerControl{
+public class AlbumSongsListActivity extends AppCompatActivity implements MediaController.MediaPlayerControl,PopupMenu.OnMenuItemClickListener{
     private CoordinatorLayout mainContainer;
     private RecyclerView albumSongListView;
     private ArrayList<Song> songList;
@@ -103,12 +105,37 @@ public class AlbumSongsListActivity extends AppCompatActivity implements MediaCo
             public void onItemClick(int position) {
               onSongPicked(position);
             }
+
+            @Override
+            public void onMoreButtonClick(View view, int position) {
+                showSongOptionsMenu(view,position);
+            }
         });
         albumSongListView.setAdapter(songListAdapter);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this,1);
         albumSongListView.setLayoutManager(gridLayoutManager);
         albumImage.setImageBitmap(OfflineDataProvider.getBitmapByAlbumPath(this,albumPath));
         setTitle(title);
+
+        //registerForContextMenu(albumSongListView);
+    }
+
+    public void showSongOptionsMenu(View view,int position){
+        PopupMenu popupMenu = new PopupMenu(this,view);
+        MenuInflater inflater = popupMenu.getMenuInflater();
+        inflater.inflate(R.menu.song_menu,popupMenu.getMenu());
+        popupMenu.show();
+        popupMenu.setOnMenuItemClickListener(this);
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem menuItem) {
+        switch (menuItem.getItemId()){
+            case R.id.shuffle:
+                Toast.makeText(this,"shuffle",Toast.LENGTH_SHORT).show();
+                break;
+        }
+        return false;
     }
 
     public void onSongPicked(int position){
@@ -283,4 +310,5 @@ public class AlbumSongsListActivity extends AppCompatActivity implements MediaCo
     public int getAudioSessionId() {
         return 0;
     }
+
 }

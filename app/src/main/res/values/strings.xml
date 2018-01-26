@@ -24,4 +24,11 @@
     <string name="genres">GENRES</string>
     <string name="search_title">Search</string>
     <string name="search_hint">Search Artist,Song and Album</string>
+
+    <string name="shuffle">Shuffle</string>
+    <string name="play_next">Play Next</string>
+    <string name="add_to_queue">Add to queue</string>
+    <string name="add_to_playlist">Add to playlist</string>
+    <string name="goto_artist">Goto to atist</string>
+    <string name="not_interested">Nor interested</string>
 </resources>

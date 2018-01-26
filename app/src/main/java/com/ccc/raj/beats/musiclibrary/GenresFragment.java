@@ -59,6 +59,11 @@ public class GenresFragment extends Fragment {
                 //musicPlayService.playOfflineSong();
                 //}
             }
+
+            @Override
+            public void onOptionsButtonClick(View view, int position) {
+
+            }
         });
         genresListView.setAdapter(albumListAdapter);
         GridLayoutManager layoutManager = new GridLayoutManager(getActivity(),2);

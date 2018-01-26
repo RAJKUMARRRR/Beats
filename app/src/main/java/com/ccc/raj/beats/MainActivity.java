@@ -177,6 +177,7 @@ public class MainActivity extends AppCompatActivity implements MediaController.M
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setBackgroundResource(R.drawable.rectangle);
         return super.onCreateOptionsMenu(menu);
     }
 

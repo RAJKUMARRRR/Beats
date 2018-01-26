@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -34,6 +35,7 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.ViewHo
 
     public interface OnItemClickListener{
         public void onItemClick(int position);
+        public void onMoreButtonClick(View view,int position);
     }
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener){
@@ -80,6 +82,13 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.ViewHo
            songOrder.setText(offlineSong.getTrackNumber()+"");
            songTitle.setText(Utitlity.formatString(offlineSong.getDisplayName()+"",35));
         }
+        ImageButton imageButton = container.findViewById(R.id.moreButton);
+        imageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onItemClickListener.onMoreButtonClick(view,position);
+            }
+        });
     }
 
     @Override

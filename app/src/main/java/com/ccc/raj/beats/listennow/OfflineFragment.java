@@ -14,8 +14,11 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import com.ccc.raj.beats.AlbumListAdapter;
@@ -33,7 +36,7 @@ import java.util.ArrayList;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class OfflineFragment extends Fragment {
+public class OfflineFragment extends Fragment implements PopupMenu.OnMenuItemClickListener{
     ArrayList<Album> mAlbumArrayList =null;
     RecyclerView songsListView;
     Context context;
@@ -61,7 +64,7 @@ public class OfflineFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_offline, container, false);
         songsListView = view.findViewById(R.id.offlineTrackListView);
         if(checkPermission()){
-            mAlbumArrayList = OfflineDataProvider.getOfflineAlbums(context,MediaStore.Audio.Media.ALBUM);
+            /*mAlbumArrayList = OfflineDataProvider.getOfflineAlbums(context,MediaStore.Audio.Media.ALBUM);
             AlbumListAdapter albumListAdapter = new AlbumListAdapter(mAlbumArrayList,context);
             albumListAdapter.setOnItemClickListener(new AlbumListAdapter.OnItemClickListener() {
                 @Override
@@ -84,14 +87,17 @@ public class OfflineFragment extends Fragment {
                         musicPlayService.playOfflineSong();
                     }
                 }
+
+                @Override
+                public void onOptionsButtonClick(View view, int position) {
+
+                }
             });
             songsListView.setAdapter(albumListAdapter);
-            /*songsListView.setItemViewCacheSize(1000);
-            songsListView.setDrawingCacheEnabled(true);
-            songsListView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
-            songsListView.setHasFixedSize(true);*/
             GridLayoutManager layoutManager = new GridLayoutManager(getActivity(),2);
             songsListView.setLayoutManager(layoutManager);
+            */
+            setMusicAlbumData();
         }else{
             if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
                     permissionString)) {
@@ -105,6 +111,62 @@ public class OfflineFragment extends Fragment {
         return view;
     }
 
+    private void setMusicAlbumData(){
+        mAlbumArrayList = OfflineDataProvider.getOfflineAlbums(context,MediaStore.Audio.Media.ALBUM);
+        AlbumListAdapter albumListAdapter = new AlbumListAdapter(mAlbumArrayList,context);
+        albumListAdapter.setOnItemClickListener(new AlbumListAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(int position) {
+                Intent intent = new Intent(getContext(),AlbumSongsListActivity.class);
+                Album album = mAlbumArrayList.get(position);
+                intent.putExtra(AlbumSongsListActivity.COLUMN, MediaStore.Audio.Media.ALBUM);
+                intent.putExtra(AlbumSongsListActivity.COLUMN_VALUE,album.getAlbumTitle());
+                intent.putExtra(AlbumSongsListActivity.ALBUM_PATH,album.getAlbumPath());
+                intent.putExtra(AlbumSongsListActivity.TITLE,album.getAlbumTitle());
+                startActivity(intent);
+            }
+
+            @Override
+            public void onPlayButtonClick(int position) {
+                ArrayList<Song> songsAlbum = OfflineDataProvider.getSongsFromAlbum(context,mAlbumArrayList.get(position).getAlbumTitle(),mAlbumArrayList.get(0).getAlbumPath());
+                if(songsAlbum.size()>0) {
+                    musicPlayService.setOfflineSongsList(songsAlbum);
+                    musicPlayService.setOfflineSongPosition(0);
+                    musicPlayService.playOfflineSong();
+                }
+            }
+
+            @Override
+            public void onOptionsButtonClick(View view, int position) {
+                showAlbumOptionsMenu(view,position);
+            }
+        });
+        songsListView.setAdapter(albumListAdapter);
+            /*songsListView.setItemViewCacheSize(1000);
+            songsListView.setDrawingCacheEnabled(true);
+            songsListView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
+            songsListView.setHasFixedSize(true);*/
+        GridLayoutManager layoutManager = new GridLayoutManager(getActivity(),2);
+        songsListView.setLayoutManager(layoutManager);
+    }
+
+    public void showAlbumOptionsMenu(View view,int position){
+        PopupMenu popupMenu = new PopupMenu(getContext(),view);
+        MenuInflater inflater = popupMenu.getMenuInflater();
+        inflater.inflate(R.menu.song_menu,popupMenu.getMenu());
+        popupMenu.show();
+        popupMenu.setOnMenuItemClickListener(this);
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem menuItem) {
+        switch (menuItem.getItemId()){
+            case R.id.shuffle:
+                Toast.makeText(getContext(),"shuffle",Toast.LENGTH_SHORT).show();
+                break;
+        }
+        return false;
+    }
 
     public void setMusicPlayService(MusicPlayService musicPlayService){
         this.musicPlayService = musicPlayService;
@@ -131,7 +193,7 @@ public class OfflineFragment extends Fragment {
             case REQUEST_CODE: {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    mAlbumArrayList = OfflineDataProvider.getOfflineAlbums(context,MediaStore.Audio.Media.ALBUM);
+                    /*mAlbumArrayList = OfflineDataProvider.getOfflineAlbums(context,MediaStore.Audio.Media.ALBUM);
                     AlbumListAdapter albumListAdapter = new AlbumListAdapter(mAlbumArrayList,context);
                     albumListAdapter.setOnItemClickListener(new AlbumListAdapter.OnItemClickListener() {
                         @Override
@@ -154,10 +216,17 @@ public class OfflineFragment extends Fragment {
                                 musicPlayService.playOfflineSong();
                             }
                         }
+
+                        @Override
+                        public void onOptionsButtonClick(View view, int position) {
+
+                        }
                     });
                     songsListView.setAdapter(albumListAdapter);
                     GridLayoutManager layoutManager = new GridLayoutManager(getActivity(),2);
                     songsListView.setLayoutManager(layoutManager);
+                    */
+                    setMusicAlbumData();
                 } else {
                     Toast.makeText(context,"Permissin denied,can't download image",Toast.LENGTH_SHORT).show();
                 }

@@ -34,6 +34,7 @@ public class AlbumListAdapter extends RecyclerView.Adapter<AlbumListAdapter.View
     public interface OnItemClickListener{
         public  void onItemClick(int position);
         public void onPlayButtonClick(int position);
+        public void onOptionsButtonClick(View view,int position);
     }
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener){
@@ -71,6 +72,13 @@ public class AlbumListAdapter extends RecyclerView.Adapter<AlbumListAdapter.View
             @Override
             public void onClick(View view) {
                 onItemClickListener.onPlayButtonClick(position);
+            }
+        });
+        ImageButton imageButton = cardView.findViewById(R.id.imageOptions);
+        imageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onItemClickListener.onOptionsButtonClick(view,position);
             }
         });
     }

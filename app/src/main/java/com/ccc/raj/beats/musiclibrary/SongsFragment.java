@@ -50,6 +50,11 @@ public class SongsFragment extends Fragment {
                 //Toast.makeText(getContext(),"Implement this",Toast.LENGTH_SHORT).show();
                 onSongPicked(position);
             }
+
+            @Override
+            public void onMoreButtonClick(View view, int position) {
+
+            }
         });
         songsListView.setAdapter(songListAdapter);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(),1);
