@@ -18,6 +18,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -30,7 +31,7 @@ import com.ccc.raj.beats.model.Song;
 
 import java.util.ArrayList;
 
-public class AlbumSongsListActivity extends AppCompatActivity implements MediaController.MediaPlayerControl,PopupMenu.OnMenuItemClickListener{
+public class AlbumSongsListActivity extends AppCompatActivity implements CustomMediaController.MediaPlayerControl,PopupMenu.OnMenuItemClickListener{
     private CoordinatorLayout mainContainer;
     private RecyclerView albumSongListView;
     private ArrayList<Song> songList;
@@ -53,6 +54,7 @@ public class AlbumSongsListActivity extends AppCompatActivity implements MediaCo
     private String column;
     private String columnValue;
     private String title;
+    FrameLayout mediaViewContainer;
 
     ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
@@ -81,13 +83,9 @@ public class AlbumSongsListActivity extends AppCompatActivity implements MediaCo
         bindService(playIntent,serviceConnection, Context.BIND_AUTO_CREATE);
 
         mainContainer = findViewById(R.id.coordinator_album_songs);
-        ViewTreeObserver vto = mainContainer.getViewTreeObserver();
-        vto.addOnGlobalLayoutListener(new  ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                setController();
-            }
-        });
+
+        mediaViewContainer = findViewById(R.id.media_container);
+        setController();
     }
 
     public void setSongsListData(){
@@ -178,10 +176,6 @@ public class AlbumSongsListActivity extends AppCompatActivity implements MediaCo
         return true;
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-    }
 
     @Override
     protected void onDestroy() {
@@ -203,26 +197,28 @@ public class AlbumSongsListActivity extends AppCompatActivity implements MediaCo
             }
         });
         controller.setMediaPlayer(this);
-        controller.setAnchorView(mainContainer);
+        controller.setAnchorView(mediaViewContainer);
         controller.setEnabled(true);
-        controller.show();
+        //controller.show();
     }
     public void playNext(){
         musicPlayService.playNext();
+        controller.updatePausePlay();
         if(playbackPaused){
             setController();
             playbackPaused=false;
         }
-        controller.show(0);
+        //controller.show(0);
     }
 
     public void playPrev(){
         musicPlayService.playPrev();
+        controller.updatePausePlay();
         if(playbackPaused){
             setController();
             playbackPaused=false;
         }
-        controller.show(0);
+        //controller.show(0);
     }
 
     @Override
@@ -241,7 +237,7 @@ public class AlbumSongsListActivity extends AppCompatActivity implements MediaCo
     }
     @Override
     protected void onStop() {
-        controller.hide();
+        //controller.hide();
         super.onStop();
     }
 
@@ -259,7 +255,7 @@ public class AlbumSongsListActivity extends AppCompatActivity implements MediaCo
 
     @Override
     public int getDuration() {
-        if(musicPlayService!=null&&musicBound&&musicPlayService.isPng()){
+        if(musicPlayService!=null&&musicBound/*&&musicPlayService.isPng()*/){
             return musicPlayService.getDur();
         }
         return 0;
@@ -267,7 +263,7 @@ public class AlbumSongsListActivity extends AppCompatActivity implements MediaCo
 
     @Override
     public int getCurrentPosition() {
-        if(musicPlayService!=null&&musicBound&&musicPlayService.isPng()){
+        if(musicPlayService!=null&&musicBound/*&&musicPlayService.isPng()*/){
             return musicPlayService.getPosn();
         }
         return 0;

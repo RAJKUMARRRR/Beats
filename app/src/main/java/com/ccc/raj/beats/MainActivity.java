@@ -27,6 +27,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.FrameLayout;
 import android.widget.MediaController;
 import android.widget.Toast;
 
@@ -38,7 +39,7 @@ import com.ccc.raj.beats.musiclibrary.MusicLibraryFragment;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements MediaController.MediaPlayerControl,NavigationView.OnNavigationItemSelectedListener{
+public class MainActivity extends AppCompatActivity implements CustomMediaController.MediaPlayerControl,NavigationView.OnNavigationItemSelectedListener{
     Toolbar toolbar;
     public static MusicPlayService musicPlayService;
     private ArrayList<Song> songsList;
@@ -48,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements MediaController.M
     private boolean paused=false, playbackPaused=false;
     DrawerLayout drawerLayout;
     ListenNowFragment listenNowFragment;
+    FrameLayout mediaViewContainer;
     ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
@@ -83,14 +85,15 @@ public class MainActivity extends AppCompatActivity implements MediaController.M
 
         setNavigationDrawer();
 
-        ViewTreeObserver vto = drawerLayout.getViewTreeObserver();
-        vto.addOnGlobalLayoutListener(new  ViewTreeObserver.OnGlobalLayoutListener() {
+        mediaViewContainer = findViewById(R.id.media_container);
+        //ViewTreeObserver vto = mediaViewContainer.getViewTreeObserver();
+        /*vto.addOnGlobalLayoutListener(new  ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
                 setController();
             }
-        });
-
+        });*/
+        setController();
 
     }
 
@@ -165,7 +168,7 @@ public class MainActivity extends AppCompatActivity implements MediaController.M
             }
         });
         controller.setMediaPlayer(this);
-        //controller.setAnchorView(drawerLayout);
+        controller.setAnchorView(mediaViewContainer);
         controller.setEnabled(true);
         controller.show();
     }
@@ -198,26 +201,28 @@ public class MainActivity extends AppCompatActivity implements MediaController.M
     }
     @Override
     protected void onStop() {
-        controller.hide();
+        //controller.hide();
         super.onStop();
     }
 
     public void playNext(){
         musicPlayService.playNext();
+        controller.updatePausePlay();
         if(playbackPaused){
-            setController();
+            //setController();
             playbackPaused=false;
         }
-        controller.show(0);
+        //controller.show(0);
     }
 
     public void playPrev(){
         musicPlayService.playPrev();
+        controller.updatePausePlay();
         if(playbackPaused){
-            setController();
+            //setController();
             playbackPaused=false;
         }
-        controller.show(0);
+        //controller.show(0);
     }
 
     @Override
@@ -234,7 +239,7 @@ public class MainActivity extends AppCompatActivity implements MediaController.M
 
     @Override
     public int getDuration() {
-        if(musicPlayService!=null&&musicBound&&musicPlayService.isPng()){
+        if(musicPlayService!=null&&musicBound/*&&musicPlayService.isPng()*/){
             return musicPlayService.getDur();
         }
         return 0;
@@ -242,7 +247,7 @@ public class MainActivity extends AppCompatActivity implements MediaController.M
 
     @Override
     public int getCurrentPosition() {
-        if(musicPlayService!=null&&musicBound&&musicPlayService.isPng()){
+        if(musicPlayService!=null&&musicBound/*&&musicPlayService.isPng()*/){
              return musicPlayService.getPosn();
         }
         return 0;
