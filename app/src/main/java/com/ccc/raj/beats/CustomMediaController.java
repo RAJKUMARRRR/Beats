@@ -31,44 +31,52 @@ public class CustomMediaController {
     private View.OnClickListener prevListenr;
     private View.OnClickListener nextListenr;
     private View mRoot;
-    StringBuilder               mFormatBuilder;
-    Formatter                   mFormatter;
-    private boolean             mDragging;
+    StringBuilder mFormatBuilder;
+    Formatter mFormatter;
+    private boolean mDragging;
 
     private Context context;
 
-    public CustomMediaController(Context context){
+    public CustomMediaController(Context context) {
         this.context = context;
     }
 
-    public void setPrevNextListeners(View.OnClickListener prevListener,View.OnClickListener nextListener) {
-         this.prevListenr = prevListener;
-         this.nextListenr = nextListener;
+    public void setPrevNextListeners(View.OnClickListener prevListener, View.OnClickListener nextListener) {
+        this.prevListenr = prevListener;
+        this.nextListenr = nextListener;
     }
-    public void setMediaPlayer(MediaPlayerControl mediaPlayer){
-      this.mControl = mediaPlayer;
+
+    public void setMediaPlayer(MediaPlayerControl mediaPlayer) {
+        this.mControl = mediaPlayer;
     }
-    public  void setEnabled(boolean enabled){
+
+    public void setEnabled(boolean enabled) {
 
     }
-    public  void show(){
+
+    public void show() {
 
     }
-    public void runTimer(){
+
+    public void hide(){
+
+    }
+
+    public void runTimer() {
         final Handler handler = new Handler();
         handler.post(new Runnable() {
             @Override
             public void run() {
-                if(mControl!=null&&mControl.isPlaying()) {
+                if (mControl != null && mControl.isPlaying()) {
                     setProgress();
                     updatePausePlay();
                 }
-                handler.postDelayed(this,1000);
+                handler.postDelayed(this, 1000);
             }
         });
     }
 
-    public  void setAnchorView(ViewGroup viewGroup){
+    public void setAnchorView(ViewGroup viewGroup) {
         LayoutInflater inflate = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mRoot = inflate.inflate(R.layout.media_sliding_windows, null);
         viewGroup.addView(mRoot);
@@ -103,6 +111,7 @@ public class CustomMediaController {
 
         installPrevNextListeners();
     }
+
     private void installPrevNextListeners() {
         if (next != null) {
             next.setOnClickListener(nextListenr);
@@ -114,6 +123,7 @@ public class CustomMediaController {
             prev.setEnabled(prevListenr != null);
         }
     }
+
     private SeekBar.OnSeekBarChangeListener mSeekListener = new SeekBar.OnSeekBarChangeListener() {
         public void onStartTrackingTouch(SeekBar bar) {
             mDragging = true;
@@ -127,9 +137,9 @@ public class CustomMediaController {
 
             long duration = mControl.getDuration();
             long newposition = (duration * progress) / 1000L;
-            mControl.seekTo( (int) newposition);
+            mControl.seekTo((int) newposition);
             if (currentTime != null)
-                currentTime.setText(stringForTime( (int) newposition));
+                currentTime.setText(stringForTime((int) newposition));
         }
 
         public void onStopTrackingTouch(SeekBar bar) {
@@ -144,14 +154,16 @@ public class CustomMediaController {
             doPauseResume();
         }
     };
+
     private void doPauseResume() {
         if (mControl.isPlaying()) {
             mControl.pause();
-        }else{
+        } else {
             mControl.start();
         }
         updatePausePlay();
     }
+
     public void updatePausePlay() {
         if (mRoot == null || playpauseButton == null) {
             return;
@@ -174,7 +186,7 @@ public class CustomMediaController {
             if (duration > 0) {
                 // use long to avoid overflow
                 long pos = 1000L * position / duration;
-                progressBar.setProgress( (int) pos);
+                progressBar.setProgress((int) pos);
             }
             int percent = mControl.getBufferPercentage();
             progressBar.setSecondaryProgress(percent * 10);
@@ -193,7 +205,7 @@ public class CustomMediaController {
 
         int seconds = totalSeconds % 60;
         int minutes = (totalSeconds / 60) % 60;
-        int hours   = totalSeconds / 3600;
+        int hours = totalSeconds / 3600;
 
         mFormatBuilder.setLength(0);
         if (hours > 0) {
@@ -206,15 +218,25 @@ public class CustomMediaController {
 
     public static interface MediaPlayerControl {
         public void start();
+
         public void pause();
+
         public int getDuration();
+
         public int getCurrentPosition();
+
         public void seekTo(int i);
+
         public boolean isPlaying();
+
         public int getBufferPercentage();
+
         public boolean canPause();
+
         public boolean canSeekBackward();
+
         public boolean canSeekForward();
+
         public int getAudioSessionId();
     }
 }

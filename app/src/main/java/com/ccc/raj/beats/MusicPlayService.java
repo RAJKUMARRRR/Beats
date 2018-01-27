@@ -12,6 +12,7 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.provider.MediaStore;
+import android.util.Log;
 
 import com.ccc.raj.beats.model.Song;
 
@@ -34,6 +35,7 @@ public class MusicPlayService extends Service implements MediaPlayer.OnPreparedL
     }
 
     public MusicPlayService() {
+        Log.i("MusicPlayerService","OnCreateService");
     }
 
     @Override

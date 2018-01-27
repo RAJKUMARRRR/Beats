@@ -31,8 +31,7 @@ import com.ccc.raj.beats.model.Song;
 
 import java.util.ArrayList;
 
-public class AlbumSongsListActivity extends AppCompatActivity implements CustomMediaController.MediaPlayerControl,PopupMenu.OnMenuItemClickListener{
-    private CoordinatorLayout mainContainer;
+public class AlbumSongsListActivity extends MediaControlBaseActivity implements PopupMenu.OnMenuItemClickListener{
     private RecyclerView albumSongListView;
     private ArrayList<Song> songList;
     private ImageView albumImage;
@@ -44,48 +43,35 @@ public class AlbumSongsListActivity extends AppCompatActivity implements CustomM
     public static final String ALBUM_PATH = "ALBUM_PATH";
 
 
-    MusicController controller;
-    public static MusicPlayService musicPlayService;
-    private boolean musicBound = false;
-    private boolean paused=false, playbackPaused=false;
-    private Intent playIntent;
-    //private String album;
+    private  MusicPlayService musicPlayService;
+
     private String albumPath;
     private String column;
     private String columnValue;
     private String title;
     FrameLayout mediaViewContainer;
 
-    ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            MusicPlayService.MusicServiceBinder musicServiceBinder = (MusicPlayService.MusicServiceBinder) iBinder;
-            musicPlayService = musicServiceBinder.getService();
-            musicBound = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-            musicBound = false;
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    protected void onMusicServiceBind(MusicPlayService musicPlayService) {
+        this.musicPlayService = musicPlayService;
+    }
+
+    @Override
+    protected void setControllerAnchorView(MusicController musicController) {
         setContentView(R.layout.activity_album_songs_list);
         albumImage = findViewById(R.id.album_image);
         setActionBar();
 
         setSongsListData();
 
-        playIntent = new Intent(this,MusicPlayService.class);
-        bindService(playIntent,serviceConnection, Context.BIND_AUTO_CREATE);
-
-        mainContainer = findViewById(R.id.coordinator_album_songs);
-
         mediaViewContainer = findViewById(R.id.media_container);
-        setController();
+        musicController.setAnchorView(mediaViewContainer);
     }
 
     public void setSongsListData(){
@@ -114,8 +100,6 @@ public class AlbumSongsListActivity extends AppCompatActivity implements CustomM
         albumSongListView.setLayoutManager(gridLayoutManager);
         albumImage.setImageBitmap(OfflineDataProvider.getBitmapByAlbumPath(this,albumPath));
         setTitle(title);
-
-        //registerForContextMenu(albumSongListView);
     }
 
     public void showSongOptionsMenu(View view,int position){
@@ -175,136 +159,4 @@ public class AlbumSongsListActivity extends AppCompatActivity implements CustomM
         }
         return true;
     }
-
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        unbindService(serviceConnection);
-    }
-
-    public void setController(){
-        controller = new MusicController(this);
-        controller.setPrevNextListeners(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                playNext();
-            }
-        }, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                playPrev();
-            }
-        });
-        controller.setMediaPlayer(this);
-        controller.setAnchorView(mediaViewContainer);
-        controller.setEnabled(true);
-        //controller.show();
-    }
-    public void playNext(){
-        musicPlayService.playNext();
-        controller.updatePausePlay();
-        if(playbackPaused){
-            setController();
-            playbackPaused=false;
-        }
-        //controller.show(0);
-    }
-
-    public void playPrev(){
-        musicPlayService.playPrev();
-        controller.updatePausePlay();
-        if(playbackPaused){
-            setController();
-            playbackPaused=false;
-        }
-        //controller.show(0);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if(paused){
-            setController();
-            paused = false;
-        }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        paused = true;
-    }
-    @Override
-    protected void onStop() {
-        //controller.hide();
-        super.onStop();
-    }
-
-    @Override
-    public void start() {
-        musicPlayService.go();
-    }
-
-
-    @Override
-    public void pause() {
-        musicPlayService.pausePlayer();
-        playbackPaused = true;
-    }
-
-    @Override
-    public int getDuration() {
-        if(musicPlayService!=null&&musicBound/*&&musicPlayService.isPng()*/){
-            return musicPlayService.getDur();
-        }
-        return 0;
-    }
-
-    @Override
-    public int getCurrentPosition() {
-        if(musicPlayService!=null&&musicBound/*&&musicPlayService.isPng()*/){
-            return musicPlayService.getPosn();
-        }
-        return 0;
-    }
-
-    @Override
-    public void seekTo(int i) {
-        musicPlayService.seek(i);
-    }
-
-    @Override
-    public boolean isPlaying() {
-        if(musicPlayService!=null&&musicBound){
-            return musicPlayService.isPng();
-        }
-        return false;
-    }
-
-    @Override
-    public int getBufferPercentage() {
-        return 0;
-    }
-
-    @Override
-    public boolean canPause() {
-        return true;
-    }
-
-    @Override
-    public boolean canSeekBackward() {
-        return true;
-    }
-
-    @Override
-    public boolean canSeekForward() {
-        return true;
-    }
-
-    @Override
-    public int getAudioSessionId() {
-        return 0;
-    }
-
 }

@@ -39,35 +39,27 @@ import com.ccc.raj.beats.musiclibrary.MusicLibraryFragment;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements CustomMediaController.MediaPlayerControl,NavigationView.OnNavigationItemSelectedListener{
+public class MainActivity extends MediaControlBaseActivity implements NavigationView.OnNavigationItemSelectedListener{
     Toolbar toolbar;
-    public static MusicPlayService musicPlayService;
+    public  MusicPlayService musicPlayService;
     private ArrayList<Song> songsList;
-    private Intent playIntent;
-    private boolean musicBound = false;
-    private MusicController controller;
-    private boolean paused=false, playbackPaused=false;
     DrawerLayout drawerLayout;
     ListenNowFragment listenNowFragment;
     FrameLayout mediaViewContainer;
-    ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            MusicPlayService.MusicServiceBinder musicServiceBinder = (MusicPlayService.MusicServiceBinder) iBinder;
-            musicPlayService = musicServiceBinder.getService();
-            musicBound = true;
-            listenNowFragment.setMusicPlayService(musicPlayService);
-            MusicPlayServiceHolder.setMusicPlayService(musicPlayService);
-        }
 
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-            musicBound = false;
-        }
-    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    protected void onMusicServiceBind(MusicPlayService musicPlayService) {
+        this.musicPlayService = musicPlayService;
+        listenNowFragment.setMusicPlayService(musicPlayService);
+    }
+
+    @Override
+    protected void setControllerAnchorView(MusicController musicController) {
         setContentView(R.layout.activity_main);
         toolbar = findViewById(R.id.toolbar_main);
 
@@ -79,29 +71,13 @@ public class MainActivity extends AppCompatActivity implements CustomMediaContro
         fragmentTransaction.add(R.id.main_container,listenNowFragment);
         fragmentTransaction.commit();
 
-
-        playIntent = new Intent(this,MusicPlayService.class);
-        bindService(playIntent,serviceConnection, Context.BIND_AUTO_CREATE);
-
         setNavigationDrawer();
 
         mediaViewContainer = findViewById(R.id.media_container);
-        //ViewTreeObserver vto = mediaViewContainer.getViewTreeObserver();
-        /*vto.addOnGlobalLayoutListener(new  ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                setController();
-            }
-        });*/
-        setController();
+        musicController.setAnchorView(mediaViewContainer);
 
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        unbindService(serviceConnection);
-    }
 
     public void setNavigationDrawer(){
         drawerLayout = findViewById(R.id.drawer_view);
@@ -154,24 +130,6 @@ public class MainActivity extends AppCompatActivity implements CustomMediaContro
         return true;
     }
 
-    public void setController(){
-        controller = new MusicController(this);
-        controller.setPrevNextListeners(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                playNext();
-            }
-        }, new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                playPrev();
-            }
-        });
-        controller.setMediaPlayer(this);
-        controller.setAnchorView(mediaViewContainer);
-        controller.setEnabled(true);
-        controller.show();
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -183,114 +141,5 @@ public class MainActivity extends AppCompatActivity implements CustomMediaContro
         searchView.setBackgroundResource(R.drawable.rectangle);
         return super.onCreateOptionsMenu(menu);
     }
-
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if(paused){
-            setController();
-            paused = false;
-        }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        paused = true;
-    }
-    @Override
-    protected void onStop() {
-        //controller.hide();
-        super.onStop();
-    }
-
-    public void playNext(){
-        musicPlayService.playNext();
-        controller.updatePausePlay();
-        if(playbackPaused){
-            //setController();
-            playbackPaused=false;
-        }
-        //controller.show(0);
-    }
-
-    public void playPrev(){
-        musicPlayService.playPrev();
-        controller.updatePausePlay();
-        if(playbackPaused){
-            //setController();
-            playbackPaused=false;
-        }
-        //controller.show(0);
-    }
-
-    @Override
-    public void start() {
-       musicPlayService.go();
-    }
-
-
-    @Override
-    public void pause() {
-       musicPlayService.pausePlayer();
-       playbackPaused = true;
-    }
-
-    @Override
-    public int getDuration() {
-        if(musicPlayService!=null&&musicBound/*&&musicPlayService.isPng()*/){
-            return musicPlayService.getDur();
-        }
-        return 0;
-    }
-
-    @Override
-    public int getCurrentPosition() {
-        if(musicPlayService!=null&&musicBound/*&&musicPlayService.isPng()*/){
-             return musicPlayService.getPosn();
-        }
-        return 0;
-    }
-
-    @Override
-    public void seekTo(int i) {
-      musicPlayService.seek(i);
-    }
-
-    @Override
-    public boolean isPlaying() {
-        if(musicPlayService!=null&&musicBound){
-            return musicPlayService.isPng();
-        }
-        return false;
-    }
-
-    @Override
-    public int getBufferPercentage() {
-        return 0;
-    }
-
-    @Override
-    public boolean canPause() {
-        return true;
-    }
-
-    @Override
-    public boolean canSeekBackward() {
-        return true;
-    }
-
-    @Override
-    public boolean canSeekForward() {
-        return true;
-    }
-
-    @Override
-    public int getAudioSessionId() {
-        return 0;
-    }
-
-
 }
 

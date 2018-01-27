@@ -14,6 +14,9 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.ccc.raj.beats.R;
@@ -25,16 +28,26 @@ import com.ccc.raj.beats.searchresult.SearchRecord;
 
 import java.util.ArrayList;
 
-public class SearchActivity extends AppCompatActivity {
+public class SearchActivity extends MediaControlBaseActivity {
     Toolbar mToolbar;
     RecyclerView searchListView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    protected void onMusicServiceBind(MusicPlayService musicPlayService) {
+
+    }
+
+    @Override
+    protected void setControllerAnchorView(MusicController musicController) {
         setContentView(R.layout.activity_search);
         mToolbar = findViewById(R.id.toolbar_main);
         setSupportActionBar(mToolbar);
         searchListView = findViewById(R.id.searchListView);
+        musicController.setAnchorView((FrameLayout) findViewById(R.id.media_container));
         handleIntent(getIntent());
     }
 
@@ -151,4 +164,10 @@ public class SearchActivity extends AppCompatActivity {
         searchListView.setAdapter(songListAdapter);
         searchListView.setLayoutManager(gridLayoutManager);
     }
+
+    public void testOnClick(View view){
+        Intent intent = new Intent(getApplicationContext(),MoreRecordsActivity.class);
+        startActivity(intent);
+    }
+
 }

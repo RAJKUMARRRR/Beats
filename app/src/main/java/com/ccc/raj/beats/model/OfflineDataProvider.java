@@ -34,42 +34,13 @@ public class OfflineDataProvider {
                 MediaStore.Audio.Media.DATA,
                 MediaStore.Audio.Media.COMPOSER,
                 MediaStore.Audio.Media.ARTIST,
-                MediaStore.Audio.Media.ARTIST_ID
+                MediaStore.Audio.Media.ARTIST_ID,
         };
         String where = "0 == 0) GROUP BY (" + column;
         String sortOrder = MediaStore.Audio.Media.DATE_ADDED+" DESC";
         Cursor musicCursor = musicResolver.query(musicUri, columns, where, null, sortOrder);
         Log.i("BeatsAlbumCount",musicCursor.getCount()+"");
         albumArrayList = getOfflineAlbumsFromCursor(musicCursor);
-        /*if (musicCursor != null && musicCursor.moveToFirst()) {
-            int titleColumn = musicCursor.getColumnIndex
-                    (MediaStore.Audio.Media.ALBUM);
-            int albumId = musicCursor.getColumnIndex
-                    (MediaStore.Audio.Media.ALBUM_ID);
-            int albumPath = musicCursor.getColumnIndex
-                    (MediaStore.Audio.Media.DATA);
-            int composerColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.COMPOSER);
-            int artistColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
-            int artistIdColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST_ID);
-            do {
-                String thisTitle = musicCursor.getString(titleColumn);
-                String fullPath = musicCursor.getString(albumPath);
-                int thisAlbumId = musicCursor.getInt(albumId);
-                String composer = musicCursor.getString(composerColumn);
-                String artist = musicCursor.getString(artistColumn);
-                String artistId = musicCursor.getString(artistIdColumn);
-                Log.i("Beats", fullPath);
-                Log.i("Beats", thisTitle);
-                Log.i("Beats", thisAlbumId + "");
-                Log.i("BeatsArtist", artist + "");
-                Log.i("BeatsArtistID", "ID"+artistId);
-                Album album = new OfflineAlbum(fullPath, thisAlbumId, thisTitle);
-                album.setComposer(composer);
-                album.setArtist(artist);
-                albumArrayList.add(album);
-            }
-            while (musicCursor.moveToNext());
-        }*/
         return albumArrayList;
     }
 

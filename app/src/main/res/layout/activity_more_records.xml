@@ -14,7 +14,7 @@
     sothree:umanoParallaxOffset="0dp"
     sothree:umanoScrollableView="@+id/list"
     sothree:umanoShadowHeight="4dp"
-    tools:context="com.ccc.raj.beats.AlbumSongsListActivity">
+    tools:context="com.ccc.raj.beats.MoreRecordsActivity">
 
     <android.support.design.widget.CoordinatorLayout
         android:id="@+id/coordinator_album_songs"
@@ -55,17 +55,6 @@
                     android:layout_height="?attr/actionBarSize"
                     app:layout_collapseMode="pin" />
 
-                <ImageButton
-                    android:id="@+id/playAllSongs"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_gravity="bottom|end"
-                    android:layout_marginBottom="5dp"
-                    android:layout_marginRight="5dp"
-                    android:background="@color/cardview_shadow_end_color"
-                    android:onClick="onAllPlayClicked"
-                    android:scaleType="centerCrop"
-                    app:srcCompat="@drawable/play" />
             </android.support.design.widget.CollapsingToolbarLayout>
         </android.support.design.widget.AppBarLayout>
 
@@ -76,13 +65,11 @@
             android:padding="5dp"
             app:layout_behavior="android.support.design.widget.AppBarLayout$ScrollingViewBehavior">
 
-
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/albumSongListView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
         </android.support.v4.widget.NestedScrollView>
-
     </android.support.design.widget.CoordinatorLayout>
     <FrameLayout
         android:id="@+id/media_container"
