@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.ccc.raj.beats.R;
 import com.ccc.raj.beats.Utitlity;
 import com.ccc.raj.beats.model.Album;
+import com.ccc.raj.beats.model.OfflineAlbum;
 import com.ccc.raj.beats.model.OfflineDataProvider;
 import com.ccc.raj.beats.model.OfflineSong;
 
@@ -95,13 +96,13 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
 
     public void bindAlbumData(ViewHolder viewHolder,SearchRecord searchRecord){
         CardView cardView = (CardView) viewHolder.itemView;
-        Album album = searchRecord.getOfflineAlbum();
+        OfflineAlbum album = (OfflineAlbum) searchRecord.getOfflineAlbum();
         TextView textSong = cardView.findViewById(R.id.textSong);
         textSong.setText(Utitlity.formatString(album.getAlbumTitle(),20));
         TextView textArtist = cardView.findViewById(R.id.textArtist);
-        textArtist.setText(Utitlity.formatString(album.getComposer()+"",20));
+        textArtist.setText(Utitlity.formatString(album.getArtist()+"",20));
         ImageView imageSong = cardView.findViewById(R.id.imageSong);
-        imageSong.setImageBitmap(OfflineDataProvider.getBitmapByAlbumId(context,album.getAlbumId()));
+        imageSong.setImageBitmap(OfflineDataProvider.getBitmapByAlbumArt(album.getAlbumArt()));
         cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -28,6 +28,7 @@ import android.widget.Toast;
 
 import com.ccc.raj.beats.model.OfflineDataProvider;
 import com.ccc.raj.beats.model.Song;
+import com.ccc.raj.beats.model.SongTable;
 
 import java.util.ArrayList;
 
@@ -40,12 +41,12 @@ public class AlbumSongsListActivity extends MediaControlBaseActivity implements 
     public static final String COLUMN = "COLUMN";
     public static final String COLUMN_VALUE = "COLUMN_VALUE";
     public static final String TITLE = "TITLE";
-    public static final String ALBUM_PATH = "ALBUM_PATH";
+    public static final String ALBUM_ID = "ALBUM_ID";
 
 
     private  MusicPlayService musicPlayService;
 
-    private String albumPath;
+    private int albumId;
     private String column;
     private String columnValue;
     private String title;
@@ -80,9 +81,9 @@ public class AlbumSongsListActivity extends MediaControlBaseActivity implements 
         column = intent.getStringExtra(COLUMN);
         columnValue = intent.getStringExtra(COLUMN_VALUE);
         title = intent.getStringExtra(TITLE);
-        albumPath = intent.getStringExtra(ALBUM_PATH);
+        albumId = intent.getIntExtra(ALBUM_ID,0);
         //songList = OfflineDataProvider.getSongsFromAlbum(this,album,albumPath);
-        songList = OfflineDataProvider.getSongsFromColumn(this,column,columnValue);
+        songList = SongTable.getSongsFromColumn(this,column,columnValue);
         SongListAdapter songListAdapter = new SongListAdapter(this,songList);
         songListAdapter.setOnItemClickListener(new SongListAdapter.OnItemClickListener() {
             @Override
@@ -98,7 +99,7 @@ public class AlbumSongsListActivity extends MediaControlBaseActivity implements 
         albumSongListView.setAdapter(songListAdapter);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this,1);
         albumSongListView.setLayoutManager(gridLayoutManager);
-        albumImage.setImageBitmap(OfflineDataProvider.getBitmapByAlbumPath(this,albumPath));
+        albumImage.setImageBitmap(OfflineDataProvider.getBitmapByAlbumId(this,albumId));
         setTitle(title);
     }
 
@@ -121,7 +122,7 @@ public class AlbumSongsListActivity extends MediaControlBaseActivity implements 
     }
 
     public void onSongPicked(int position){
-        ArrayList<Song> songsAlbum = OfflineDataProvider.getSongsFromColumn(this,column,columnValue);
+        ArrayList<Song> songsAlbum = SongTable.getSongsFromColumn(this,column,columnValue);
         if(songsAlbum.size()>0) {
             musicPlayService.setOfflineSongsList(songsAlbum);
             musicPlayService.setOfflineSongPosition(position);
@@ -130,7 +131,7 @@ public class AlbumSongsListActivity extends MediaControlBaseActivity implements 
     }
 
     public void onAllPlayClicked(View view){
-        ArrayList<Song> songsAlbum = OfflineDataProvider.getSongsFromColumn(this,column,columnValue);
+        ArrayList<Song> songsAlbum = SongTable.getSongsFromColumn(this,column,columnValue);
         if(songsAlbum.size()>0) {
             musicPlayService.setOfflineSongsList(songsAlbum);
             musicPlayService.setOfflineSongPosition(0);

@@ -15,6 +15,8 @@ import com.ccc.raj.beats.AlbumListAdapter;
 import com.ccc.raj.beats.AlbumSongsListActivity;
 import com.ccc.raj.beats.R;
 import com.ccc.raj.beats.model.Album;
+import com.ccc.raj.beats.model.AlbumTable;
+import com.ccc.raj.beats.model.OfflineAlbum;
 import com.ccc.raj.beats.model.OfflineDataProvider;
 
 import java.util.ArrayList;
@@ -36,16 +38,16 @@ public class GenresFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_genres, container, false);
         genresListView = view.findViewById(R.id.genresListView);
-        mAlbumArrayList = OfflineDataProvider.getOfflineAlbums(getContext(), MediaStore.Audio.Media.ARTIST);
+        mAlbumArrayList = AlbumTable.getAlbumsGroupByArtist(getContext());
         AlbumListAdapter albumListAdapter = new AlbumListAdapter(mAlbumArrayList,getContext());
         albumListAdapter.setOnItemClickListener(new AlbumListAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
                 Intent intent = new Intent(getContext(),AlbumSongsListActivity.class);
-                Album album = mAlbumArrayList.get(position);
-                intent.putExtra(AlbumSongsListActivity.COLUMN, MediaStore.Audio.Media.ARTIST);
+                OfflineAlbum album = (OfflineAlbum) mAlbumArrayList.get(position);
+                intent.putExtra(AlbumSongsListActivity.COLUMN, AlbumTable.ARTIST);
                 intent.putExtra(AlbumSongsListActivity.COLUMN_VALUE,album.getArtist());
-                intent.putExtra(AlbumSongsListActivity.ALBUM_PATH,album.getAlbumPath());
+                intent.putExtra(AlbumSongsListActivity.ALBUM_ID,album.getAlbumId());
                 intent.putExtra(AlbumSongsListActivity.TITLE,album.getArtist());
                 startActivity(intent);
             }

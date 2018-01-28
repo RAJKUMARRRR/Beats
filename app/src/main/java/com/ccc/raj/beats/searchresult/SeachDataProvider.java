@@ -7,8 +7,10 @@ import android.net.Uri;
 import android.provider.MediaStore;
 
 import com.ccc.raj.beats.model.Album;
+import com.ccc.raj.beats.model.AlbumTable;
 import com.ccc.raj.beats.model.OfflineDataProvider;
 import com.ccc.raj.beats.model.Song;
+import com.ccc.raj.beats.model.SongTable;
 
 import java.util.ArrayList;
 
@@ -21,22 +23,14 @@ public class SeachDataProvider {
     public ArrayList<Album> searchAlbums(Context context, String query,String column,boolean isCustom,String customWhere){
         ArrayList<Album> albumArrayList = new ArrayList<>();
         ContentResolver musicResolver = context.getContentResolver();
-        Uri musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-        String[] columns = {
-                MediaStore.Audio.Media.ALBUM,
-                MediaStore.Audio.Media.ALBUM_ID,
-                MediaStore.Audio.Media.DATA,
-                MediaStore.Audio.Media.COMPOSER,
-                MediaStore.Audio.Media.ARTIST,
-                MediaStore.Audio.Media.ARTIST_ID
-        };
+        Uri musicUri = AlbumTable.TABLE_URI;
         String where = column +" Like '%" + query +"%') GROUP BY (" + column;
-        String sortOrder = MediaStore.Audio.Media.DATE_ADDED+" DESC";
+        String sortOrder = AlbumTable.ALBUM+" DESC";
         if(isCustom){
             where = customWhere;
         }
-        Cursor musicCursor = musicResolver.query(musicUri, columns, where, null, sortOrder);
-        albumArrayList = OfflineDataProvider.getOfflineAlbumsFromCursor(musicCursor);
+        Cursor musicCursor = musicResolver.query(musicUri, null, where, null, sortOrder);
+        albumArrayList = AlbumTable.getOfflineAlbumsFromCursor(musicCursor);
         return  albumArrayList;
     }
     public ArrayList<Song> searchSongs(Context context, String query, String column,boolean isCustom,String customWhere){
@@ -49,7 +43,7 @@ public class SeachDataProvider {
             where = customWhere;
         }
         Cursor musicCursor = musicResolver.query(musicUri, null, where, null, sortOrder);
-        ArrayList<Song> songList = OfflineDataProvider.getSongsFromCursor(musicCursor);
+        ArrayList<Song> songList = SongTable.getSongsFromCursor(musicCursor);
         return songList;
     }
 }

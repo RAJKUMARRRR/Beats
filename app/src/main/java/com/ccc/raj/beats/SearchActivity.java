@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.ccc.raj.beats.R;
 import com.ccc.raj.beats.model.Album;
+import com.ccc.raj.beats.model.AlbumTable;
 import com.ccc.raj.beats.model.Song;
 import com.ccc.raj.beats.searchresult.SeachDataProvider;
 import com.ccc.raj.beats.searchresult.SearchListAdapter;
@@ -109,7 +110,7 @@ public class SearchActivity extends MediaControlBaseActivity {
         return searchRecords;
     }
     private ArrayList<SearchRecord> getAlbumsSearchData(SeachDataProvider seachDataProvider,String query){
-        ArrayList<Album> albumSearchData = seachDataProvider.searchAlbums(this,query, MediaStore.Audio.Media.ALBUM,false,null);
+        ArrayList<Album> albumSearchData = seachDataProvider.searchAlbums(this,query, AlbumTable.ALBUM,false,null);
         ArrayList<SearchRecord> searchRecords = new ArrayList<>();
         SearchRecord record;
         if(albumSearchData.size()>0) {
@@ -125,7 +126,7 @@ public class SearchActivity extends MediaControlBaseActivity {
         return searchRecords;
     }
     private ArrayList<SearchRecord> getArtistsSearchData(SeachDataProvider seachDataProvider,String query){
-        ArrayList<Album> artistSearchData = seachDataProvider.searchAlbums(this,query, MediaStore.Audio.Media.COMPOSER,false,null);
+        ArrayList<Album> artistSearchData = seachDataProvider.searchAlbums(this,query, AlbumTable.ARTIST,false,null);
         ArrayList<SearchRecord> searchRecords = new ArrayList<>();
         SearchRecord record;
         if(artistSearchData.size()>0) {

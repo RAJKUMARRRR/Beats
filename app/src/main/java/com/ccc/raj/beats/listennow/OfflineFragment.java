@@ -27,8 +27,11 @@ import com.ccc.raj.beats.MusicPlayService;
 import com.ccc.raj.beats.MusicPlayServiceHolder;
 import com.ccc.raj.beats.R;
 import com.ccc.raj.beats.model.Album;
+import com.ccc.raj.beats.model.AlbumTable;
+import com.ccc.raj.beats.model.OfflineAlbum;
 import com.ccc.raj.beats.model.OfflineDataProvider;
 import com.ccc.raj.beats.model.Song;
+import com.ccc.raj.beats.model.SongTable;
 
 import java.util.ArrayList;
 
@@ -36,13 +39,14 @@ import java.util.ArrayList;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class OfflineFragment extends Fragment implements PopupMenu.OnMenuItemClickListener{
-    ArrayList<Album> mAlbumArrayList =null;
+public class OfflineFragment extends Fragment implements PopupMenu.OnMenuItemClickListener {
+    ArrayList<Album> mAlbumArrayList = null;
     RecyclerView songsListView;
     Context context;
     MusicPlayService musicPlayService;
     private static String permissionString = Manifest.permission.READ_EXTERNAL_STORAGE;
     private static final int REQUEST_CODE = 9867;
+
     public OfflineFragment() {
         // Required empty public constructor
     }
@@ -52,6 +56,7 @@ public class OfflineFragment extends Fragment implements PopupMenu.OnMenuItemCli
         super.onAttach(context);
         this.context = context;
     }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -63,45 +68,12 @@ public class OfflineFragment extends Fragment implements PopupMenu.OnMenuItemCli
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_offline, container, false);
         songsListView = view.findViewById(R.id.offlineTrackListView);
-        if(checkPermission()){
-            /*mAlbumArrayList = OfflineDataProvider.getOfflineAlbums(context,MediaStore.Audio.Media.ALBUM);
-            AlbumListAdapter albumListAdapter = new AlbumListAdapter(mAlbumArrayList,context);
-            albumListAdapter.setOnItemClickListener(new AlbumListAdapter.OnItemClickListener() {
-                @Override
-                public void onItemClick(int position) {
-                    Intent intent = new Intent(getContext(),AlbumSongsListActivity.class);
-                    Album album = mAlbumArrayList.get(position);
-                    intent.putExtra(AlbumSongsListActivity.COLUMN, MediaStore.Audio.Media.ALBUM);
-                    intent.putExtra(AlbumSongsListActivity.COLUMN_VALUE,album.getAlbumTitle());
-                    intent.putExtra(AlbumSongsListActivity.ALBUM_PATH,album.getAlbumPath());
-                    intent.putExtra(AlbumSongsListActivity.TITLE,album.getAlbumTitle());
-                    startActivity(intent);
-                }
-
-                @Override
-                public void onPlayButtonClick(int position) {
-                    ArrayList<Song> songsAlbum = OfflineDataProvider.getSongsFromAlbum(context,mAlbumArrayList.get(position).getAlbumTitle(),mAlbumArrayList.get(0).getAlbumPath());
-                    if(songsAlbum.size()>0) {
-                        musicPlayService.setOfflineSongsList(songsAlbum);
-                        musicPlayService.setOfflineSongPosition(0);
-                        musicPlayService.playOfflineSong();
-                    }
-                }
-
-                @Override
-                public void onOptionsButtonClick(View view, int position) {
-
-                }
-            });
-            songsListView.setAdapter(albumListAdapter);
-            GridLayoutManager layoutManager = new GridLayoutManager(getActivity(),2);
-            songsListView.setLayoutManager(layoutManager);
-            */
+        if (checkPermission()) {
             setMusicAlbumData();
-        }else{
+        } else {
             if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
                     permissionString)) {
-                Toast.makeText(context,"Permissin needed to store image",Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "Permissin needed to store image", Toast.LENGTH_SHORT).show();
             } else {
                 ActivityCompat.requestPermissions(getActivity(),
                         new String[]{permissionString},
@@ -111,25 +83,26 @@ public class OfflineFragment extends Fragment implements PopupMenu.OnMenuItemCli
         return view;
     }
 
-    private void setMusicAlbumData(){
-        mAlbumArrayList = OfflineDataProvider.getOfflineAlbums(context,MediaStore.Audio.Media.ALBUM);
-        AlbumListAdapter albumListAdapter = new AlbumListAdapter(mAlbumArrayList,context);
+    private void setMusicAlbumData() {
+        mAlbumArrayList = AlbumTable.getAllAlbums(context);
+        AlbumListAdapter albumListAdapter = new AlbumListAdapter(mAlbumArrayList, context);
         albumListAdapter.setOnItemClickListener(new AlbumListAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                Intent intent = new Intent(getContext(),AlbumSongsListActivity.class);
-                Album album = mAlbumArrayList.get(position);
-                intent.putExtra(AlbumSongsListActivity.COLUMN, MediaStore.Audio.Media.ALBUM);
-                intent.putExtra(AlbumSongsListActivity.COLUMN_VALUE,album.getAlbumTitle());
-                intent.putExtra(AlbumSongsListActivity.ALBUM_PATH,album.getAlbumPath());
-                intent.putExtra(AlbumSongsListActivity.TITLE,album.getAlbumTitle());
+                Intent intent = new Intent(getContext(), AlbumSongsListActivity.class);
+                OfflineAlbum album = (OfflineAlbum) mAlbumArrayList.get(position);
+                intent.putExtra(AlbumSongsListActivity.COLUMN, AlbumTable.ALBUM);
+                intent.putExtra(AlbumSongsListActivity.COLUMN_VALUE, album.getAlbumTitle());
+                intent.putExtra(AlbumSongsListActivity.ALBUM_ID, album.getAlbumId());
+                intent.putExtra(AlbumSongsListActivity.TITLE, album.getAlbumTitle());
                 startActivity(intent);
             }
 
             @Override
             public void onPlayButtonClick(int position) {
-                ArrayList<Song> songsAlbum = OfflineDataProvider.getSongsFromAlbum(context,mAlbumArrayList.get(position).getAlbumTitle(),mAlbumArrayList.get(0).getAlbumPath());
-                if(songsAlbum.size()>0) {
+                OfflineAlbum album = (OfflineAlbum) mAlbumArrayList.get(position);
+                ArrayList<Song> songsAlbum = SongTable.getSongsFromAlbum(context,album.getAlbumTitle());
+                if (songsAlbum.size() > 0) {
                     musicPlayService.setOfflineSongsList(songsAlbum);
                     musicPlayService.setOfflineSongPosition(0);
                     musicPlayService.playOfflineSong();
@@ -138,7 +111,7 @@ public class OfflineFragment extends Fragment implements PopupMenu.OnMenuItemCli
 
             @Override
             public void onOptionsButtonClick(View view, int position) {
-                showAlbumOptionsMenu(view,position);
+                showAlbumOptionsMenu(view, position);
             }
         });
         songsListView.setAdapter(albumListAdapter);
@@ -146,42 +119,42 @@ public class OfflineFragment extends Fragment implements PopupMenu.OnMenuItemCli
             songsListView.setDrawingCacheEnabled(true);
             songsListView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
             songsListView.setHasFixedSize(true);*/
-        GridLayoutManager layoutManager = new GridLayoutManager(getActivity(),2);
+        GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), 2);
         songsListView.setLayoutManager(layoutManager);
     }
 
-    public void showAlbumOptionsMenu(View view,int position){
-        PopupMenu popupMenu = new PopupMenu(getContext(),view);
+    public void showAlbumOptionsMenu(View view, int position) {
+        PopupMenu popupMenu = new PopupMenu(getContext(), view);
         MenuInflater inflater = popupMenu.getMenuInflater();
-        inflater.inflate(R.menu.song_menu,popupMenu.getMenu());
+        inflater.inflate(R.menu.song_menu, popupMenu.getMenu());
         popupMenu.show();
         popupMenu.setOnMenuItemClickListener(this);
     }
 
     @Override
     public boolean onMenuItemClick(MenuItem menuItem) {
-        switch (menuItem.getItemId()){
+        switch (menuItem.getItemId()) {
             case R.id.shuffle:
-                Toast.makeText(getContext(),"shuffle",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "shuffle", Toast.LENGTH_SHORT).show();
                 break;
         }
         return false;
     }
 
-    public void setMusicPlayService(MusicPlayService musicPlayService){
+    public void setMusicPlayService(MusicPlayService musicPlayService) {
         this.musicPlayService = musicPlayService;
-        if(mAlbumArrayList != null) {
-            this.musicPlayService.setOfflineSongsList(OfflineDataProvider.getSongsFromAlbum(context, mAlbumArrayList.get(0).getAlbumTitle(), mAlbumArrayList.get(0).getAlbumPath()));
+        if (mAlbumArrayList != null) {
+            OfflineAlbum album = (OfflineAlbum) mAlbumArrayList.get(0);
+            this.musicPlayService.setOfflineSongsList(SongTable.getSongsFromAlbum(context, album.getAlbumTitle()));
             //this.musicPlayService.playOfflineSong();
         }
     }
 
 
-
-    public boolean checkPermission(){
-        if(ContextCompat.checkSelfPermission(context,permissionString) != PackageManager.PERMISSION_GRANTED){
-           return false;
-        }else{
+    public boolean checkPermission() {
+        if (ContextCompat.checkSelfPermission(context, permissionString) != PackageManager.PERMISSION_GRANTED) {
+            return false;
+        } else {
             return true;
         }
     }
@@ -193,42 +166,9 @@ public class OfflineFragment extends Fragment implements PopupMenu.OnMenuItemCli
             case REQUEST_CODE: {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    /*mAlbumArrayList = OfflineDataProvider.getOfflineAlbums(context,MediaStore.Audio.Media.ALBUM);
-                    AlbumListAdapter albumListAdapter = new AlbumListAdapter(mAlbumArrayList,context);
-                    albumListAdapter.setOnItemClickListener(new AlbumListAdapter.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(int position) {
-                            Intent intent = new Intent(getContext(),AlbumSongsListActivity.class);
-                            Album album = mAlbumArrayList.get(position);
-                            intent.putExtra(AlbumSongsListActivity.COLUMN, MediaStore.Audio.Media.ALBUM);
-                            intent.putExtra(AlbumSongsListActivity.COLUMN_VALUE,album.getAlbumTitle());
-                            intent.putExtra(AlbumSongsListActivity.ALBUM_PATH,album.getAlbumPath());
-                            intent.putExtra(AlbumSongsListActivity.TITLE,album.getAlbumTitle());
-                            startActivity(intent);
-                        }
-
-                        @Override
-                        public void onPlayButtonClick(int position) {
-                            ArrayList<Song> songsAlbum = OfflineDataProvider.getSongsFromAlbum(context,mAlbumArrayList.get(position).getAlbumTitle(),mAlbumArrayList.get(0).getAlbumPath());
-                            if(songsAlbum.size()>0) {
-                                musicPlayService.setOfflineSongsList(songsAlbum);
-                                musicPlayService.setOfflineSongPosition(0);
-                                musicPlayService.playOfflineSong();
-                            }
-                        }
-
-                        @Override
-                        public void onOptionsButtonClick(View view, int position) {
-
-                        }
-                    });
-                    songsListView.setAdapter(albumListAdapter);
-                    GridLayoutManager layoutManager = new GridLayoutManager(getActivity(),2);
-                    songsListView.setLayoutManager(layoutManager);
-                    */
                     setMusicAlbumData();
                 } else {
-                    Toast.makeText(context,"Permissin denied,can't download image",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Permissin denied,can't download image", Toast.LENGTH_SHORT).show();
                 }
                 return;
             }

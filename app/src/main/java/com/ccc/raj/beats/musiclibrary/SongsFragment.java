@@ -17,6 +17,7 @@ import com.ccc.raj.beats.SongListAdapter;
 import com.ccc.raj.beats.model.OfflineDataProvider;
 import com.ccc.raj.beats.model.OfflineSong;
 import com.ccc.raj.beats.model.Song;
+import com.ccc.raj.beats.model.SongTable;
 
 import java.util.ArrayList;
 
@@ -43,7 +44,7 @@ public class SongsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_songs, container, false);
         songsListView = view.findViewById(R.id.songsListView);
-        songListAdapter = new SongListAdapter(getContext(),OfflineDataProvider.getOfflineSongsList(getContext()),false);
+        songListAdapter = new SongListAdapter(getContext(), SongTable.getAllSongs(getContext()),false);
         songListAdapter.setOnItemClickListener(new SongListAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {

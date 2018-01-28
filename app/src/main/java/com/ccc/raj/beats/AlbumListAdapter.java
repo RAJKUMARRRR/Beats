@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ccc.raj.beats.model.Album;
+import com.ccc.raj.beats.model.OfflineAlbum;
 import com.ccc.raj.beats.model.OfflineDataProvider;
 
 import java.util.ArrayList;
@@ -54,13 +55,13 @@ public class AlbumListAdapter extends RecyclerView.Adapter<AlbumListAdapter.View
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
         CardView cardView = holder.cardView;
-        Album album = albumList.get(position);
+        OfflineAlbum album = (OfflineAlbum) albumList.get(position);
         TextView textSong = cardView.findViewById(R.id.textSong);
         textSong.setText(Utitlity.formatString(album.getAlbumTitle(),20));
         TextView textArtist = cardView.findViewById(R.id.textArtist);
-        textArtist.setText(Utitlity.formatString(album.getComposer()+"",20));
+        textArtist.setText(Utitlity.formatString(album.getArtist()+"",20));
         ImageView imageSong = cardView.findViewById(R.id.imageSong);
-        imageSong.setImageBitmap(OfflineDataProvider.getBitmapByAlbumId(context,album.getAlbumId()));
+        imageSong.setImageBitmap(OfflineDataProvider.getBitmapByAlbumArt(album.getAlbumArt()));
         cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -16,6 +16,8 @@ import android.util.Log;
 
 import com.ccc.raj.beats.R;
 import com.ccc.raj.beats.model.Album;
+import com.ccc.raj.beats.model.AlbumTable;
+import com.ccc.raj.beats.model.OfflineAlbum;
 import com.ccc.raj.beats.model.OfflineSong;
 import com.ccc.raj.beats.model.Song;
 
@@ -57,6 +59,7 @@ public class CustomSuggestionsProvider extends ContentProvider {
             List<Song> list = getSongsData(query);
             int n = 0;
             for (Song obj : list) {
+                String title =  obj.getTitle();
                 cursor.addRow(new Object[] { n,
                         obj.getTitle(),
                         "SONG",
@@ -67,20 +70,22 @@ public class CustomSuggestionsProvider extends ContentProvider {
             }
             List<Album> albums = getAlbumData(query);
             for (Album obj : albums) {
+                OfflineAlbum album = (OfflineAlbum) obj;
                 cursor.addRow(new Object[] { n,
-                        obj.getAlbumTitle(),
+                        album.getAlbumTitle(),
                         "ALBUM",
-                        obj.getAlbumTitle(),
+                        album.getAlbumTitle(),
                         "drawable://" + R.drawable.ic_search//getContext().getResources().getDrawable(R.drawable.ic_search)
                 });
                 n++;
             }
             List<Album> artists = getArtistData(query);
             for (Album obj : artists) {
+                OfflineAlbum album = (OfflineAlbum) obj;
                 cursor.addRow(new Object[] { n,
-                        obj.getArtist(),
+                        album.getArtist(),
                         "ARTIST",
-                        obj.getArtist(),
+                        album.getArtist(),
                         "drawable://" + R.drawable.ic_search//getContext().getResources().getDrawable(R.drawable.ic_search)
                 });
                 n++;
@@ -100,14 +105,14 @@ public class CustomSuggestionsProvider extends ContentProvider {
     }
 
     private ArrayList<Album> getAlbumData(String query){
-        String where = MediaStore.Audio.Media.ALBUM +" Like '%" + query+"%') GROUP BY (" + MediaStore.Audio.Media.ALBUM;
-        ArrayList<Album> albumsSearchData = seachDataProvider.searchAlbums(getContext(),query, MediaStore.Audio.Media.TITLE,true,where);
+        String where = AlbumTable.ALBUM +" Like '%" + query+"%') GROUP BY (" + AlbumTable.ALBUM;
+        ArrayList<Album> albumsSearchData = seachDataProvider.searchAlbums(getContext(),query, AlbumTable.ALBUM,true,where);
         return albumsSearchData;
     }
 
     private ArrayList<Album> getArtistData(String query){
-        String where = MediaStore.Audio.Media.ARTIST +" Like '%" + query+"%') GROUP BY (" + MediaStore.Audio.Media.ARTIST;
-        ArrayList<Album> artistSearchData = seachDataProvider.searchAlbums(getContext(),query, MediaStore.Audio.Media.TITLE,true,where);
+        String where = AlbumTable.ARTIST +" Like '%" + query+"%') GROUP BY (" + AlbumTable.ARTIST;
+        ArrayList<Album> artistSearchData = seachDataProvider.searchAlbums(getContext(),query, AlbumTable.ALBUM,true,where);
         return artistSearchData;
     }
     @Nullable
