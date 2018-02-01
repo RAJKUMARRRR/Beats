@@ -4,19 +4,32 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
-public abstract class MediaControlBaseActivity extends AppCompatActivity implements CustomMediaController.MediaPlayerControl{
+import com.ccc.raj.beats.model.OfflineDataProvider;
+import com.ccc.raj.beats.model.OfflineSong;
+import com.ccc.raj.beats.model.Song;
+
+import java.util.ArrayList;
+
+public abstract class MediaControlBaseActivity extends AppCompatActivity implements CustomMediaController.MediaPlayerControl,MusicServiceSubscriber{
 
     private MusicController controller;
     private static MusicPlayService musicPlayService;
     private boolean musicBound = false;
-    private boolean paused=false, playbackPaused=false;
+    private boolean paused = false, playbackPaused = false;
     private Intent playIntent;
+    private ImageView imageViewAlbum;
+    private FrameLayout mainContainer;
 
     ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
@@ -26,6 +39,7 @@ public abstract class MediaControlBaseActivity extends AppCompatActivity impleme
             MusicPlayServiceHolder.setMusicPlayService(musicPlayService);
             musicBound = true;
             onMusicServiceBind(musicPlayService);
+            musicPlayService.subscribeForService(MediaControlBaseActivity.this);
         }
 
         @Override
@@ -38,8 +52,8 @@ public abstract class MediaControlBaseActivity extends AppCompatActivity impleme
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        playIntent = new Intent(this,MusicPlayService.class);
-        bindService(playIntent,serviceConnection, Context.BIND_AUTO_CREATE);
+        playIntent = new Intent(this, MusicPlayService.class);
+        bindService(playIntent, serviceConnection, Context.BIND_AUTO_CREATE);
         setController();
     }
 
@@ -51,7 +65,7 @@ public abstract class MediaControlBaseActivity extends AppCompatActivity impleme
 
     protected abstract void onMusicServiceBind(MusicPlayService musicPlayService);
 
-    private void setController(){
+    private void setController() {
         controller = new MusicController(this);
         controller.setPrevNextListeners(new View.OnClickListener() {
             @Override
@@ -65,38 +79,66 @@ public abstract class MediaControlBaseActivity extends AppCompatActivity impleme
             }
         });
         controller.setMediaPlayer(this);
-        //controller.setAnchorView(mediaViewContainer);
         setControllerAnchorView(controller);
         controller.setEnabled(true);
         //controller.show();
+        imageViewAlbum = findViewById(R.id.imageViewAlbum);
+        mainContainer = findViewById(R.id.mainMediaContainer);
     }
+
+    private void setAlbumArt() {
+        if (musicPlayService != null) {
+            OfflineSong song = (OfflineSong) musicPlayService.getActiveSong();
+            Bitmap bitmap = OfflineDataProvider.getBitmapByAlbumId(this, song.getAlbumId());
+            if (imageViewAlbum != null) {
+                imageViewAlbum.setImageBitmap(bitmap);
+            }
+            if (mainContainer != null) {
+                Drawable drawable = new BitmapDrawable(getResources(), bitmap);
+                mainContainer.setBackground(drawable);
+            }
+        }
+    }
+
+    @Override
+    public void updateActivePlayTrack(ArrayList<Song> songsList, int position) {
+      Log.i("BeatsSubscriber","Got Update:"+position);
+      setAlbumArt();
+    }
+
 
     protected abstract void setControllerAnchorView(MusicController musicController);
 
-    private void playNext(){
+    private void playNext() {
         musicPlayService.playNext();
         controller.updatePausePlay();
-        if(playbackPaused){
+        if (playbackPaused) {
             //setController();
-            playbackPaused=false;
+            playbackPaused = false;
         }
         //controller.show(0);
     }
 
-    private void playPrev(){
+    private void playPrev() {
         musicPlayService.playPrev();
         controller.updatePausePlay();
-        if(playbackPaused){
+        if (playbackPaused) {
             //setController();
-            playbackPaused=false;
+            playbackPaused = false;
         }
         //controller.show(0);
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        setAlbumArt();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
-        if(paused){
+        if (paused) {
             //setController();
             paused = false;
         }
@@ -107,6 +149,7 @@ public abstract class MediaControlBaseActivity extends AppCompatActivity impleme
         super.onPause();
         paused = true;
     }
+
     @Override
     protected void onStop() {
         //controller.hide();
@@ -116,6 +159,7 @@ public abstract class MediaControlBaseActivity extends AppCompatActivity impleme
     @Override
     public void start() {
         musicPlayService.go();
+        setAlbumArt();
     }
 
 
@@ -127,7 +171,7 @@ public abstract class MediaControlBaseActivity extends AppCompatActivity impleme
 
     @Override
     public int getDuration() {
-        if(musicPlayService!=null&&musicBound/*&&musicPlayService.isPng()*/){
+        if (musicPlayService != null && musicBound/*&&musicPlayService.isPng()*/) {
             return musicPlayService.getDur();
         }
         return 0;
@@ -135,7 +179,7 @@ public abstract class MediaControlBaseActivity extends AppCompatActivity impleme
 
     @Override
     public int getCurrentPosition() {
-        if(musicPlayService!=null&&musicBound/*&&musicPlayService.isPng()*/){
+        if (musicPlayService != null && musicBound/*&&musicPlayService.isPng()*/) {
             return musicPlayService.getPosn();
         }
         return 0;
@@ -148,7 +192,7 @@ public abstract class MediaControlBaseActivity extends AppCompatActivity impleme
 
     @Override
     public boolean isPlaying() {
-        if(musicPlayService!=null&&musicBound){
+        if (musicPlayService != null && musicBound) {
             return musicPlayService.isPng();
         }
         return false;
@@ -178,4 +222,5 @@ public abstract class MediaControlBaseActivity extends AppCompatActivity impleme
     public int getAudioSessionId() {
         return 0;
     }
+
 }

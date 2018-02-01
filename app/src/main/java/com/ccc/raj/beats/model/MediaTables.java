@@ -1,11 +1,15 @@
 package com.ccc.raj.beats.model;
 
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
+
+import com.ccc.raj.beats.Utitlity;
+import com.ccc.raj.beats.musiclibrary.PlayListAlbum;
 
 import java.util.ArrayList;
 
@@ -14,13 +18,6 @@ import java.util.ArrayList;
  */
 
 public class MediaTables {
-
-    public static class AlbumTable {
-    }
-
-    public static class SongTable {
-    }
-
     public static class ArtistTable {
         public static final String ARTIST = MediaStore.Audio.ArtistColumns.ARTIST;
         public static final String ARTIST_KEY = MediaStore.Audio.ArtistColumns.ARTIST_KEY;
@@ -35,13 +32,5 @@ public class MediaTables {
 
         }
 
-    }
-
-    public static class PlaylistTable {
-        public static final String DATA = MediaStore.Audio.PlaylistsColumns.DATA;
-        public static final String DATE_ADDED = MediaStore.Audio.PlaylistsColumns.DATE_ADDED;
-        public static final String DATE_MODIFIED = MediaStore.Audio.PlaylistsColumns.DATE_MODIFIED;
-        public static final String NAME = MediaStore.Audio.PlaylistsColumns.NAME;
-        public static final String ID = MediaStore.Audio.Playlists._ID;
     }
 }

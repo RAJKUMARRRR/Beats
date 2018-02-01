@@ -19,13 +19,37 @@ import com.ccc.raj.beats.model.Song;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class MusicPlayService extends Service implements MediaPlayer.OnPreparedListener,MediaPlayer.OnCompletionListener,MediaPlayer.OnErrorListener{
+public class MusicPlayService extends Service implements MediaPlayer.OnPreparedListener,MediaPlayer.OnCompletionListener,MediaPlayer.OnErrorListener,MusicServicePublisher{
 
     private MusicServiceBinder musicServiceBinder = new MusicServiceBinder();
     private MediaPlayer mediaPlayer;
     private ArrayList<Song> offlineSongsList;
     private int offlineSongPosition;
     private static final int NOTIFY_ID = 1;
+    private ArrayList<MusicServiceSubscriber> subsciberList = new ArrayList<>();
+
+
+    @Override
+    public void subscribeForService(MusicServiceSubscriber obj) {
+       if(obj != null){
+           subsciberList.add(obj);
+       }
+    }
+
+    @Override
+    public void unsubscribeForService(MusicServiceSubscriber obj) {
+        if(obj != null){
+            int index = subsciberList.indexOf(obj);
+            subsciberList.remove(index);
+        }
+    }
+
+    @Override
+    public void notifyAllSubscribers() {
+        for(int i=0;i<subsciberList.size();i++){
+            subsciberList.get(i).updateActivePlayTrack(offlineSongsList,offlineSongPosition);
+        }
+    }
 
 
     class MusicServiceBinder extends Binder {
@@ -73,6 +97,14 @@ public class MusicPlayService extends Service implements MediaPlayer.OnPreparedL
         this.offlineSongsList = list;
     }
 
+    public ArrayList<Song> getActivePlayList(){
+        return offlineSongsList;
+    }
+
+    public Song getActiveSong(){
+        return offlineSongsList.get(offlineSongPosition);
+    }
+
     public void playOfflineSong(){
         mediaPlayer.reset();
         Song song = offlineSongsList.get(offlineSongPosition);
@@ -84,6 +116,7 @@ public class MusicPlayService extends Service implements MediaPlayer.OnPreparedL
             e.printStackTrace();
         }
         mediaPlayer.prepareAsync();
+        notifyAllSubscribers();
     }
 
     public void setOfflineSongPosition(int position){

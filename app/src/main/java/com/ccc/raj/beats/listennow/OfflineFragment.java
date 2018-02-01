@@ -25,6 +25,7 @@ import com.ccc.raj.beats.AlbumListAdapter;
 import com.ccc.raj.beats.AlbumSongsListActivity;
 import com.ccc.raj.beats.MusicPlayService;
 import com.ccc.raj.beats.MusicPlayServiceHolder;
+import com.ccc.raj.beats.PlayListSelectionPopup;
 import com.ccc.raj.beats.R;
 import com.ccc.raj.beats.model.Album;
 import com.ccc.raj.beats.model.AlbumTable;
@@ -46,6 +47,7 @@ public class OfflineFragment extends Fragment implements PopupMenu.OnMenuItemCli
     MusicPlayService musicPlayService;
     private static String permissionString = Manifest.permission.READ_EXTERNAL_STORAGE;
     private static final int REQUEST_CODE = 9867;
+    private int selectedAlbumPosition = -1;
 
     public OfflineFragment() {
         // Required empty public constructor
@@ -124,6 +126,7 @@ public class OfflineFragment extends Fragment implements PopupMenu.OnMenuItemCli
     }
 
     public void showAlbumOptionsMenu(View view, int position) {
+        selectedAlbumPosition = position;
         PopupMenu popupMenu = new PopupMenu(getContext(), view);
         MenuInflater inflater = popupMenu.getMenuInflater();
         inflater.inflate(R.menu.song_menu, popupMenu.getMenu());
@@ -137,8 +140,16 @@ public class OfflineFragment extends Fragment implements PopupMenu.OnMenuItemCli
             case R.id.shuffle:
                 Toast.makeText(getContext(), "shuffle", Toast.LENGTH_SHORT).show();
                 break;
+            case R.id.add_to_playlist:
+                onAddToPlayListClick(selectedAlbumPosition);
+                break;
         }
         return false;
+    }
+    public void onAddToPlayListClick(int position){
+        Album album =  mAlbumArrayList.get(position);
+        ArrayList<Song> songs = SongTable.getSongsFromAlbum(getContext(),album.getAlbumTitle());
+        new PlayListSelectionPopup(getContext(),songs).showPopup();
     }
 
     public void setMusicPlayService(MusicPlayService musicPlayService) {

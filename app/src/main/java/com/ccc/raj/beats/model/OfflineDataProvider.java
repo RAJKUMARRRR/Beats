@@ -11,6 +11,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 
 import com.ccc.raj.beats.R;
+import com.ccc.raj.beats.Utitlity;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -217,6 +218,8 @@ public class OfflineDataProvider {
     }
 
     public static Bitmap getBitmapBySongId(Context context, long songId) {
+        Utitlity.Log("Inside getBitmapBySongId");
+        Utitlity.Log("songId:"+songId);
         Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 new String[]{MediaStore.Audio.Media._ID, MediaStore.Audio.Media.ALBUM_ID},
                 MediaStore.Audio.Media._ID + "=?",

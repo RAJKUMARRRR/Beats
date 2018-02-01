@@ -1,12 +1,17 @@
 package com.ccc.raj.beats;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.support.v7.widget.AppCompatSeekBar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -25,6 +30,8 @@ public class CustomMediaController {
     private ImageButton prev;
     private ImageButton thumbsUp;
     private ImageButton thumbsDown;
+    private ImageView imageViewAlbum;
+    private FrameLayout mainContainer;
     private AppCompatSeekBar progressBar;
     private TextView time;
     private TextView currentTime;
@@ -77,6 +84,16 @@ public class CustomMediaController {
         });
     }
 
+    public  void setAlbumArt(Bitmap bitmap){
+        if(imageViewAlbum!=null){
+           imageViewAlbum.setImageBitmap(bitmap);
+        }
+        if(mainContainer!=null){
+            Drawable drawable = new BitmapDrawable(context.getResources(),bitmap);
+            mainContainer.setBackground(drawable);
+        }
+    }
+
     public void setAnchorView(ViewGroup viewGroup) {
         LayoutInflater inflate = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mRoot = inflate.inflate(R.layout.media_sliding_windows, null);
@@ -110,6 +127,8 @@ public class CustomMediaController {
         mFormatBuilder = new StringBuilder();
         mFormatter = new Formatter(mFormatBuilder, Locale.getDefault());
 
+        imageViewAlbum = v.findViewById(R.id.imageViewAlbum);
+        mainContainer = v.findViewById(R.id.mainMediaContainer);
         installPrevNextListeners();
     }
 

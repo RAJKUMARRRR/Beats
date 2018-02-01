@@ -1,6 +1,7 @@
 package com.ccc.raj.beats;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 import com.ccc.raj.beats.model.Album;
 import com.ccc.raj.beats.model.OfflineAlbum;
 import com.ccc.raj.beats.model.OfflineDataProvider;
+import com.ccc.raj.beats.musiclibrary.PlayListAlbum;
 
 import java.util.ArrayList;
 
@@ -21,7 +23,7 @@ import java.util.ArrayList;
  */
 
 public class AlbumListAdapter extends RecyclerView.Adapter<AlbumListAdapter.ViewHolder>{
-    ArrayList<Album> albumList;
+    public ArrayList<Album> albumList;
     Context context;
     private OnItemClickListener onItemClickListener;
     public static  class ViewHolder extends RecyclerView.ViewHolder{
@@ -55,16 +57,15 @@ public class AlbumListAdapter extends RecyclerView.Adapter<AlbumListAdapter.View
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
         CardView cardView = holder.cardView;
-        OfflineAlbum album = (OfflineAlbum) albumList.get(position);
+        Album album = albumList.get(position);
         TextView textSong = cardView.findViewById(R.id.textSong);
         textSong.setText(Utitlity.formatString(album.getAlbumTitle(),20));
         TextView textArtist = cardView.findViewById(R.id.textArtist);
         textArtist.setText(Utitlity.formatString(album.getArtist()+"",20));
-        ImageView imageSong = cardView.findViewById(R.id.imageSong);
-        imageSong.setImageBitmap(OfflineDataProvider.getBitmapByAlbumArt(album.getAlbumArt()));
         cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(onItemClickListener!=null)
                 onItemClickListener.onItemClick(position);
             }
         });
@@ -72,6 +73,7 @@ public class AlbumListAdapter extends RecyclerView.Adapter<AlbumListAdapter.View
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(onItemClickListener!=null)
                 onItemClickListener.onPlayButtonClick(position);
             }
         });
@@ -79,9 +81,25 @@ public class AlbumListAdapter extends RecyclerView.Adapter<AlbumListAdapter.View
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(onItemClickListener!=null)
                 onItemClickListener.onOptionsButtonClick(view,position);
             }
         });
+        ImageView imageSong = cardView.findViewById(R.id.imageSong);
+        Bitmap bitmap;
+
+        if(album instanceof PlayListAlbum) {
+            PlayListAlbum playListAlbum = (PlayListAlbum) album;
+            bitmap =  playListAlbum.getPlayListBitmap();
+        }else{
+            bitmap = OfflineDataProvider.getBitmapByAlbumArt(album.getAlbumArt());
+        }
+
+        if (bitmap != null) {
+            imageSong.setImageBitmap(bitmap);
+        } else {
+            imageSong.setImageResource(R.drawable.music);
+        }
     }
 
     @Override

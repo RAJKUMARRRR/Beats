@@ -12,8 +12,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.ListPopupWindow;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,7 +28,9 @@ import android.widget.MediaController;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
+import com.ccc.raj.beats.model.MediaTables;
 import com.ccc.raj.beats.model.OfflineDataProvider;
+import com.ccc.raj.beats.model.PlayListTable;
 import com.ccc.raj.beats.model.Song;
 import com.ccc.raj.beats.model.SongTable;
 
@@ -37,11 +41,16 @@ public class AlbumSongsListActivity extends MediaControlBaseActivity implements 
     private ArrayList<Song> songList;
     private ImageView albumImage;
     private Toolbar toolbar;
+    private int selectedSongPosition = -1;
 
     public static final String COLUMN = "COLUMN";
     public static final String COLUMN_VALUE = "COLUMN_VALUE";
     public static final String TITLE = "TITLE";
     public static final String ALBUM_ID = "ALBUM_ID";
+    public static final String ALBUM_TYPE = "ALBUM_TYPE";
+    public static final int OFFLINE_ALBUM = 0;
+    public static final int PLAYLIST_ALBUM = 1;
+    public static final int ARTIST_ALBUM = 2;
 
 
     private  MusicPlayService musicPlayService;
@@ -82,8 +91,23 @@ public class AlbumSongsListActivity extends MediaControlBaseActivity implements 
         columnValue = intent.getStringExtra(COLUMN_VALUE);
         title = intent.getStringExtra(TITLE);
         albumId = intent.getIntExtra(ALBUM_ID,0);
-        //songList = OfflineDataProvider.getSongsFromAlbum(this,album,albumPath);
-        songList = SongTable.getSongsFromColumn(this,column,columnValue);
+
+        int album_type = intent.getIntExtra(ALBUM_TYPE,0);
+        switch (album_type) {
+            case OFFLINE_ALBUM:
+                songList = SongTable.getSongsFromColumn(this, column, columnValue);
+                break;
+            case PLAYLIST_ALBUM:
+                songList = PlayListTable.getSongsFromPlayLists(this,albumId);
+                break;
+            case ARTIST_ALBUM:
+                songList = SongTable.getSongsFromColumn(this, column, columnValue);
+                break;
+            default:
+                songList = SongTable.getSongsFromColumn(this, column, columnValue);
+        }
+
+
         SongListAdapter songListAdapter = new SongListAdapter(this,songList);
         songListAdapter.setOnItemClickListener(new SongListAdapter.OnItemClickListener() {
             @Override
@@ -93,6 +117,7 @@ public class AlbumSongsListActivity extends MediaControlBaseActivity implements 
 
             @Override
             public void onMoreButtonClick(View view, int position) {
+                selectedSongPosition = position;
                 showSongOptionsMenu(view,position);
             }
         });
@@ -107,6 +132,7 @@ public class AlbumSongsListActivity extends MediaControlBaseActivity implements 
         PopupMenu popupMenu = new PopupMenu(this,view);
         MenuInflater inflater = popupMenu.getMenuInflater();
         inflater.inflate(R.menu.song_menu,popupMenu.getMenu());
+        popupMenu.getMenu().add(Menu.NONE,R.id.delete,5,R.string.delete);
         popupMenu.show();
         popupMenu.setOnMenuItemClickListener(this);
     }
@@ -116,6 +142,9 @@ public class AlbumSongsListActivity extends MediaControlBaseActivity implements 
         switch (menuItem.getItemId()){
             case R.id.shuffle:
                 Toast.makeText(this,"shuffle",Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.add_to_playlist:
+                onAddToPlayListClick(selectedSongPosition);
                 break;
         }
         return false;
@@ -128,6 +157,12 @@ public class AlbumSongsListActivity extends MediaControlBaseActivity implements 
             musicPlayService.setOfflineSongPosition(position);
             musicPlayService.playOfflineSong();
         }
+    }
+
+    public void onAddToPlayListClick(int position){
+        ArrayList<Song> songs = new ArrayList<>();
+        songs.add(songList.get(position));
+        new PlayListSelectionPopup(this,songs).showPopup();
     }
 
     public void onAllPlayClicked(View view){

@@ -29,7 +29,7 @@ public class AlbumTable {
         ArrayList<Album> albumArrayList = new ArrayList<>();
         ContentResolver musicResolver = context.getContentResolver();
         Uri musicUri = TABLE_URI;
-        String sortOrder = ALBUM + " DESC";
+        String sortOrder = ALBUM + " ASC";
         Cursor musicCursor = musicResolver.query(musicUri, null, null, null, sortOrder);
         albumArrayList = getOfflineAlbumsFromCursor(musicCursor);
         return albumArrayList;
@@ -43,7 +43,7 @@ public class AlbumTable {
         ContentResolver musicResolver = context.getContentResolver();
         Uri musicUri = TABLE_URI;
         String where = "0 == 0) GROUP BY (" + ARTIST;
-        String sortOrder = ARTIST + " DESC";
+        String sortOrder = ARTIST + " ASC";
         Cursor musicCursor = musicResolver.query(musicUri, null, where, null, sortOrder);
         albumArrayList = getOfflineAlbumsFromCursor(musicCursor);
         return albumArrayList;
@@ -57,7 +57,7 @@ public class AlbumTable {
         String whereVal[] = {
                 artist
         };
-        String sortOrder = ALBUM + " DESC";
+        String sortOrder = ALBUM + " ASC";
         Cursor musicCursor = musicResolver.query(musicUri, null, where, whereVal, sortOrder);
         albumArrayList = getOfflineAlbumsFromCursor(musicCursor);
         return albumArrayList;

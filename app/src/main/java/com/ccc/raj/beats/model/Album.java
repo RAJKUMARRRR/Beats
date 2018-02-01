@@ -7,4 +7,8 @@ import android.graphics.Bitmap;
  */
 
 public interface Album {
+    public int getAlbumId();
+    public String getAlbumTitle();
+    public String getArtist();
+    public String getAlbumArt();
 }
