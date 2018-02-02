@@ -235,4 +235,45 @@ public class OfflineDataProvider {
             return bm;
         }
     }
+
+    public static Bitmap getBitmapBySongsList(Context context,ArrayList<Song> songs){
+        Bitmap playListAlbumArt = null;
+        Bitmap[] bitmaps = new Bitmap[4];
+        if(songs.size()>0) {
+            Bitmap bitmap;
+            switch (songs.size()) {
+                case 1:
+                    bitmap = OfflineDataProvider.getBitmapBySongId(context,songs.get(0).getId());
+                    for(int i=0;i<4;i++) {
+                        bitmaps[i] = bitmap;
+                    }
+                    break;
+                case 2:
+                    Bitmap bitmapOne = OfflineDataProvider.getBitmapBySongId(context,songs.get(0).getId());
+                    Bitmap bitmapTwo = OfflineDataProvider.getBitmapBySongId(context,songs.get(1).getId());
+                    bitmaps[0] = bitmapOne;
+                    bitmaps[1] = bitmapTwo;
+                    bitmaps[2] = bitmapOne;
+                    bitmaps[3] = bitmapTwo;
+                    break;
+                case 3:
+                    Bitmap One = OfflineDataProvider.getBitmapBySongId(context,songs.get(0).getId());
+                    Bitmap Two = OfflineDataProvider.getBitmapBySongId(context,songs.get(1).getId());
+                    Bitmap Three = OfflineDataProvider.getBitmapBySongId(context,songs.get(2).getId());
+                    bitmaps[0] = One;
+                    bitmaps[1] = Two;
+                    bitmaps[2] = Three;
+                    bitmaps[3] = One;
+                    break;
+                default:
+                    for(int i=0;i<4;i++){
+                        bitmap = OfflineDataProvider.getBitmapBySongId(context,songs.get(i).getId());
+                        bitmaps[i] = bitmap;
+                    }
+            }
+            playListAlbumArt = Utitlity.mergeMultipleBitmaps(bitmaps);
+        }
+        return playListAlbumArt;
+    }
+
 }

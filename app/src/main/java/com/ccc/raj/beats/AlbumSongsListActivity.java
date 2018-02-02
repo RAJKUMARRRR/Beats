@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.IBinder;
 import android.support.design.widget.CoordinatorLayout;
@@ -42,7 +43,7 @@ public class AlbumSongsListActivity extends MediaControlBaseActivity implements 
     private ImageView albumImage;
     private Toolbar toolbar;
     private int selectedSongPosition = -1;
-
+    private SongListAdapter songListAdapter;
     public static final String COLUMN = "COLUMN";
     public static final String COLUMN_VALUE = "COLUMN_VALUE";
     public static final String TITLE = "TITLE";
@@ -96,19 +97,24 @@ public class AlbumSongsListActivity extends MediaControlBaseActivity implements 
         switch (album_type) {
             case OFFLINE_ALBUM:
                 songList = SongTable.getSongsFromColumn(this, column, columnValue);
+                albumImage.setImageBitmap(OfflineDataProvider.getBitmapByAlbumId(this,albumId));
                 break;
             case PLAYLIST_ALBUM:
                 songList = PlayListTable.getSongsFromPlayLists(this,albumId);
+                Bitmap playListAlbumArt = OfflineDataProvider.getBitmapBySongsList(this,songList);
+                albumImage.setImageBitmap(playListAlbumArt);
                 break;
             case ARTIST_ALBUM:
                 songList = SongTable.getSongsFromColumn(this, column, columnValue);
+                albumImage.setImageBitmap(OfflineDataProvider.getBitmapByAlbumId(this,albumId));
                 break;
             default:
                 songList = SongTable.getSongsFromColumn(this, column, columnValue);
+                albumImage.setImageBitmap(OfflineDataProvider.getBitmapByAlbumId(this,albumId));
         }
 
 
-        SongListAdapter songListAdapter = new SongListAdapter(this,songList);
+        songListAdapter = new SongListAdapter(this,songList);
         songListAdapter.setOnItemClickListener(new SongListAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
@@ -124,15 +130,38 @@ public class AlbumSongsListActivity extends MediaControlBaseActivity implements 
         albumSongListView.setAdapter(songListAdapter);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this,1);
         albumSongListView.setLayoutManager(gridLayoutManager);
-        albumImage.setImageBitmap(OfflineDataProvider.getBitmapByAlbumId(this,albumId));
         setTitle(title);
     }
 
     public void showSongOptionsMenu(View view,int position){
         PopupMenu popupMenu = new PopupMenu(this,view);
         MenuInflater inflater = popupMenu.getMenuInflater();
-        inflater.inflate(R.menu.song_menu,popupMenu.getMenu());
-        popupMenu.getMenu().add(Menu.NONE,R.id.delete,5,R.string.delete);
+        inflater.inflate(R.menu.popup_menu,popupMenu.getMenu());
+        int album_type = getIntent().getIntExtra(ALBUM_TYPE,0);
+        switch (album_type) {
+            case OFFLINE_ALBUM:
+                popupMenu.getMenu().removeItem(R.id.not_interested);
+                popupMenu.getMenu().removeItem(R.id.go_to_album);
+                popupMenu.getMenu().removeItem(R.id.remove_from_playlist);
+                popupMenu.getMenu().removeItem(R.id.edit_playlist);
+                break;
+            case PLAYLIST_ALBUM:
+                popupMenu.getMenu().removeItem(R.id.not_interested);
+                popupMenu.getMenu().removeItem(R.id.delete);
+                popupMenu.getMenu().removeItem(R.id.edit_playlist);
+                break;
+            case ARTIST_ALBUM:
+                popupMenu.getMenu().removeItem(R.id.not_interested);
+                popupMenu.getMenu().removeItem(R.id.goto_artist);
+                popupMenu.getMenu().removeItem(R.id.remove_from_playlist);
+                popupMenu.getMenu().removeItem(R.id.edit_playlist);
+                break;
+            default:
+                popupMenu.getMenu().removeItem(R.id.not_interested);
+                popupMenu.getMenu().removeItem(R.id.go_to_album);
+                popupMenu.getMenu().removeItem(R.id.remove_from_playlist);
+                popupMenu.getMenu().removeItem(R.id.edit_playlist);
+        }
         popupMenu.show();
         popupMenu.setOnMenuItemClickListener(this);
     }
@@ -146,14 +175,16 @@ public class AlbumSongsListActivity extends MediaControlBaseActivity implements 
             case R.id.add_to_playlist:
                 onAddToPlayListClick(selectedSongPosition);
                 break;
+            case R.id.remove_from_playlist:
+                onRemoveFromPlaylistClicked();
+                break;
         }
         return false;
     }
 
     public void onSongPicked(int position){
-        ArrayList<Song> songsAlbum = SongTable.getSongsFromColumn(this,column,columnValue);
-        if(songsAlbum.size()>0) {
-            musicPlayService.setOfflineSongsList(songsAlbum);
+        if(songList.size()>0) {
+            musicPlayService.setOfflineSongsList(songList);
             musicPlayService.setOfflineSongPosition(position);
             musicPlayService.playOfflineSong();
         }
@@ -166,9 +197,8 @@ public class AlbumSongsListActivity extends MediaControlBaseActivity implements 
     }
 
     public void onAllPlayClicked(View view){
-        ArrayList<Song> songsAlbum = SongTable.getSongsFromColumn(this,column,columnValue);
-        if(songsAlbum.size()>0) {
-            musicPlayService.setOfflineSongsList(songsAlbum);
+        if(songList.size()>0) {
+            musicPlayService.setOfflineSongsList(songList);
             musicPlayService.setOfflineSongPosition(0);
             musicPlayService.playOfflineSong();
         }
@@ -177,6 +207,17 @@ public class AlbumSongsListActivity extends MediaControlBaseActivity implements 
         imageButton.setBackgroundResource(R.drawable.anim_music);
         AnimationDrawable animationDrawable = (AnimationDrawable) imageButton.getBackground();
         animationDrawable.start();
+    }
+
+    public void onRemoveFromPlaylistClicked(){
+        boolean status = PlayListTable.deleteSongFromPlayList(this,albumId,songList.get(selectedSongPosition));
+        if(status){
+            Toast.makeText(this,"'"+songList.get(selectedSongPosition).getTitle()+"' "+getString(R.string.removed_from_playlist),Toast.LENGTH_SHORT).show();
+            songListAdapter.songList.remove(selectedSongPosition);
+            songListAdapter.notifyItemRemoved(selectedSongPosition);
+        }else{
+            Toast.makeText(this,"Failed",Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void setActionBar(){

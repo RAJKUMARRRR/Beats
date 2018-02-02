@@ -15,6 +15,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
@@ -91,8 +92,8 @@ public class PlaylistsFragment extends Fragment implements PopupMenu.OnMenuItemC
         inflater.inflate(R.menu.popup_menu,popupMenu.getMenu());
         popupMenu.getMenu().removeItem(R.id.goto_artist);
         popupMenu.getMenu().removeItem(R.id.not_interested);
-        //popupMenu.getMenu().add(Menu.NONE,R.id.edit_playlist,5,R.string.edit_playlist);
-        //popupMenu.getMenu().add(Menu.NONE,R.id.delete,6,R.string.delete);
+        popupMenu.getMenu().removeItem(R.id.go_to_album);
+        popupMenu.getMenu().removeItem(R.id.remove_from_playlist);
         popupMenu.show();
         popupMenu.setOnMenuItemClickListener(this);
     }
@@ -108,6 +109,9 @@ public class PlaylistsFragment extends Fragment implements PopupMenu.OnMenuItemC
                 break;
             case R.id.delete:
                 onDeleteOptionClick();
+                break;
+            case R.id.edit_playlist:
+                onEditPlaylistClick();
                 break;
         }
         return false;
@@ -143,6 +147,41 @@ public class PlaylistsFragment extends Fragment implements PopupMenu.OnMenuItemC
             }
         });
         AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    public void onEditPlaylistClick(){
+        final Album album =  playList.get(selectedAlbumPosition);
+        View view = getLayoutInflater().inflate(R.layout.create_playlist_popup,null);
+        final EditText editText = view.findViewById(R.id.textPlayList);
+        editText.setText(album.getAlbumTitle());
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setView(view);
+        builder.setTitle(getContext().getString(R.string.edit_playlist));
+        builder.setPositiveButton(R.string.update, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int j) {
+                String name = editText.getText().toString();
+                if(name!=null&&(!name.isEmpty())){
+                    boolean status = PlayListTable.updatePlayList(getContext(),album.getAlbumId(),name);
+                    if(status){
+                        PlayListAlbum playListAlbum = (PlayListAlbum) album;
+                        playListAlbum.setPlayListName(name);
+                        albumListAdapter.albumList.set(selectedAlbumPosition,playListAlbum);
+                        albumListAdapter.notifyItemChanged(selectedAlbumPosition);
+                        Toast.makeText(getContext(),getString(R.string.playlist_updated),Toast.LENGTH_SHORT).show();
+                    }else{
+                        Toast.makeText(getContext(),getString(R.string.update_failed),Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+            }
+        });
+        final AlertDialog dialog = builder.create();
         dialog.show();
     }
 }

@@ -53,43 +53,8 @@ public class PlayListTable {
                 Log.i(TAG,"date:"+date);
                 Log.i(TAG,"dateAdded:"+dateAdded);
                 Log.i(TAG,"dateModified:"+dateModified);
-                Bitmap playListAlbumArt = null;
                 ArrayList<Song> songs = getSongsFromPlayLists(context,id);
-                Bitmap[] bitmaps = new Bitmap[4];
-                if(songs.size()>0) {
-                    Bitmap bitmap;
-                    switch (songs.size()) {
-                        case 1:
-                            bitmap = OfflineDataProvider.getBitmapBySongId(context,songs.get(0).getId());
-                            for(int i=0;i<4;i++) {
-                                bitmaps[i] = bitmap;
-                            }
-                            break;
-                        case 2:
-                            Bitmap bitmapOne = OfflineDataProvider.getBitmapBySongId(context,songs.get(0).getId());
-                            Bitmap bitmapTwo = OfflineDataProvider.getBitmapBySongId(context,songs.get(1).getId());
-                            bitmaps[0] = bitmapOne;
-                            bitmaps[1] = bitmapOne;
-                            bitmaps[2] = bitmapTwo;
-                            bitmaps[3] = bitmapTwo;
-                            break;
-                        case 3:
-                            for(int i=0;i<3;i++){
-                                bitmap = OfflineDataProvider.getBitmapBySongId(context,songs.get(i).getId());
-                                bitmaps[i] = bitmap;
-                                if(i==2){
-                                    bitmaps[3] = bitmap;
-                                }
-                            }
-                            break;
-                        default:
-                            for(int i=0;i<4;i++){
-                                bitmap = OfflineDataProvider.getBitmapBySongId(context,songs.get(i).getId());
-                                bitmaps[i] = bitmap;
-                            }
-                    }
-                    playListAlbumArt = Utitlity.mergeMultipleBitmaps(bitmaps);
-                }
+                Bitmap playListAlbumArt = OfflineDataProvider.getBitmapBySongsList(context,songs);
                 PlayListAlbum playListAlbum = new PlayListAlbum();
                 playListAlbum.setPlayListId(id);
                 playListAlbum.setPlayListName(name);
@@ -133,6 +98,24 @@ public class PlayListTable {
         }
     }
 
+    public static boolean updatePlayList(Context context,int playListId,String updatedName){
+        Utitlity.Log("Inside updatePlayList");
+        Utitlity.Log("updatedName:"+updatedName);
+        ContentResolver contentResolver = context.getContentResolver();
+        Uri uri = TABLE_URI;
+        String where = ID + " = ?";
+        String[] whereValues = {
+                String.valueOf(playListId)
+        };
+        ContentValues values = new ContentValues();
+        values.put(NAME,updatedName);
+        int rows = contentResolver.update(uri,values,where,whereValues);
+        if(rows != 0) {
+            return true;
+        }
+        return false;
+    }
+
     public static ArrayList<Song> getSongsFromPlayLists(Context context,int playListId){
         Utitlity.Log("Inside getSongsFromPlayLists");
         Utitlity.Log("playListId:"+playListId);
@@ -151,22 +134,20 @@ public class PlayListTable {
         Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external",playListId);
         OfflineSong song = (OfflineSong) songParam;
         ContentValues contentValues = new ContentValues();
-        /*contentValues.put(SongTable.ALBUM_KEY,song.getAlbumKey());
-        contentValues.put(SongTable.ALBUM,song.getAlbum());
-        contentValues.put(SongTable.ALBUM_ID,song.getAlbumId());
-        contentValues.put(SongTable.ARTIST_KEY,song.getArtistKey());
-        contentValues.put(SongTable.ARTIST,song.getArtist());
-        contentValues.put(SongTable.TITLE_KEY,song.getTitleKey());
-        contentValues.put(SongTable.TITLE,song.getTitle());
-        contentValues.put(SongTable.BOOKMARK,song.getBookmark());
-        contentValues.put(SongTable.COMPOSER,song.getComposer());
-        contentValues.put(SongTable.DATE_MODIFIED,song.getDateModified());
-        contentValues.put(SongTable.ARTIST_ID,song.getArtistId());
-        contentValues.put(SongTable.DISPLAY_NAME,song.getDisplayName());
-        contentValues.put(SongTable.DURATION,song.getDuratio());
-        contentValues.put(SongTable.SIZE,song.getSize());
-        contentValues.put(SongTable.TRACK,song.getTrackNumber());
-        contentValues.put(SongTable.YEAR,song.getYear());*/
+        //contentValues.put(SongTable.ALBUM_KEY,song.getAlbumKey());
+        //contentValues.put(SongTable.ALBUM,song.getAlbum());
+        //contentValues.put(SongTable.ALBUM_ID,song.getAlbumId());
+        //contentValues.put(SongTable.ARTIST_KEY,song.getArtistKey());
+        //contentValues.put(SongTable.ARTIST,song.getArtist());
+        //contentValues.put(SongTable.TITLE_KEY,song.getTitleKey());
+        //contentValues.put(SongTable.TITLE,song.getTitle());
+        //contentValues.put(SongTable.COMPOSER,song.getComposer());
+        //contentValues.put(SongTable.ARTIST_ID,song.getArtistId());
+        //contentValues.put(SongTable.DISPLAY_NAME,song.getDisplayName());
+        //contentValues.put(SongTable.DURATION,song.getDuratio());
+        //contentValues.put(SongTable.SIZE,song.getSize());
+        //contentValues.put(SongTable.TRACK,song.getTrackNumber());
+       // contentValues.put(SongTable.YEAR,song.getYear());
         contentValues.put(MediaStore.Audio.Playlists.Members._ID,song.getId());
         contentValues.put(MediaStore.Audio.Playlists.Members.AUDIO_ID,song.getId());
         contentValues.put(MediaStore.Audio.Playlists.Members.PLAY_ORDER,0);
@@ -178,4 +159,24 @@ public class PlayListTable {
         }
         return id;
     }
+
+    public static boolean deleteSongFromPlayList(Context context,int playListId,Song songParam){
+        Utitlity.Log("Inside deleteSongFromPlayList");
+        Utitlity.Log("playListId:"+playListId);
+        Utitlity.Log("Song Name:"+songParam.getTitle());
+        ContentResolver contentResolver = context.getContentResolver();
+        OfflineSong song = (OfflineSong) songParam;
+        Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external",playListId);
+        String where = MediaStore.Audio.Playlists.Members._ID + " = ?";
+        String[] whereValues = {
+                String.valueOf(song.getId())
+        };
+        int rows = contentResolver.delete(uri,where,whereValues);
+        if(rows>0){
+            return true;
+        }else {
+            return false;
+        }
+    }
+
 }

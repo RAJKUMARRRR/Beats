@@ -29,15 +29,21 @@
     <string name="play_next">Play Next</string>
     <string name="add_to_queue">Add to queue</string>
     <string name="add_to_playlist">Add to playlist</string>
-    <string name="goto_artist">Goto to atist</string>
+    <string name="goto_artist">Goto to artist</string>
     <string name="not_interested">Nor interested</string>
     <string name="edit_playlist">Edit playlist</string>
     <string name="delete">Delete</string>
+    <string name="go_to_album">Go to album</string>
+    <string name="remove_from_playlist">Remove from playlist</string>
 
     <string name="new_playlist">NEW PLAYLIST</string>
     <string name="cancel">CANCEL</string>
     <string name="create_playlist">CREATE PLAYLIST</string>
     <string name="select_playlist">SELECT PLAYLIST</string>
+    <string name="update">UPDATE</string>
 
     <string name="delete_message">Do you want to delete</string>
+    <string name="playlist_updated">Playlist Updated</string>
+    <string name="update_failed">Update Failed</string>
+    <string name="removed_from_playlist">removed from playlist</string>
 </resources>
