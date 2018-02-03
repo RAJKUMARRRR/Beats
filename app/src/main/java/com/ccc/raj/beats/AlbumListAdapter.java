@@ -12,9 +12,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ccc.raj.beats.model.Album;
-import com.ccc.raj.beats.model.OfflineAlbum;
+import com.ccc.raj.beats.model.GenresAlbum;
 import com.ccc.raj.beats.model.OfflineDataProvider;
-import com.ccc.raj.beats.musiclibrary.PlayListAlbum;
+import com.ccc.raj.beats.model.PlayListAlbum;
 
 import java.util.ArrayList;
 
@@ -91,6 +91,10 @@ public class AlbumListAdapter extends RecyclerView.Adapter<AlbumListAdapter.View
         if(album instanceof PlayListAlbum) {
             PlayListAlbum playListAlbum = (PlayListAlbum) album;
             bitmap =  playListAlbum.getPlayListBitmap();
+        }
+        else if(album instanceof GenresAlbum){
+            GenresAlbum genresAlbum = (GenresAlbum) album;
+            bitmap = genresAlbum.getGenresBitmap();
         }else{
             bitmap = OfflineDataProvider.getBitmapByAlbumArt(album.getAlbumArt());
         }

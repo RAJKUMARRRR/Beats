@@ -29,6 +29,7 @@ import android.widget.MediaController;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
+import com.ccc.raj.beats.model.GenresTable;
 import com.ccc.raj.beats.model.MediaTables;
 import com.ccc.raj.beats.model.OfflineDataProvider;
 import com.ccc.raj.beats.model.PlayListTable;
@@ -52,6 +53,7 @@ public class AlbumSongsListActivity extends MediaControlBaseActivity implements 
     public static final int OFFLINE_ALBUM = 0;
     public static final int PLAYLIST_ALBUM = 1;
     public static final int ARTIST_ALBUM = 2;
+    public static final int GENRES_ALBUM = 3;
 
 
     private  MusicPlayService musicPlayService;
@@ -107,6 +109,11 @@ public class AlbumSongsListActivity extends MediaControlBaseActivity implements 
             case ARTIST_ALBUM:
                 songList = SongTable.getSongsFromColumn(this, column, columnValue);
                 albumImage.setImageBitmap(OfflineDataProvider.getBitmapByAlbumId(this,albumId));
+                break;
+            case GENRES_ALBUM:
+                songList = GenresTable.getSongsFromGeneres(this,albumId);
+                Bitmap genresAlbumArt = OfflineDataProvider.getBitmapBySongsList(this,songList);
+                albumImage.setImageBitmap(genresAlbumArt);
                 break;
             default:
                 songList = SongTable.getSongsFromColumn(this, column, columnValue);

@@ -1,4 +1,4 @@
-package com.ccc.raj.beats.musiclibrary;
+package com.ccc.raj.beats.model;
 
 import android.graphics.Bitmap;
 

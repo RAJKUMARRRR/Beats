@@ -16,8 +16,10 @@ import com.ccc.raj.beats.AlbumSongsListActivity;
 import com.ccc.raj.beats.R;
 import com.ccc.raj.beats.model.Album;
 import com.ccc.raj.beats.model.AlbumTable;
+import com.ccc.raj.beats.model.GenresTable;
 import com.ccc.raj.beats.model.OfflineAlbum;
 import com.ccc.raj.beats.model.OfflineDataProvider;
+import com.ccc.raj.beats.model.PlayListTable;
 
 import java.util.ArrayList;
 
@@ -27,7 +29,7 @@ import java.util.ArrayList;
 public class GenresFragment extends Fragment {
 
     RecyclerView genresListView;
-    ArrayList<Album> mAlbumArrayList;
+    ArrayList<Album> genresAlbumList;
     public GenresFragment() {
         // Required empty public constructor
     }
@@ -38,17 +40,18 @@ public class GenresFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_genres, container, false);
         genresListView = view.findViewById(R.id.genresListView);
-        mAlbumArrayList = AlbumTable.getAlbumsGroupByArtist(getContext());
-        AlbumListAdapter albumListAdapter = new AlbumListAdapter(mAlbumArrayList,getContext());
+        genresAlbumList = GenresTable.getAllGenresAlbums(getContext());
+        AlbumListAdapter albumListAdapter = new AlbumListAdapter(genresAlbumList,getContext());
         albumListAdapter.setOnItemClickListener(new AlbumListAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
                 Intent intent = new Intent(getContext(),AlbumSongsListActivity.class);
-                OfflineAlbum album = (OfflineAlbum) mAlbumArrayList.get(position);
-                intent.putExtra(AlbumSongsListActivity.COLUMN, AlbumTable.ARTIST);
-                intent.putExtra(AlbumSongsListActivity.COLUMN_VALUE,album.getArtist());
-                intent.putExtra(AlbumSongsListActivity.ALBUM_ID,album.getAlbumId());
-                intent.putExtra(AlbumSongsListActivity.TITLE,album.getArtist());
+                Album album = genresAlbumList.get(position);
+                intent.putExtra(AlbumSongsListActivity.COLUMN, GenresTable.NAME);
+                intent.putExtra(AlbumSongsListActivity.COLUMN_VALUE, album.getAlbumTitle());
+                intent.putExtra(AlbumSongsListActivity.ALBUM_ID, album.getAlbumId());
+                intent.putExtra(AlbumSongsListActivity.TITLE, album.getAlbumTitle());
+                intent.putExtra(AlbumSongsListActivity.ALBUM_TYPE,AlbumSongsListActivity.GENRES_ALBUM);
                 startActivity(intent);
             }
 

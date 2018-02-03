@@ -87,6 +87,7 @@ public class AlbumTable {
             do {
                 String title = musicCursor.getString(titleColumn);
                 int albumId = 0;
+
                 if(albumIdColumn>0) {
                    albumId = musicCursor.getInt(albumIdColumn);
                 }else{

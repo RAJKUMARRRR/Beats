@@ -1,17 +1,6 @@
 package com.ccc.raj.beats.model;
 
-import android.content.ContentResolver;
-import android.content.ContentValues;
-import android.content.Context;
-import android.database.Cursor;
-import android.net.Uri;
 import android.provider.MediaStore;
-import android.util.Log;
-
-import com.ccc.raj.beats.Utitlity;
-import com.ccc.raj.beats.musiclibrary.PlayListAlbum;
-
-import java.util.ArrayList;
 
 /**
  * Created by Raj on 1/27/2018.

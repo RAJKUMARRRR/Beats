@@ -10,7 +10,6 @@ import android.provider.MediaStore;
 import android.util.Log;
 
 import com.ccc.raj.beats.Utitlity;
-import com.ccc.raj.beats.musiclibrary.PlayListAlbum;
 
 import java.util.ArrayList;
 
