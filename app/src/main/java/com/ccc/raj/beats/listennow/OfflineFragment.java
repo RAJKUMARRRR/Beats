@@ -129,7 +129,12 @@ public class OfflineFragment extends Fragment implements PopupMenu.OnMenuItemCli
         selectedAlbumPosition = position;
         PopupMenu popupMenu = new PopupMenu(getContext(), view);
         MenuInflater inflater = popupMenu.getMenuInflater();
-        inflater.inflate(R.menu.song_menu, popupMenu.getMenu());
+        inflater.inflate(R.menu.popup_menu, popupMenu.getMenu());
+        popupMenu.getMenu().removeItem(R.id.not_interested);
+        popupMenu.getMenu().removeItem(R.id.edit_playlist);
+        popupMenu.getMenu().removeItem(R.id.delete);
+        popupMenu.getMenu().removeItem(R.id.go_to_album);
+        popupMenu.getMenu().removeItem(R.id.remove_from_playlist);
         popupMenu.show();
         popupMenu.setOnMenuItemClickListener(this);
     }

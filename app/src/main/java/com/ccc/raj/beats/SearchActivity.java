@@ -11,24 +11,34 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import com.ccc.raj.beats.model.Album;
 import com.ccc.raj.beats.model.AlbumTable;
+import com.ccc.raj.beats.model.ArtistAlbum;
+import com.ccc.raj.beats.model.GenresAlbum;
+import com.ccc.raj.beats.model.GenresTable;
+import com.ccc.raj.beats.model.OfflineAlbum;
 import com.ccc.raj.beats.model.Song;
+import com.ccc.raj.beats.model.SongTable;
 import com.ccc.raj.beats.searchresult.SearchDataProvider;
 import com.ccc.raj.beats.searchresult.SearchListAdapter;
 import com.ccc.raj.beats.searchresult.SearchRecord;
 
 import java.util.ArrayList;
 
-public class SearchActivity extends MediaControlBaseActivity {
+public class SearchActivity extends MediaControlBaseActivity implements PopupMenu.OnMenuItemClickListener {
     Toolbar mToolbar;
     RecyclerView searchListView;
     private String searchQuery;
     private static final int SECTION_LIMIT = 4;
+    private int selectedAlbumPosition = -1;
+    private ArrayList<SearchRecord> searchRecords = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,7 +62,7 @@ public class SearchActivity extends MediaControlBaseActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.options_menu,menu);
+        menuInflater.inflate(R.menu.options_menu, menu);
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
@@ -65,42 +75,41 @@ public class SearchActivity extends MediaControlBaseActivity {
         handleIntent(intent);
     }
 
-    public void handleIntent(Intent intent){
+    public void handleIntent(Intent intent) {
         SearchDataProvider searchDataProvider = new SearchDataProvider();
-        ArrayList<SearchRecord> searchRecords = new ArrayList<>();
         String query = "";
-        if(Intent.ACTION_SEARCH.equalsIgnoreCase(intent.getAction())){
+        if (Intent.ACTION_SEARCH.equalsIgnoreCase(intent.getAction())) {
             query = intent.getStringExtra(SearchManager.QUERY);
-            Toast.makeText(this,query,Toast.LENGTH_SHORT).show();
-            searchRecords.addAll(getAlbumsSearchData(searchDataProvider,query));
-            searchRecords.addAll(getArtistsSearchData(searchDataProvider,query));
-            searchRecords.addAll(getSongsSearchData(searchDataProvider,query));
-        }else if("SONG".equalsIgnoreCase(intent.getAction())){
+            Toast.makeText(this, query, Toast.LENGTH_SHORT).show();
+            searchRecords.addAll(getAlbumsSearchData(searchDataProvider, query));
+            searchRecords.addAll(getArtistsSearchData(searchDataProvider, query));
+            searchRecords.addAll(getSongsSearchData(searchDataProvider, query));
+        } else if ("SONG".equalsIgnoreCase(intent.getAction())) {
             query = intent.getDataString();
-            searchRecords.addAll(getSongsSearchData(searchDataProvider,query));
-            Toast.makeText(this,query,Toast.LENGTH_SHORT).show();
-        }else if("ALBUM".equalsIgnoreCase(intent.getAction())){
+            searchRecords.addAll(getSongsSearchData(searchDataProvider, query));
+            Toast.makeText(this, query, Toast.LENGTH_SHORT).show();
+        } else if ("ALBUM".equalsIgnoreCase(intent.getAction())) {
             query = intent.getDataString();
-            searchRecords.addAll(getAlbumsSearchData(searchDataProvider,query));
-            Toast.makeText(this,query,Toast.LENGTH_SHORT).show();
-        }else if("ARTIST".equalsIgnoreCase(intent.getAction())){
+            searchRecords.addAll(getAlbumsSearchData(searchDataProvider, query));
+            Toast.makeText(this, query, Toast.LENGTH_SHORT).show();
+        } else if ("ARTIST".equalsIgnoreCase(intent.getAction())) {
             query = intent.getDataString();
-            searchRecords.addAll(getArtistsSearchData(searchDataProvider,query));
-            Toast.makeText(this,query,Toast.LENGTH_SHORT).show();
+            searchRecords.addAll(getArtistsSearchData(searchDataProvider, query));
+            Toast.makeText(this, query, Toast.LENGTH_SHORT).show();
         }
         populateSearchData(searchRecords);
         searchQuery = query;
     }
 
-    private ArrayList<SearchRecord> getSongsSearchData(SearchDataProvider searchDataProvider, String query){
-        ArrayList<Song> songsSearchData = searchDataProvider.searchSongs(this,query,MediaStore.Audio.Media.TITLE,false,null);
+    private ArrayList<SearchRecord> getSongsSearchData(SearchDataProvider searchDataProvider, String query) {
+        ArrayList<Song> songsSearchData = searchDataProvider.searchSongs(this, query, MediaStore.Audio.Media.TITLE, false, null);
         ArrayList<SearchRecord> searchRecords = new ArrayList<>();
         SearchRecord record;
-        if(songsSearchData.size()>0) {
+        if (songsSearchData.size() > 0) {
             record = new SearchRecord(SearchRecord.SECTION_VIEW);
-            if(songsSearchData.size()>SECTION_LIMIT) {
-                record.setSectionData(new SearchRecord.Section("Songs", (songsSearchData.size()-SECTION_LIMIT) + " more", SearchRecord.SONG_VIEW));
-            }else{
+            if (songsSearchData.size() > SECTION_LIMIT) {
+                record.setSectionData(new SearchRecord.Section("Songs", (songsSearchData.size() - SECTION_LIMIT) + " more", SearchRecord.SONG_VIEW));
+            } else {
                 record.setSectionData(new SearchRecord.Section("Songs", "", SearchRecord.SONG_VIEW));
             }
             searchRecords.add(record);
@@ -110,22 +119,23 @@ public class SearchActivity extends MediaControlBaseActivity {
                 record.setSong(song);
                 searchRecords.add(record);
                 count++;
-                if(count>=SECTION_LIMIT){
+                if (count >= SECTION_LIMIT) {
                     break;
                 }
             }
         }
         return searchRecords;
     }
-    private ArrayList<SearchRecord> getAlbumsSearchData(SearchDataProvider searchDataProvider, String query){
-        ArrayList<Album> albumSearchData = searchDataProvider.searchAlbums(this,query, AlbumTable.ALBUM,false,null);
+
+    private ArrayList<SearchRecord> getAlbumsSearchData(SearchDataProvider searchDataProvider, String query) {
+        ArrayList<Album> albumSearchData = searchDataProvider.searchAlbums(this, query, AlbumTable.ALBUM, false, null);
         ArrayList<SearchRecord> searchRecords = new ArrayList<>();
         SearchRecord record;
-        if(albumSearchData.size()>0) {
+        if (albumSearchData.size() > 0) {
             record = new SearchRecord(SearchRecord.SECTION_VIEW);
-            if(albumSearchData.size()>SECTION_LIMIT) {
-                record.setSectionData(new SearchRecord.Section("Albums", (albumSearchData.size()-SECTION_LIMIT) + " more", SearchRecord.ALBUM_VIEW));
-            }else{
+            if (albumSearchData.size() > SECTION_LIMIT) {
+                record.setSectionData(new SearchRecord.Section("Albums", (albumSearchData.size() - SECTION_LIMIT) + " more", SearchRecord.ALBUM_VIEW));
+            } else {
                 record.setSectionData(new SearchRecord.Section("Albums", "", SearchRecord.ALBUM_VIEW));
             }
             searchRecords.add(record);
@@ -135,47 +145,48 @@ public class SearchActivity extends MediaControlBaseActivity {
                 record.setOfflineAlbum(album);
                 searchRecords.add(record);
                 count++;
-                if(count>=SECTION_LIMIT){
+                if (count >= SECTION_LIMIT) {
                     break;
                 }
             }
         }
         return searchRecords;
     }
-    private ArrayList<SearchRecord> getArtistsSearchData(SearchDataProvider searchDataProvider, String query){
-        ArrayList<Album> artistSearchData = searchDataProvider.searchAlbums(this,query, AlbumTable.ARTIST,false,null);
+
+    private ArrayList<SearchRecord> getArtistsSearchData(SearchDataProvider searchDataProvider, String query) {
+        ArrayList<Album> artistSearchData = searchDataProvider.searchAlbums(this, query, AlbumTable.ARTIST, false, null);
         ArrayList<SearchRecord> searchRecords = new ArrayList<>();
         SearchRecord record;
-        if(artistSearchData.size()>0) {
+        if (artistSearchData.size() > 0) {
             record = new SearchRecord(SearchRecord.SECTION_VIEW);
-            if(artistSearchData.size()>SECTION_LIMIT) {
-                record.setSectionData(new SearchRecord.Section("Artists", (artistSearchData.size()-SECTION_LIMIT) + " more", SearchRecord.ARTIST_VIEW));
-            }else{
+            if (artistSearchData.size() > SECTION_LIMIT) {
+                record.setSectionData(new SearchRecord.Section("Artists", (artistSearchData.size() - SECTION_LIMIT) + " more", SearchRecord.ARTIST_VIEW));
+            } else {
                 record.setSectionData(new SearchRecord.Section("Artists", "", SearchRecord.ARTIST_VIEW));
             }
             searchRecords.add(record);
-            int count=0;
+            int count = 0;
             for (Album album : artistSearchData) {
                 record = new SearchRecord(SearchRecord.ARTIST_VIEW);
                 record.setOfflineAlbum(album);
                 searchRecords.add(record);
                 count++;
-                if(count>=SECTION_LIMIT){
+                if (count >= SECTION_LIMIT) {
                     break;
                 }
             }
         }
-        return  searchRecords;
+        return searchRecords;
     }
 
-    public  void populateSearchData(final ArrayList<SearchRecord> searchRecords){
-        SearchListAdapter songListAdapter = new SearchListAdapter(this,searchRecords);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this,2);
+    public void populateSearchData(final ArrayList<SearchRecord> searchRecords) {
+        SearchListAdapter songListAdapter = new SearchListAdapter(this, searchRecords);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2);
         gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
                 int type = searchRecords.get(position).getViewType();
-                switch (type){
+                switch (type) {
                     case SearchRecord.SECTION_VIEW:
                         return 2;
                     case SearchRecord.SONG_VIEW:
@@ -191,34 +202,122 @@ public class SearchActivity extends MediaControlBaseActivity {
         songListAdapter.setOnItemClickListener(new SearchListAdapter.OnItemClickListener() {
             @Override
             public void onListItemClick(View view, int position) {
+                Intent intent = new Intent(getApplicationContext(), AlbumSongsListActivity.class);
+                SearchRecord searchRecord = searchRecords.get(position);
+                Album album;
+                if (searchRecord.getViewType() == SearchRecord.SONG_VIEW) {
+                    ArrayList<Song> songs = new ArrayList<>();
+                    songs.add(searchRecord.getSong());
+                    MusicPlayService musicPlayService = MusicPlayServiceHolder.getMusicPlayService();
+                    if(musicPlayService != null) {
+                        musicPlayService.setOfflineSongsList(songs);
+                        musicPlayService.setOfflineSongPosition(0);
+                        musicPlayService.playOfflineSong();
+                    }
+                } else if (searchRecord.getViewType() == SearchRecord.ALBUM_VIEW) {
+                    album = searchRecord.getOfflineAlbum();
+                    intent.putExtra(AlbumSongsListActivity.COLUMN, AlbumTable.ALBUM);
+                    intent.putExtra(AlbumSongsListActivity.COLUMN_VALUE, album.getAlbumTitle());
+                    intent.putExtra(AlbumSongsListActivity.ALBUM_ID, album.getAlbumId());
+                    intent.putExtra(AlbumSongsListActivity.TITLE, album.getAlbumTitle());
+                    startActivity(intent);
+                } else {
+                    album = searchRecord.getOfflineAlbum();
+                    intent.putExtra(AlbumSongsListActivity.COLUMN, AlbumTable.ARTIST);
+                    intent.putExtra(AlbumSongsListActivity.COLUMN_VALUE, album.getAlbumTitle());
+                    intent.putExtra(AlbumSongsListActivity.ALBUM_ID, album.getAlbumId());
+                    intent.putExtra(AlbumSongsListActivity.TITLE, album.getAlbumTitle());
+                    startActivity(intent);
+                }
             }
 
             @Override
             public void onMoreButtonClick(View view, int position) {
                 SearchRecord searchRecord = searchRecords.get(position);
-                Intent intent = new Intent(getApplicationContext(),MoreRecordsActivity.class);
-                switch (searchRecord.getSectionData().getSectionType()){
+                Intent intent = new Intent(getApplicationContext(), MoreRecordsActivity.class);
+                switch (searchRecord.getSectionData().getSectionType()) {
                     case SearchRecord.SONG_VIEW:
-                        intent.putExtra(MoreRecordsActivity.VIEW_TYPE,MoreRecordsActivity.SONG);
+                        intent.putExtra(MoreRecordsActivity.VIEW_TYPE, MoreRecordsActivity.SONG);
                         break;
                     case SearchRecord.ALBUM_VIEW:
-                        intent.putExtra(MoreRecordsActivity.VIEW_TYPE,MoreRecordsActivity.ALBUM);
+                        intent.putExtra(MoreRecordsActivity.VIEW_TYPE, MoreRecordsActivity.ALBUM);
                         break;
                     case SearchRecord.ARTIST_VIEW:
-                        intent.putExtra(MoreRecordsActivity.VIEW_TYPE,MoreRecordsActivity.ARTIST);
+                        intent.putExtra(MoreRecordsActivity.VIEW_TYPE, MoreRecordsActivity.ARTIST);
                         break;
                 }
-                intent.putExtra(MoreRecordsActivity.SEARCH_QUERY,searchQuery);
+                intent.putExtra(MoreRecordsActivity.SEARCH_QUERY, searchQuery);
                 startActivity(intent);
+            }
+
+            @Override
+            public void onMenuOptionsClick(View view, int position) {
+                SearchRecord searchRecord = searchRecords.get(position);
+                if (searchRecord.getViewType() == SearchRecord.SONG_VIEW) {
+                    showSongOptionsMenu(view, position);
+                } else {
+                    showAlbumOptionsMenu(view, position);
+                }
             }
         });
         searchListView.setAdapter(songListAdapter);
         searchListView.setLayoutManager(gridLayoutManager);
     }
 
-    public void testOnClick(View view){
-        Intent intent = new Intent(getApplicationContext(),MoreRecordsActivity.class);
-        startActivity(intent);
+    public void showSongOptionsMenu(View view, int position) {
+        selectedAlbumPosition = position;
+        PopupMenu popupMenu = new PopupMenu(this, view);
+        MenuInflater inflater = popupMenu.getMenuInflater();
+        inflater.inflate(R.menu.popup_menu, popupMenu.getMenu());
+        popupMenu.getMenu().removeItem(R.id.not_interested);
+        popupMenu.getMenu().removeItem(R.id.remove_from_playlist);
+        popupMenu.getMenu().removeItem(R.id.edit_playlist);
+        popupMenu.getMenu().removeItem(R.id.shuffle);
+        popupMenu.show();
+        popupMenu.setOnMenuItemClickListener(this);
+    }
+
+    public void showAlbumOptionsMenu(View view, int position) {
+        selectedAlbumPosition = position;
+        PopupMenu popupMenu = new PopupMenu(this, view);
+        MenuInflater inflater = popupMenu.getMenuInflater();
+        inflater.inflate(R.menu.popup_menu, popupMenu.getMenu());
+        popupMenu.getMenu().removeItem(R.id.not_interested);
+        popupMenu.getMenu().removeItem(R.id.edit_playlist);
+        popupMenu.getMenu().removeItem(R.id.delete);
+        popupMenu.getMenu().removeItem(R.id.go_to_album);
+        popupMenu.getMenu().removeItem(R.id.remove_from_playlist);
+        popupMenu.show();
+        popupMenu.setOnMenuItemClickListener(this);
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case R.id.shuffle:
+                Toast.makeText(this, "shuffle", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.add_to_playlist:
+                onAddToPlayListClick(selectedAlbumPosition);
+                break;
+        }
+        return false;
+    }
+
+    public void onAddToPlayListClick(int position) {
+        SearchRecord searchRecord = searchRecords.get(position);
+        ArrayList<Song> songs = new ArrayList<>();
+        switch (searchRecord.getViewType()) {
+            case SearchRecord.SONG_VIEW:
+                songs.add(searchRecord.getSong());
+                new PlayListSelectionPopup(this, songs).showPopup();
+                break;
+            case SearchRecord.ALBUM_VIEW:
+                Album album = searchRecord.getOfflineAlbum();
+                songs = SongTable.getSongsFromAlbum(this, album.getAlbumTitle());
+                new PlayListSelectionPopup(this, songs).showPopup();
+                break;
+        }
     }
 
 }

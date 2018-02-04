@@ -71,7 +71,7 @@
     </LinearLayout>
 
     <ImageButton
-        android:id="@+id/moreButton"
+        android:id="@+id/imageOptions"
         style="@style/Widget.AppCompat.ImageButton"
         android:layout_width="0dp"
         android:layout_height="match_parent"

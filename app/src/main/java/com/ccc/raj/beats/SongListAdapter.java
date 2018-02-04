@@ -82,7 +82,7 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.ViewHo
            songOrder.setText(offlineSong.getTrackNumber()+"");
            songTitle.setText(Utitlity.formatString(offlineSong.getDisplayName()+"",35));
         }
-        ImageButton imageButton = container.findViewById(R.id.moreButton);
+        ImageButton imageButton = container.findViewById(R.id.imageOptions);
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -48,6 +48,7 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
     public interface OnItemClickListener{
         public void onListItemClick(View view,int position);
         public void onMoreButtonClick(View view,int position);
+        public void onMenuOptionsClick(View view,int position);
     }
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener){
@@ -93,14 +94,25 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
                 bindHeaderData(holder,searchRecord,position);
                 break;
         }
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(mOnItemClickListener!=null){
-                    mOnItemClickListener.onListItemClick(view,position);
+        if(searchRecord.getViewType() != SearchRecord.SECTION_VIEW) {
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (mOnItemClickListener != null) {
+                        mOnItemClickListener.onListItemClick(view, position);
+                    }
                 }
-            }
-        });
+            });
+            ImageButton menuOptionsButton = holder.itemView.findViewById(R.id.imageOptions);
+            menuOptionsButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (mOnItemClickListener != null) {
+                        mOnItemClickListener.onMenuOptionsClick(view, position);
+                    }
+                }
+            });
+        }
     }
 
     @Override
@@ -123,12 +135,6 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
         textArtist.setText(Utitlity.formatString(album.getArtist()+"",20));
         ImageView imageSong = cardView.findViewById(R.id.imageSong);
         imageSong.setImageBitmap(OfflineDataProvider.getBitmapByAlbumArt(album.getAlbumArt()));
-        cardView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //onItemClickListener.onItemClick(position);
-            }
-        });
         ImageButton playButton = cardView.findViewById(R.id.albumPlayButton);
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -147,14 +153,6 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
         OfflineSong offlineSong = (OfflineSong) searchRecord.getSong();
         artistTitle.setText(Utitlity.formatString(offlineSong.getArtist()+"",35));
         songDuration.setText(Utitlity.converMillisecondsToMMSS(offlineSong.getDuratio())+"");
-        container.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //onItemClickListener.onItemClick(position);
-            }
-        });
-        /*songOrder.setText(offlineSong.getTrackNumber()+"");
-        songTitle.setText(Utitlity.formatString(offlineSong.getDisplayName()+"",35));*/
         songOrder.setBackgroundResource(R.drawable.music);
         songOrder.setBackground(new BitmapDrawable(context.getResources(),OfflineDataProvider.getBitmapBySongId(context,offlineSong.getId())));
         songOrder.setText("");

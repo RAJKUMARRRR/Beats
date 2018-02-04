@@ -8,8 +8,13 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
+import android.widget.Toast;
 
 import com.ccc.raj.beats.AlbumListAdapter;
 import com.ccc.raj.beats.AlbumSongsListActivity;
@@ -27,10 +32,11 @@ import java.util.ArrayList;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class GenresFragment extends Fragment {
+public class GenresFragment extends Fragment implements PopupMenu.OnMenuItemClickListener{
 
     RecyclerView genresListView;
     ArrayList<Album> genresAlbumList;
+    private int selectedAlbumPosition = -1;
     public GenresFragment() {
         // Required empty public constructor
     }
@@ -47,13 +53,6 @@ public class GenresFragment extends Fragment {
             @Override
             public void onItemClick(int position) {
                 Album album = genresAlbumList.get(position);
-                /*Intent intent = new Intent(getContext(),AlbumSongsListActivity.class);
-                intent.putExtra(AlbumSongsListActivity.COLUMN, GenresTable.NAME);
-                intent.putExtra(AlbumSongsListActivity.COLUMN_VALUE, album.getAlbumTitle());
-                intent.putExtra(AlbumSongsListActivity.ALBUM_ID, album.getAlbumId());
-                intent.putExtra(AlbumSongsListActivity.TITLE, album.getAlbumTitle());
-                intent.putExtra(AlbumSongsListActivity.ALBUM_TYPE,AlbumSongsListActivity.GENRES_ALBUM);
-                startActivity(intent);*/
                 Intent intent = new Intent(getContext(), MoreRecordsActivity.class);
                 intent.putExtra(MoreRecordsActivity.VIEW_TYPE,MoreRecordsActivity.GENRES_ALBUM);
                 intent.putExtra(MoreRecordsActivity.SEARCH_QUERY,String.valueOf(album.getAlbumId()));
@@ -72,12 +71,34 @@ public class GenresFragment extends Fragment {
 
             @Override
             public void onOptionsButtonClick(View view, int position) {
-
+                showAlbumOptionsMenu(view,position);
             }
         });
         genresListView.setAdapter(albumListAdapter);
         GridLayoutManager layoutManager = new GridLayoutManager(getActivity(),2);
         genresListView.setLayoutManager(layoutManager);
         return view;
+    }
+    public void showAlbumOptionsMenu(View view, int position) {
+        selectedAlbumPosition = position;
+        PopupMenu popupMenu = new PopupMenu(getContext(), view);
+        MenuInflater inflater = popupMenu.getMenuInflater();
+        inflater.inflate(R.menu.popup_menu_empty, popupMenu.getMenu());
+        popupMenu.getMenu().add(Menu.NONE,R.id.play_next,0,R.string.play_next);
+        popupMenu.getMenu().add(Menu.NONE,R.id.add_to_queue,1,R.string.add_to_queue);
+        popupMenu.show();
+        popupMenu.setOnMenuItemClickListener(this);
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case R.id.play_next:
+                Toast.makeText(getContext(), "play next", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.add_to_queue:
+                break;
+        }
+        return false;
     }
 }

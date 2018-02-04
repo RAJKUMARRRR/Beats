@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ccc.raj.beats.model.Album;
+import com.ccc.raj.beats.model.ArtistAlbum;
 import com.ccc.raj.beats.model.GenresAlbum;
 import com.ccc.raj.beats.model.OfflineDataProvider;
 import com.ccc.raj.beats.model.PlayListAlbum;
@@ -103,6 +104,10 @@ public class AlbumListAdapter extends RecyclerView.Adapter<AlbumListAdapter.View
             imageSong.setImageBitmap(bitmap);
         } else {
             imageSong.setImageResource(R.drawable.music);
+        }
+
+        if(album instanceof ArtistAlbum || album instanceof GenresAlbum){
+            imageButton.setVisibility(View.GONE);
         }
     }
 
