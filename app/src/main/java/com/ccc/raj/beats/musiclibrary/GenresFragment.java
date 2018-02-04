@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 
 import com.ccc.raj.beats.AlbumListAdapter;
 import com.ccc.raj.beats.AlbumSongsListActivity;
+import com.ccc.raj.beats.MoreRecordsActivity;
 import com.ccc.raj.beats.R;
 import com.ccc.raj.beats.model.Album;
 import com.ccc.raj.beats.model.AlbumTable;
@@ -45,13 +46,17 @@ public class GenresFragment extends Fragment {
         albumListAdapter.setOnItemClickListener(new AlbumListAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                Intent intent = new Intent(getContext(),AlbumSongsListActivity.class);
                 Album album = genresAlbumList.get(position);
+                /*Intent intent = new Intent(getContext(),AlbumSongsListActivity.class);
                 intent.putExtra(AlbumSongsListActivity.COLUMN, GenresTable.NAME);
                 intent.putExtra(AlbumSongsListActivity.COLUMN_VALUE, album.getAlbumTitle());
                 intent.putExtra(AlbumSongsListActivity.ALBUM_ID, album.getAlbumId());
                 intent.putExtra(AlbumSongsListActivity.TITLE, album.getAlbumTitle());
                 intent.putExtra(AlbumSongsListActivity.ALBUM_TYPE,AlbumSongsListActivity.GENRES_ALBUM);
+                startActivity(intent);*/
+                Intent intent = new Intent(getContext(), MoreRecordsActivity.class);
+                intent.putExtra(MoreRecordsActivity.VIEW_TYPE,MoreRecordsActivity.GENRES_ALBUM);
+                intent.putExtra(MoreRecordsActivity.SEARCH_QUERY,String.valueOf(album.getAlbumId()));
                 startActivity(intent);
             }
 

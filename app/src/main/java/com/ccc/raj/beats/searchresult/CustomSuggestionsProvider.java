@@ -6,8 +6,6 @@ import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.MatrixCursor;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -18,7 +16,6 @@ import com.ccc.raj.beats.R;
 import com.ccc.raj.beats.model.Album;
 import com.ccc.raj.beats.model.AlbumTable;
 import com.ccc.raj.beats.model.OfflineAlbum;
-import com.ccc.raj.beats.model.OfflineSong;
 import com.ccc.raj.beats.model.Song;
 
 import java.util.ArrayList;
@@ -40,7 +37,7 @@ public class CustomSuggestionsProvider extends ContentProvider {
             SearchManager.SUGGEST_COLUMN_INTENT_DATA,
             SearchManager.SUGGEST_COLUMN_ICON_1
     };
-    SeachDataProvider seachDataProvider = new SeachDataProvider();
+    SearchDataProvider searchDataProvider = new SearchDataProvider();
     @Override
     public boolean onCreate() {
         return false;
@@ -100,19 +97,19 @@ public class CustomSuggestionsProvider extends ContentProvider {
         String where = MediaStore.Audio.Media.ALBUM +" Like '%" + query +"%' OR "+MediaStore.Audio.Media.TITLE +" Like '%" + query +"%' OR "+MediaStore.Audio.Media.COMPOSER +" Like '%" + query +"%') GROUP BY (" +
                 MediaStore.Audio.Media.TITLE;/*+","+MediaStore.Audio.Media.TITLE+","+MediaStore.Audio.Media.COMPOSER*/;
         where = MediaStore.Audio.Media.TITLE +" Like '%" + query+"%') GROUP BY (" + MediaStore.Audio.Media.TITLE;
-        ArrayList<Song> songsSearchData = seachDataProvider.searchSongs(getContext(),query, MediaStore.Audio.Media.TITLE,true,where);
+        ArrayList<Song> songsSearchData = searchDataProvider.searchSongs(getContext(),query, MediaStore.Audio.Media.TITLE,true,where);
         return  songsSearchData;
     }
 
     private ArrayList<Album> getAlbumData(String query){
         String where = AlbumTable.ALBUM +" Like '%" + query+"%') GROUP BY (" + AlbumTable.ALBUM;
-        ArrayList<Album> albumsSearchData = seachDataProvider.searchAlbums(getContext(),query, AlbumTable.ALBUM,true,where);
+        ArrayList<Album> albumsSearchData = searchDataProvider.searchAlbums(getContext(),query, AlbumTable.ALBUM,true,where);
         return albumsSearchData;
     }
 
     private ArrayList<Album> getArtistData(String query){
         String where = AlbumTable.ARTIST +" Like '%" + query+"%') GROUP BY (" + AlbumTable.ARTIST;
-        ArrayList<Album> artistSearchData = seachDataProvider.searchAlbums(getContext(),query, AlbumTable.ALBUM,true,where);
+        ArrayList<Album> artistSearchData = searchDataProvider.searchAlbums(getContext(),query, AlbumTable.ALBUM,true,where);
         return artistSearchData;
     }
     @Nullable

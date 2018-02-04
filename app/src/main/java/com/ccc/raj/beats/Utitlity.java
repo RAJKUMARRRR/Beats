@@ -15,6 +15,9 @@ public class Utitlity {
     private final static String TAG = "Beats";
 
     public static String formatString(String str, int limit) {
+        if(str == null || str.isEmpty()){
+            return "";
+        }
         if (str.length() > limit) {
             str = str.substring(0, limit) + "...";
             return str;

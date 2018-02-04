@@ -212,6 +212,19 @@ public class OfflineDataProvider {
         }
     }
 
+    public static String getAlbumArtByAlbumId(Context context,int albumId){
+        Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                new String[]{MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ALBUM_ART},
+                MediaStore.Audio.Albums._ID + "=?",
+                new String[]{String.valueOf(albumId)},
+                null);
+        String albumArt = "";
+        if (cursor.moveToFirst()) {
+            albumArt = cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART));
+        }
+        return albumArt;
+    }
+
     public static Bitmap getBitmapByAlbumArt(String albumArt) {
         Bitmap bm = BitmapFactory.decodeFile(albumArt);
         return bm;
@@ -234,6 +247,21 @@ public class OfflineDataProvider {
             Bitmap bm = BitmapFactory.decodeResource(context.getResources(), R.drawable.music);
             return bm;
         }
+    }
+    public static String getAlbumArtBySongId(Context context, long songId) {
+        Utitlity.Log("getAlbumArtBySongId");
+        Utitlity.Log("songId:"+songId);
+        Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                new String[]{MediaStore.Audio.Media._ID, MediaStore.Audio.Media.ALBUM_ID},
+                MediaStore.Audio.Media._ID + "=?",
+                new String[]{String.valueOf(songId)},
+                null);
+        String albumArt = "";
+        if (cursor.moveToFirst()) {
+            int albumId = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID));
+            albumArt = getAlbumArtByAlbumId(context,albumId);
+        }
+        return albumArt;
     }
 
     public static Bitmap getBitmapBySongsList(Context context,ArrayList<Song> songs){

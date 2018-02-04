@@ -13,9 +13,11 @@ import android.view.ViewGroup;
 
 import com.ccc.raj.beats.AlbumListAdapter;
 import com.ccc.raj.beats.AlbumSongsListActivity;
+import com.ccc.raj.beats.MoreRecordsActivity;
 import com.ccc.raj.beats.R;
 import com.ccc.raj.beats.model.Album;
 import com.ccc.raj.beats.model.AlbumTable;
+import com.ccc.raj.beats.model.ArtistTable;
 import com.ccc.raj.beats.model.OfflineAlbum;
 import com.ccc.raj.beats.model.OfflineDataProvider;
 import com.ccc.raj.beats.model.Song;
@@ -38,17 +40,20 @@ public class ArtistsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_artists, container, false);
         artistsListView = view.findViewById(R.id.artistsListView);
-        mAlbumArrayList = AlbumTable.getAlbumsGroupByArtist(getContext());
+        mAlbumArrayList = ArtistTable.getAllArtistAlbums(getContext());//AlbumTable.getAlbumsGroupByArtist(getContext());
         AlbumListAdapter albumListAdapter = new AlbumListAdapter(mAlbumArrayList,getContext());
         albumListAdapter.setOnItemClickListener(new AlbumListAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                Intent intent = new Intent(getContext(),AlbumSongsListActivity.class);
-                OfflineAlbum album = (OfflineAlbum) mAlbumArrayList.get(position);
+                Album album = mAlbumArrayList.get(position);
+                /*Intent intent = new Intent(getContext(),AlbumSongsListActivity.class);
                 intent.putExtra(AlbumSongsListActivity.COLUMN, AlbumTable.ARTIST);
-                intent.putExtra(AlbumSongsListActivity.COLUMN_VALUE,album.getArtist());
+                intent.putExtra(AlbumSongsListActivity.COLUMN_VALUE,album.getAlbumTitle());
                 intent.putExtra(AlbumSongsListActivity.ALBUM_ID,album.getAlbumId());
-                intent.putExtra(AlbumSongsListActivity.TITLE,album.getArtist());
+                intent.putExtra(AlbumSongsListActivity.TITLE,album.getAlbumTitle());*/
+                Intent intent = new Intent(getContext(), MoreRecordsActivity.class);
+                intent.putExtra(MoreRecordsActivity.VIEW_TYPE,MoreRecordsActivity.ARTIST_ALBUM);
+                intent.putExtra(MoreRecordsActivity.SEARCH_QUERY,String.valueOf(album.getAlbumId()));
                 startActivity(intent);
             }
 

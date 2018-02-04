@@ -11,9 +11,15 @@ public class SearchRecord {
     public static class Section{
         public String titleSection;
         public String subTitleSection;
-        public Section(String titleSection,String subTitleSection){
+        public int sectionType;
+        public Section(String titleSection,String subTitleSection,int sectionType){
             this.titleSection = titleSection;
             this.subTitleSection = subTitleSection;
+            this.sectionType = sectionType;
+        }
+
+        public int getSectionType(){
+            return sectionType;
         }
 
         public String getTitleSection() {

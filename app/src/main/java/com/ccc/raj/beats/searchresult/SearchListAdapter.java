@@ -7,12 +7,14 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.ccc.raj.beats.R;
+import com.ccc.raj.beats.SongListAdapter;
 import com.ccc.raj.beats.Utitlity;
 import com.ccc.raj.beats.model.Album;
 import com.ccc.raj.beats.model.OfflineAlbum;
@@ -29,6 +31,7 @@ import java.util.zip.Inflater;
 public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.ViewHolder>{
     ArrayList<SearchRecord> mSearchRecords;
     Context context;
+    private OnItemClickListener mOnItemClickListener;
     public  static class ViewHolder extends RecyclerView.ViewHolder{
         public  View itemView;
         public ViewHolder(View itemView) {
@@ -40,6 +43,15 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
     public SearchListAdapter(Context context,ArrayList<SearchRecord> searchRecords){
       this.mSearchRecords = searchRecords;
       this.context = context;
+    }
+
+    public interface OnItemClickListener{
+        public void onListItemClick(View view,int position);
+        public void onMoreButtonClick(View view,int position);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener){
+        this.mOnItemClickListener = onItemClickListener;
     }
 
     @Override
@@ -65,22 +77,30 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(ViewHolder holder, final int position) {
         SearchRecord searchRecord = mSearchRecords.get(position);
         switch (searchRecord.getViewType()){
             case SearchRecord.ALBUM_VIEW:
-                bindAlbumData(holder,searchRecord);
+                bindAlbumData(holder,searchRecord,position);
                 break;
             case SearchRecord.ARTIST_VIEW:
-                bindAlbumData(holder,searchRecord);
+                bindAlbumData(holder,searchRecord,position);
                 break;
             case SearchRecord.SONG_VIEW:
-                bindSongData(holder,searchRecord);
+                bindSongData(holder,searchRecord,position);
                 break;
             case SearchRecord.SECTION_VIEW:
-                bindHeaderData(holder,searchRecord);
+                bindHeaderData(holder,searchRecord,position);
                 break;
         }
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(mOnItemClickListener!=null){
+                    mOnItemClickListener.onListItemClick(view,position);
+                }
+            }
+        });
     }
 
     @Override
@@ -94,7 +114,7 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
         return searchRecord.getViewType();
     }
 
-    public void bindAlbumData(ViewHolder viewHolder,SearchRecord searchRecord){
+    public void bindAlbumData(ViewHolder viewHolder,SearchRecord searchRecord,int position){
         CardView cardView = (CardView) viewHolder.itemView;
         OfflineAlbum album = (OfflineAlbum) searchRecord.getOfflineAlbum();
         TextView textSong = cardView.findViewById(R.id.textSong);
@@ -118,7 +138,7 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
         });
     }
 
-    public  void bindSongData(ViewHolder viewHolder,SearchRecord searchRecord){
+    public  void bindSongData(ViewHolder viewHolder,SearchRecord searchRecord,int position){
         LinearLayout container = (LinearLayout) viewHolder.itemView;
         TextView songOrder = container.findViewById(R.id.order);
         TextView songTitle = container.findViewById(R.id.titleSong);
@@ -140,11 +160,23 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
         songOrder.setText("");
         songTitle.setText(Utitlity.formatString(offlineSong.getDisplayName()+"",35));
     }
-    public  void bindHeaderData(ViewHolder viewHolder,SearchRecord searchRecord){
+    public  void bindHeaderData(ViewHolder viewHolder, SearchRecord searchRecord, final int position){
         LinearLayout container = (LinearLayout) viewHolder.itemView;
         TextView textViewTitle = container.findViewById(R.id.header);
         textViewTitle.setText(searchRecord.getSectionData().getTitleSection());
-        TextView textViewSubTitle = container.findViewById(R.id.subHeader);
-        textViewSubTitle.setText(searchRecord.getSectionData().getSubTitleSection());
+        Button textViewSubTitle = container.findViewById(R.id.subHeader);
+        if(!searchRecord.getSectionData().getSubTitleSection().isEmpty()) {
+            textViewSubTitle.setText(searchRecord.getSectionData().getSubTitleSection());
+            textViewSubTitle.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (mOnItemClickListener != null) {
+                        mOnItemClickListener.onMoreButtonClick(view, position);
+                    }
+                }
+            });
+        }else{
+         textViewSubTitle.setVisibility(View.GONE);
+        }
     }
 }

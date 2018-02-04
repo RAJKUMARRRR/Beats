@@ -14,8 +14,6 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.ccc.raj.beats.R;
-import com.ccc.raj.beats.model.MediaTables;
-import com.ccc.raj.beats.model.PlayListTable;
 
 
 /**

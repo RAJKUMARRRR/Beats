@@ -19,7 +19,7 @@ import java.util.ArrayList;
  * Created by Raj on 1/23/2018.
  */
 
-public class SeachDataProvider {
+public class SearchDataProvider {
     public ArrayList<Album> searchAlbums(Context context, String query,String column,boolean isCustom,String customWhere){
         ArrayList<Album> albumArrayList = new ArrayList<>();
         ContentResolver musicResolver = context.getContentResolver();
