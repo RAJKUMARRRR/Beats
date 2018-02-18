@@ -1,6 +1,7 @@
 package com.ccc.raj.beats.musiclibrary;
 
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -50,12 +51,12 @@ public class SongsFragment extends Fragment implements PopupMenu.OnMenuItemClick
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_songs, container, false);
         songsListView = view.findViewById(R.id.songsListView);
-        songsList = SongTable.getAllSongs(getContext());
+        new AsyncSongsFetch().execute();
+        /*songsList = SongTable.getAllSongs(getContext());
         songListAdapter = new SongListAdapter(getContext(),songsList ,false);
         songListAdapter.setOnItemClickListener(new SongListAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                //Toast.makeText(getContext(),"Implement this",Toast.LENGTH_SHORT).show();
                 onSongPicked(position);
             }
 
@@ -67,6 +68,7 @@ public class SongsFragment extends Fragment implements PopupMenu.OnMenuItemClick
         songsListView.setAdapter(songListAdapter);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(),1);
         songsListView.setLayoutManager(gridLayoutManager);
+        */
         return view;
     }
     public void onSongPicked(int position){
@@ -107,6 +109,36 @@ public class SongsFragment extends Fragment implements PopupMenu.OnMenuItemClick
         ArrayList<Song> songs = new ArrayList<>();
         songs.add(songsList.get(position));
         new PlayListSelectionPopup(getContext(),songs).showPopup();
+    }
+
+
+    class AsyncSongsFetch extends AsyncTask<Void,Void,Void>{
+        @Override
+        protected Void doInBackground(Void... voids) {
+            songsList = SongTable.getAllSongs(getContext());
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            if(songsList != null) {
+                songListAdapter = new SongListAdapter(getContext(), songsList, false);
+                songListAdapter.setOnItemClickListener(new SongListAdapter.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(int position) {
+                        onSongPicked(position);
+                    }
+
+                    @Override
+                    public void onMoreButtonClick(View view, int position) {
+                        showSongOptionsMenu(view, position);
+                    }
+                });
+                songsListView.setAdapter(songListAdapter);
+                GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 1);
+                songsListView.setLayoutManager(gridLayoutManager);
+            }
+        }
     }
 
 }

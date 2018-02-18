@@ -88,6 +88,7 @@ public class GenresTable {
                 albumArrayList.add(offlineAlbum);
             }while (cursor.moveToNext());
         }
+        cursor.close();
         return  albumArrayList;
     }
     public static Album getGenresAlbumForGenresId(Context context,int genresId){
@@ -121,6 +122,7 @@ public class GenresTable {
                 }
             }while (cursor.moveToNext());
         }
+        cursor.close();
         return genresAlbum;
     }
 

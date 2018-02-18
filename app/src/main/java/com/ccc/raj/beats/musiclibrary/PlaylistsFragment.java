@@ -1,9 +1,11 @@
 package com.ccc.raj.beats.musiclibrary;
 
 
+import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -48,7 +50,8 @@ public class PlaylistsFragment extends Fragment implements PopupMenu.OnMenuItemC
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_playlists, container, false);
         playlistView = view.findViewById(R.id.playlistView);
-        playList = PlayListTable.getAllPlayLists(getContext());
+        new AsyncPlaylistFetch().execute();
+        /*playList = PlayListTable.getAllPlayLists(getContext());
         albumListAdapter = new AlbumListAdapter(playList,getContext());
         albumListAdapter.setOnItemClickListener(new AlbumListAdapter.OnItemClickListener() {
             @Override
@@ -62,7 +65,8 @@ public class PlaylistsFragment extends Fragment implements PopupMenu.OnMenuItemC
                 intent.putExtra(AlbumSongsListActivity.ALBUM_ID, album.getAlbumId());
                 intent.putExtra(AlbumSongsListActivity.TITLE, album.getAlbumTitle());
                 intent.putExtra(AlbumSongsListActivity.ALBUM_TYPE,AlbumSongsListActivity.PLAYLIST_ALBUM);
-                startActivity(intent);
+                ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(getActivity(),playlistView.getChildAt(position).findViewById(R.id.imageSong),getString(R.string.image_transition));
+                startActivity(intent,options.toBundle());
             }
 
             @Override
@@ -77,7 +81,7 @@ public class PlaylistsFragment extends Fragment implements PopupMenu.OnMenuItemC
         });
         playlistView.setAdapter(albumListAdapter);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(),2);
-        playlistView.setLayoutManager(gridLayoutManager);
+        playlistView.setLayoutManager(gridLayoutManager);*/
         return view;
     }
 
@@ -179,5 +183,49 @@ public class PlaylistsFragment extends Fragment implements PopupMenu.OnMenuItemC
         });
         final AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    class AsyncPlaylistFetch extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... voids) {
+            playList = PlayListTable.getAllPlayLists(getContext());
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            if (playList != null) {
+                albumListAdapter = new AlbumListAdapter(playList, getContext());
+                albumListAdapter.setOnItemClickListener(new AlbumListAdapter.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(int position,View view) {
+                        ArrayList<Song> songArrayList = PlayListTable.getSongsFromPlayLists(getContext(), playList.get(position).getAlbumId());
+                        Utitlity.Log(songArrayList.size() + "");
+                        Intent intent = new Intent(getContext(), AlbumSongsListActivity.class);
+                        Album album = playList.get(position);
+                        intent.putExtra(AlbumSongsListActivity.COLUMN, PlayListTable.NAME);
+                        intent.putExtra(AlbumSongsListActivity.COLUMN_VALUE, album.getAlbumTitle());
+                        intent.putExtra(AlbumSongsListActivity.ALBUM_ID, album.getAlbumId());
+                        intent.putExtra(AlbumSongsListActivity.TITLE, album.getAlbumTitle());
+                        intent.putExtra(AlbumSongsListActivity.ALBUM_TYPE, AlbumSongsListActivity.PLAYLIST_ALBUM);
+                        ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(getActivity(), view.findViewById(R.id.imageSong), getString(R.string.image_transition));
+                        startActivity(intent, options.toBundle());
+                    }
+
+                    @Override
+                    public void onPlayButtonClick(int position) {
+
+                    }
+
+                    @Override
+                    public void onOptionsButtonClick(View view, int position) {
+                        showPlaylistOptionsMenu(view, position);
+                    }
+                });
+                playlistView.setAdapter(albumListAdapter);
+                GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2);
+                playlistView.setLayoutManager(gridLayoutManager);
+            }
+        }
     }
 }

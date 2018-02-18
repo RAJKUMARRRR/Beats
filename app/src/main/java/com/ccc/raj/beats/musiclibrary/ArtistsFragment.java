@@ -1,7 +1,9 @@
 package com.ccc.raj.beats.musiclibrary;
 
 
+import android.app.ActivityOptions;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
@@ -40,21 +42,18 @@ public class ArtistsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_artists, container, false);
         artistsListView = view.findViewById(R.id.artistsListView);
-        mAlbumArrayList = ArtistTable.getAllArtistAlbums(getContext());//AlbumTable.getAlbumsGroupByArtist(getContext());
+        new AsyncArtistsFetch().execute();
+        /*mAlbumArrayList = ArtistTable.getAllArtistAlbums(getContext());
         AlbumListAdapter albumListAdapter = new AlbumListAdapter(mAlbumArrayList,getContext());
         albumListAdapter.setOnItemClickListener(new AlbumListAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
                 Album album = mAlbumArrayList.get(position);
-                /*Intent intent = new Intent(getContext(),AlbumSongsListActivity.class);
-                intent.putExtra(AlbumSongsListActivity.COLUMN, AlbumTable.ARTIST);
-                intent.putExtra(AlbumSongsListActivity.COLUMN_VALUE,album.getAlbumTitle());
-                intent.putExtra(AlbumSongsListActivity.ALBUM_ID,album.getAlbumId());
-                intent.putExtra(AlbumSongsListActivity.TITLE,album.getAlbumTitle());*/
                 Intent intent = new Intent(getContext(), MoreRecordsActivity.class);
                 intent.putExtra(MoreRecordsActivity.VIEW_TYPE,MoreRecordsActivity.ARTIST_ALBUM);
                 intent.putExtra(MoreRecordsActivity.SEARCH_QUERY,String.valueOf(album.getAlbumId()));
-                startActivity(intent);
+                ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(getActivity());
+                startActivity(intent,options.toBundle());
             }
 
             @Override
@@ -75,7 +74,51 @@ public class ArtistsFragment extends Fragment {
         artistsListView.setAdapter(albumListAdapter);
         GridLayoutManager layoutManager = new GridLayoutManager(getActivity(),2);
         artistsListView.setLayoutManager(layoutManager);
+        */
         return view;
     }
 
+    class AsyncArtistsFetch extends AsyncTask<Void,Void,Void>{
+        @Override
+        protected Void doInBackground(Void... voids) {
+            mAlbumArrayList = ArtistTable.getAllArtistAlbums(getContext());
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            if(mAlbumArrayList != null) {
+                AlbumListAdapter albumListAdapter = new AlbumListAdapter(mAlbumArrayList, getContext());
+                albumListAdapter.setOnItemClickListener(new AlbumListAdapter.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(int position,View view) {
+                        Album album = mAlbumArrayList.get(position);
+                        Intent intent = new Intent(getContext(), MoreRecordsActivity.class);
+                        intent.putExtra(MoreRecordsActivity.VIEW_TYPE, MoreRecordsActivity.ARTIST_ALBUM);
+                        intent.putExtra(MoreRecordsActivity.SEARCH_QUERY, String.valueOf(album.getAlbumId()));
+                        ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(getActivity());
+                        startActivity(intent, options.toBundle());
+                    }
+
+                    @Override
+                    public void onPlayButtonClick(int position) {
+                        //ArrayList<Song> songsAlbum = OfflineDataProvider.getSongsFromAlbum(context,mAlbumArrayList.get(position).getAlbumTitle(),mAlbumArrayList.get(0).getAlbumPath());
+                        //if(songsAlbum.size()>0) {
+                        //musicPlayService.setOfflineSongsList(songsAlbum);
+                        //musicPlayService.setOfflineSongPosition(0);
+                        //musicPlayService.playOfflineSong();
+                        //}
+                    }
+
+                    @Override
+                    public void onOptionsButtonClick(View view, int position) {
+
+                    }
+                });
+                artistsListView.setAdapter(albumListAdapter);
+                GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), 2);
+                artistsListView.setLayoutManager(layoutManager);
+            }
+        }
+    }
 }

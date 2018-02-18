@@ -47,6 +47,7 @@ public class ArtistTable {
                 artistAlbumList.add(artistAlbum);
             }while (cursor.moveToNext());
         }
+        cursor.close();
         return artistAlbumList;
     }
     public static ArrayList<Album> getAlbumsForArtistId(Context context,int artistId){
@@ -56,6 +57,7 @@ public class ArtistTable {
         Uri uri = MediaStore.Audio.Artists.Albums.getContentUri("external",artistId);
         Cursor cursor = contentResolver.query(uri,null,null,null,null);
         ArrayList<Album> albumArrayList = AlbumTable.getOfflineAlbumsFromCursor(cursor);
+        cursor.close();
         return  albumArrayList;
     }
     public static Album getArtistAlbumForArtistId(Context context,int artistId){
@@ -80,6 +82,7 @@ public class ArtistTable {
                 artistAlbum.setAlbumArt(getAlbumsForArtistId(context,id).get(0).getAlbumArt());
             }while (cursor.moveToNext());
         }
+        cursor.close();
         return artistAlbum;
     }
 }

@@ -1,5 +1,7 @@
 package com.ccc.raj.beats;
 
+import android.app.Activity;
+import android.app.ActivityOptions;
 import android.app.SearchManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -76,6 +78,10 @@ public class MainActivity extends MediaControlBaseActivity implements Navigation
         mediaViewContainer = findViewById(R.id.media_container);
         musicController.setAnchorView(mediaViewContainer);
 
+    }
+
+    public  Activity getActivity(){
+      return MainActivity.this;
     }
 
 

@@ -61,6 +61,7 @@ public class PlayListTable {
                 playList.add(playListAlbum);
             }while (cursor.moveToNext());
         }
+        cursor.close();
         return playList;
     }
 
@@ -122,6 +123,7 @@ public class PlayListTable {
         Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external",playListId);
         Cursor cursor = contentResolver.query(uri,null,null,null,null);
         ArrayList<Song> songArrayList = SongTable.getSongsFromCursor(cursor);
+        cursor.close();
         return  songArrayList;
     }
 

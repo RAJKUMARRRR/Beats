@@ -2,6 +2,8 @@ package com.ccc.raj.beats.listennow;
 
 
 import android.Manifest;
+import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -23,6 +25,7 @@ import android.widget.Toast;
 
 import com.ccc.raj.beats.AlbumListAdapter;
 import com.ccc.raj.beats.AlbumSongsListActivity;
+import com.ccc.raj.beats.MainActivity;
 import com.ccc.raj.beats.MusicPlayService;
 import com.ccc.raj.beats.MusicPlayServiceHolder;
 import com.ccc.raj.beats.PlayListSelectionPopup;
@@ -87,17 +90,18 @@ public class OfflineFragment extends Fragment implements PopupMenu.OnMenuItemCli
 
     private void setMusicAlbumData() {
         mAlbumArrayList = AlbumTable.getAllAlbums(context);
-        AlbumListAdapter albumListAdapter = new AlbumListAdapter(mAlbumArrayList, context);
+        final AlbumListAdapter albumListAdapter = new AlbumListAdapter(mAlbumArrayList, context);
         albumListAdapter.setOnItemClickListener(new AlbumListAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(int position) {
+            public void onItemClick(int position,View view) {
                 Intent intent = new Intent(getContext(), AlbumSongsListActivity.class);
                 OfflineAlbum album = (OfflineAlbum) mAlbumArrayList.get(position);
                 intent.putExtra(AlbumSongsListActivity.COLUMN, AlbumTable.ALBUM);
                 intent.putExtra(AlbumSongsListActivity.COLUMN_VALUE, album.getAlbumTitle());
                 intent.putExtra(AlbumSongsListActivity.ALBUM_ID, album.getAlbumId());
                 intent.putExtra(AlbumSongsListActivity.TITLE, album.getAlbumTitle());
-                startActivity(intent);
+                ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(getActivity(),view.findViewById(R.id.imageSong),getString(R.string.image_transition));
+                startActivity(intent,options.toBundle());
             }
 
             @Override

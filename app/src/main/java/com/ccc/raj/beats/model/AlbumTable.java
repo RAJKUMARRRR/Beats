@@ -26,13 +26,14 @@ public class AlbumTable {
     public static final String ID = MediaStore.Audio.Albums._ID;
 
     public static ArrayList<Album> getAllAlbums(Context context) {
-        ArrayList<Album> albumArrayList = new ArrayList<>();
-        ContentResolver musicResolver = context.getContentResolver();
-        Uri musicUri = TABLE_URI;
-        String sortOrder = ALBUM + " ASC";
-        Cursor musicCursor = musicResolver.query(musicUri, null, null, null, sortOrder);
-        albumArrayList = getOfflineAlbumsFromCursor(musicCursor);
-        return albumArrayList;
+            ArrayList<Album> albumArrayList = new ArrayList<>();
+            ContentResolver musicResolver = context.getContentResolver();
+            Uri musicUri = TABLE_URI;
+            String sortOrder = ALBUM + " ASC";
+            Cursor musicCursor = musicResolver.query(musicUri, null, null, null, sortOrder);
+            albumArrayList = getOfflineAlbumsFromCursor(musicCursor);
+            musicCursor.close();
+            return albumArrayList;
     }
 
     /*public static ArrayList<Album> getAlbumByAlbumId(Context context,int albumId) {
@@ -46,6 +47,7 @@ public class AlbumTable {
         String sortOrder = ARTIST + " ASC";
         Cursor musicCursor = musicResolver.query(musicUri, null, where, null, sortOrder);
         albumArrayList = getOfflineAlbumsFromCursor(musicCursor);
+        musicCursor.close();
         return albumArrayList;
     }
 
@@ -60,6 +62,7 @@ public class AlbumTable {
         String sortOrder = ALBUM + " ASC";
         Cursor musicCursor = musicResolver.query(musicUri, null, where, whereVal, sortOrder);
         albumArrayList = getOfflineAlbumsFromCursor(musicCursor);
+        musicCursor.close();
         return albumArrayList;
     }
 
@@ -120,6 +123,7 @@ public class AlbumTable {
             }
             while (musicCursor.moveToNext());
         }
+        musicCursor.close();
         return albumArrayList;
     }
 }

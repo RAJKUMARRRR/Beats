@@ -47,6 +47,7 @@ public class SongTable {
         Uri musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         Cursor musicCursor = musicResolver.query(musicUri, null, null, null, null);
         ArrayList<Song> songList = getSongsFromCursor(musicCursor);
+        musicCursor.close();
         return songList;
     }
     public static ArrayList<Song> getSongsFromColumn(Context context, String column, String columnValue) {
@@ -59,6 +60,7 @@ public class SongTable {
         String orderBy = MediaStore.Audio.Media.TRACK;
         Cursor musicCursor = musicResolver.query(musicUri, null, where, whereVal, orderBy);
         ArrayList<Song> songList = getSongsFromCursor(musicCursor);
+        musicCursor.close();
         return songList;
     }
 
@@ -72,6 +74,7 @@ public class SongTable {
         String orderBy = MediaStore.Audio.Media.TRACK;
         Cursor musicCursor = musicResolver.query(musicUri, null, where, whereVal, orderBy);
         ArrayList<Song> songList = getSongsFromCursor(musicCursor);
+        musicCursor.close();
         return songList;
     }
     public static void getSongsByAlbumId() {
@@ -160,6 +163,7 @@ public class SongTable {
             }
             while (musicCursor.moveToNext());
         }
+        musicCursor.close();
         return songList;
     }
 }

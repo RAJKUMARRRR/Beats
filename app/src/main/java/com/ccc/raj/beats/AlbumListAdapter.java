@@ -36,7 +36,7 @@ public class AlbumListAdapter extends RecyclerView.Adapter<AlbumListAdapter.View
     }
 
     public interface OnItemClickListener{
-        public  void onItemClick(int position);
+        public  void onItemClick(int position,View view);
         public void onPlayButtonClick(int position);
         public void onOptionsButtonClick(View view,int position);
     }
@@ -56,7 +56,7 @@ public class AlbumListAdapter extends RecyclerView.Adapter<AlbumListAdapter.View
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, final int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         CardView cardView = holder.cardView;
         Album album = albumList.get(position);
         TextView textSong = cardView.findViewById(R.id.textSong);
@@ -67,7 +67,7 @@ public class AlbumListAdapter extends RecyclerView.Adapter<AlbumListAdapter.View
             @Override
             public void onClick(View view) {
                 if(onItemClickListener!=null)
-                onItemClickListener.onItemClick(position);
+                onItemClickListener.onItemClick(position,holder.cardView);
             }
         });
         ImageButton playButton = cardView.findViewById(R.id.albumPlayButton);

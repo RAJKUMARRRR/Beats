@@ -1,5 +1,6 @@
 package com.ccc.raj.beats;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
@@ -9,6 +10,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.transition.Explode;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -67,6 +69,13 @@ public class MoreRecordsActivity extends MediaControlBaseActivity implements Pop
         listView = findViewById(R.id.albumSongListView);
         setActionBar();
         setListData();
+        initAnimation();
+    }
+
+    private void initAnimation(){
+        Explode enterTransition = new Explode();
+        enterTransition.setDuration(200);
+        getWindow().setEnterTransition(enterTransition);
     }
 
     private void setListData(){
@@ -115,7 +124,7 @@ public class MoreRecordsActivity extends MediaControlBaseActivity implements Pop
          albumListAdapter = new AlbumListAdapter(albumList,this);
          albumListAdapter.setOnItemClickListener(new AlbumListAdapter.OnItemClickListener() {
              @Override
-             public void onItemClick(int position) {
+             public void onItemClick(int position,View view) {
                  Intent intent = new Intent(getApplicationContext(),AlbumSongsListActivity.class);
                  Album album = albumList.get(position);
                  if(album instanceof OfflineAlbum){
@@ -123,21 +132,23 @@ public class MoreRecordsActivity extends MediaControlBaseActivity implements Pop
                      intent.putExtra(AlbumSongsListActivity.COLUMN_VALUE, album.getAlbumTitle());
                      intent.putExtra(AlbumSongsListActivity.ALBUM_ID, album.getAlbumId());
                      intent.putExtra(AlbumSongsListActivity.TITLE, album.getAlbumTitle());
-                     startActivity(intent);
+                     //startActivity(intent);
                  }else if(album instanceof ArtistAlbum){
                      intent.putExtra(AlbumSongsListActivity.COLUMN, AlbumTable.ARTIST);
                      intent.putExtra(AlbumSongsListActivity.COLUMN_VALUE,album.getAlbumTitle());
                      intent.putExtra(AlbumSongsListActivity.ALBUM_ID,album.getAlbumId());
                      intent.putExtra(AlbumSongsListActivity.TITLE,album.getAlbumTitle());
-                     startActivity(intent);
+                     //startActivity(intent);
                  }else if(album instanceof GenresAlbum){
                      intent.putExtra(AlbumSongsListActivity.COLUMN, GenresTable.NAME);
                      intent.putExtra(AlbumSongsListActivity.COLUMN_VALUE, album.getAlbumTitle());
                      intent.putExtra(AlbumSongsListActivity.ALBUM_ID, album.getAlbumId());
                      intent.putExtra(AlbumSongsListActivity.TITLE, album.getAlbumTitle());
                      intent.putExtra(AlbumSongsListActivity.ALBUM_TYPE,AlbumSongsListActivity.GENRES_ALBUM);
-                     startActivity(intent);
+                     //startActivity(intent);
                  }
+                 ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(MoreRecordsActivity.this,view.findViewById(R.id.imageSong),getString(R.string.image_transition));
+                 startActivity(intent,options.toBundle());
              }
 
              @Override

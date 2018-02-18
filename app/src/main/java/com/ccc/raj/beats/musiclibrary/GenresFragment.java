@@ -1,7 +1,9 @@
 package com.ccc.raj.beats.musiclibrary;
 
 
+import android.app.ActivityOptions;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
@@ -47,7 +49,8 @@ public class GenresFragment extends Fragment implements PopupMenu.OnMenuItemClic
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_genres, container, false);
         genresListView = view.findViewById(R.id.genresListView);
-        genresAlbumList = GenresTable.getAllGenresAlbums(getContext());
+        new AsyncGeneresFetch().execute();
+        /*genresAlbumList = GenresTable.getAllGenresAlbums(getContext());
         AlbumListAdapter albumListAdapter = new AlbumListAdapter(genresAlbumList,getContext());
         albumListAdapter.setOnItemClickListener(new AlbumListAdapter.OnItemClickListener() {
             @Override
@@ -56,7 +59,8 @@ public class GenresFragment extends Fragment implements PopupMenu.OnMenuItemClic
                 Intent intent = new Intent(getContext(), MoreRecordsActivity.class);
                 intent.putExtra(MoreRecordsActivity.VIEW_TYPE,MoreRecordsActivity.GENRES_ALBUM);
                 intent.putExtra(MoreRecordsActivity.SEARCH_QUERY,String.valueOf(album.getAlbumId()));
-                startActivity(intent);
+                ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(getActivity());
+                startActivity(intent,options.toBundle());
             }
 
             @Override
@@ -77,6 +81,7 @@ public class GenresFragment extends Fragment implements PopupMenu.OnMenuItemClic
         genresListView.setAdapter(albumListAdapter);
         GridLayoutManager layoutManager = new GridLayoutManager(getActivity(),2);
         genresListView.setLayoutManager(layoutManager);
+        */
         return view;
     }
     public void showAlbumOptionsMenu(View view, int position) {
@@ -101,4 +106,50 @@ public class GenresFragment extends Fragment implements PopupMenu.OnMenuItemClic
         }
         return false;
     }
+
+    class AsyncGeneresFetch extends AsyncTask<Void,Void,Void>{
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            genresAlbumList = GenresTable.getAllGenresAlbums(getContext());
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            if(genresAlbumList != null) {
+                AlbumListAdapter albumListAdapter = new AlbumListAdapter(genresAlbumList, getContext());
+                albumListAdapter.setOnItemClickListener(new AlbumListAdapter.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(int position,View view) {
+                        Album album = genresAlbumList.get(position);
+                        Intent intent = new Intent(getContext(), MoreRecordsActivity.class);
+                        intent.putExtra(MoreRecordsActivity.VIEW_TYPE, MoreRecordsActivity.GENRES_ALBUM);
+                        intent.putExtra(MoreRecordsActivity.SEARCH_QUERY, String.valueOf(album.getAlbumId()));
+                        ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(getActivity());
+                        startActivity(intent, options.toBundle());
+                    }
+
+                    @Override
+                    public void onPlayButtonClick(int position) {
+                        //ArrayList<Song> songsAlbum = OfflineDataProvider.getSongsFromAlbum(context,mAlbumArrayList.get(position).getAlbumTitle(),mAlbumArrayList.get(0).getAlbumPath());
+                        //if(songsAlbum.size()>0) {
+                        //musicPlayService.setOfflineSongsList(songsAlbum);
+                        //musicPlayService.setOfflineSongPosition(0);
+                        //musicPlayService.playOfflineSong();
+                        //}
+                    }
+
+                    @Override
+                    public void onOptionsButtonClick(View view, int position) {
+                        showAlbumOptionsMenu(view, position);
+                    }
+                });
+                genresListView.setAdapter(albumListAdapter);
+                GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), 2);
+                genresListView.setLayoutManager(layoutManager);
+            }
+        }
+    }
+
 }

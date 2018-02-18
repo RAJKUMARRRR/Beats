@@ -46,4 +46,9 @@
     <string name="playlist_updated">Playlist Updated</string>
     <string name="update_failed">Update Failed</string>
     <string name="removed_from_playlist">removed from playlist</string>
+
+
+
+    <!--Shared transition values-->
+    <string name="image_transition">AlbumImage:Transition</string>
 </resources>
