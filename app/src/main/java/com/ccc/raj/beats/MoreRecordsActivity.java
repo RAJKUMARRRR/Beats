@@ -134,12 +134,14 @@ public class MoreRecordsActivity extends MediaControlBaseActivity implements Pop
                      intent.putExtra(AlbumSongsListActivity.COLUMN_VALUE, album.getAlbumTitle());
                      intent.putExtra(AlbumSongsListActivity.ALBUM_ID, album.getAlbumId());
                      intent.putExtra(AlbumSongsListActivity.TITLE, album.getAlbumTitle());
+                     intent.putExtra(AlbumSongsListActivity.ALBUM_TYPE,AlbumSongsListActivity.OFFLINE_ALBUM);
                      //startActivity(intent);
                  }else if(album instanceof ArtistAlbum){
                      intent.putExtra(AlbumSongsListActivity.COLUMN, AlbumTable.ARTIST);
                      intent.putExtra(AlbumSongsListActivity.COLUMN_VALUE,album.getAlbumTitle());
                      intent.putExtra(AlbumSongsListActivity.ALBUM_ID,album.getAlbumId());
                      intent.putExtra(AlbumSongsListActivity.TITLE,album.getAlbumTitle());
+                     intent.putExtra(AlbumSongsListActivity.ALBUM_TYPE,AlbumSongsListActivity.ARTIST_ALBUM);
                      //startActivity(intent);
                  }else if(album instanceof GenresAlbum){
                      intent.putExtra(AlbumSongsListActivity.COLUMN, GenresTable.NAME);
@@ -233,6 +235,15 @@ public class MoreRecordsActivity extends MediaControlBaseActivity implements Pop
             case R.id.goto_artist:
                 onGotoArtistClick(selectedAlbumPosition);
                 break;
+            case R.id.play_next:
+                onPlayNextClick();
+                break;
+            case R.id.add_to_queue:
+                onAddToQueueClick();
+                break;
+            case R.id.go_to_album:
+                onGotoAlbumClick();
+                break;
         }
         return false;
     }
@@ -264,6 +275,53 @@ public class MoreRecordsActivity extends MediaControlBaseActivity implements Pop
         }
         ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this);
         startActivity(intent, options.toBundle());
+    }
+    public void onPlayNextClick(){
+        ArrayList<Song> songs;
+        switch (getViewType()) {
+            case SONG:
+                OfflineSong song = (OfflineSong) songList.get(selectedAlbumPosition);
+                songs = new ArrayList<>();
+                songs.add(song);
+                break;
+            default:
+                Album album = albumList.get(selectedAlbumPosition);
+                songs = SongTable.getSongsFromAlbum(this,album.getAlbumTitle());
+        }
+        MusicPlayService musicPlayService = MusicPlayServiceHolder.getMusicPlayService();
+        if(musicPlayService != null){
+            musicPlayService.addToPlayNext(songs);
+        }
+    }
+    public void onAddToQueueClick(){
+        ArrayList<Song> songs;
+        switch (getViewType()) {
+            case SONG:
+                OfflineSong song = (OfflineSong) songList.get(selectedAlbumPosition);
+                songs = new ArrayList<>();
+                songs.add(song);
+                break;
+            default:
+                Album album = albumList.get(selectedAlbumPosition);
+                songs = SongTable.getSongsFromAlbum(this,album.getAlbumTitle());
+        }
+        MusicPlayService musicPlayService = MusicPlayServiceHolder.getMusicPlayService();
+        if(musicPlayService != null){
+            musicPlayService.addToQueue(songs);
+        }
+    }
+    public void onGotoAlbumClick(){
+        switch (getViewType()) {
+            case SONG:
+                OfflineSong song = (OfflineSong) songList.get(selectedAlbumPosition);
+                Intent intent = new Intent(this, AlbumSongsListActivity.class);
+                intent.putExtra(AlbumSongsListActivity.COLUMN, AlbumTable.ALBUM);
+                intent.putExtra(AlbumSongsListActivity.COLUMN_VALUE, song.getAlbum());
+                intent.putExtra(AlbumSongsListActivity.ALBUM_ID, song.getAlbumId());
+                intent.putExtra(AlbumSongsListActivity.TITLE, song.getAlbum());
+                startActivity(intent);
+                break;
+        }
     }
 
     public void setActionBar(){

@@ -119,6 +119,14 @@ public class MusicPlayService extends Service implements MediaPlayer.OnPreparedL
         notifyAllSubscribers();
     }
 
+    public void addToQueue(ArrayList<Song> songs){
+        offlineSongsList.addAll(offlineSongPosition,songs);
+    }
+
+    public void addToPlayNext(ArrayList<Song> songs){
+        offlineSongsList.addAll(songs);
+    }
+
     public void setOfflineSongPosition(int position){
         this.offlineSongPosition = position;
     }

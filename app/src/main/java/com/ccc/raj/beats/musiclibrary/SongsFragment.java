@@ -16,14 +16,19 @@ import android.view.ViewGroup;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
+import com.ccc.raj.beats.AlbumSongsListActivity;
 import com.ccc.raj.beats.MoreRecordsActivity;
 import com.ccc.raj.beats.MusicPlayService;
 import com.ccc.raj.beats.MusicPlayServiceHolder;
 import com.ccc.raj.beats.PlayListSelectionPopup;
 import com.ccc.raj.beats.R;
 import com.ccc.raj.beats.SongListAdapter;
+import com.ccc.raj.beats.model.Album;
+import com.ccc.raj.beats.model.AlbumTable;
+import com.ccc.raj.beats.model.OfflineAlbum;
 import com.ccc.raj.beats.model.OfflineDataProvider;
 import com.ccc.raj.beats.model.OfflineSong;
+import com.ccc.raj.beats.model.PlayListTable;
 import com.ccc.raj.beats.model.Song;
 import com.ccc.raj.beats.model.SongTable;
 
@@ -98,14 +103,20 @@ public class SongsFragment extends Fragment implements PopupMenu.OnMenuItemClick
     @Override
     public boolean onMenuItemClick(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
-            case R.id.play_next:
-                Toast.makeText(getContext(), "play next", Toast.LENGTH_SHORT).show();
-                break;
             case R.id.add_to_playlist:
                 onAddToPlayListClick(selectedSongPosition);
                 break;
             case R.id.goto_artist:
                 onGotoArtistClick();
+                break;
+            case R.id.play_next:
+                onPlayNextClick();
+                break;
+            case R.id.add_to_queue:
+                onAddToQueueClick();
+                break;
+            case R.id.go_to_album:
+                onGotoAlbumClick();
                 break;
         }
         return false;
@@ -115,6 +126,33 @@ public class SongsFragment extends Fragment implements PopupMenu.OnMenuItemClick
         ArrayList<Song> songs = new ArrayList<>();
         songs.add(songsList.get(position));
         new PlayListSelectionPopup(getContext(),songs).showPopup();
+    }
+
+    public void onPlayNextClick(){
+        ArrayList<Song> songs = new ArrayList<>();
+        songs.add(songsList.get(selectedSongPosition));
+        MusicPlayService musicPlayService = MusicPlayServiceHolder.getMusicPlayService();
+        if(musicPlayService != null){
+            musicPlayService.addToPlayNext(songs);
+        }
+    }
+    public void onAddToQueueClick(){
+        ArrayList<Song> songs = new ArrayList<>();
+        songs.add(songsList.get(selectedSongPosition));
+        MusicPlayService musicPlayService = MusicPlayServiceHolder.getMusicPlayService();
+        if(musicPlayService != null){
+            musicPlayService.addToQueue(songs);
+        }
+    }
+
+    public void onGotoAlbumClick(){
+        OfflineSong song = (OfflineSong) songsList.get(selectedSongPosition);
+        Intent intent = new Intent(getContext(), AlbumSongsListActivity.class);
+        intent.putExtra(AlbumSongsListActivity.COLUMN, AlbumTable.ALBUM);
+        intent.putExtra(AlbumSongsListActivity.COLUMN_VALUE, song.getAlbum());
+        intent.putExtra(AlbumSongsListActivity.ALBUM_ID, song.getAlbumId());
+        intent.putExtra(AlbumSongsListActivity.TITLE, song.getAlbum());
+        startActivity(intent);
     }
 
     public void onGotoArtistClick(){

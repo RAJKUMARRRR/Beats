@@ -21,6 +21,8 @@ import android.widget.Toast;
 import com.ccc.raj.beats.AlbumListAdapter;
 import com.ccc.raj.beats.AlbumSongsListActivity;
 import com.ccc.raj.beats.MoreRecordsActivity;
+import com.ccc.raj.beats.MusicPlayService;
+import com.ccc.raj.beats.MusicPlayServiceHolder;
 import com.ccc.raj.beats.R;
 import com.ccc.raj.beats.model.Album;
 import com.ccc.raj.beats.model.AlbumTable;
@@ -28,6 +30,7 @@ import com.ccc.raj.beats.model.GenresTable;
 import com.ccc.raj.beats.model.OfflineAlbum;
 import com.ccc.raj.beats.model.OfflineDataProvider;
 import com.ccc.raj.beats.model.PlayListTable;
+import com.ccc.raj.beats.model.Song;
 
 import java.util.ArrayList;
 
@@ -99,12 +102,29 @@ public class GenresFragment extends Fragment implements PopupMenu.OnMenuItemClic
     public boolean onMenuItemClick(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.play_next:
-                Toast.makeText(getContext(), "play next", Toast.LENGTH_SHORT).show();
+                onPlayNextClick();
                 break;
             case R.id.add_to_queue:
+                onAddToQueueClick();
                 break;
         }
         return false;
+    }
+    public void onPlayNextClick(){
+        Album album =  genresAlbumList.get(selectedAlbumPosition);
+        ArrayList<Song> songs = GenresTable.getSongsFromGeneres(getContext(),album.getAlbumId());
+        MusicPlayService musicPlayService = MusicPlayServiceHolder.getMusicPlayService();
+        if(musicPlayService != null){
+            musicPlayService.addToPlayNext(songs);
+        }
+    }
+    public void onAddToQueueClick(){
+        Album album =  genresAlbumList.get(selectedAlbumPosition);
+        ArrayList<Song> songs = GenresTable.getSongsFromGeneres(getContext(),album.getAlbumId());
+        MusicPlayService musicPlayService = MusicPlayServiceHolder.getMusicPlayService();
+        if(musicPlayService != null){
+            musicPlayService.addToQueue(songs);
+        }
     }
 
     class AsyncGeneresFetch extends AsyncTask<Void,Void,Void>{

@@ -19,6 +19,7 @@ import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import com.ccc.raj.beats.model.Album;
+import com.ccc.raj.beats.model.AlbumTable;
 import com.ccc.raj.beats.model.GenresTable;
 import com.ccc.raj.beats.model.OfflineDataProvider;
 import com.ccc.raj.beats.model.OfflineSong;
@@ -153,6 +154,11 @@ public class AlbumSongsListActivity extends MediaControlBaseActivity implements 
                 popupMenu.getMenu().removeItem(R.id.remove_from_playlist);
                 popupMenu.getMenu().removeItem(R.id.edit_playlist);
                 break;
+            case GENRES_ALBUM:
+                popupMenu.getMenu().removeItem(R.id.not_interested);
+                popupMenu.getMenu().removeItem(R.id.remove_from_playlist);
+                popupMenu.getMenu().removeItem(R.id.edit_playlist);
+                break;
             default:
                 popupMenu.getMenu().removeItem(R.id.not_interested);
                 popupMenu.getMenu().removeItem(R.id.go_to_album);
@@ -178,6 +184,15 @@ public class AlbumSongsListActivity extends MediaControlBaseActivity implements 
             case R.id.goto_artist:
                 onGotoArtistClick();
                 break;
+            case R.id.play_next:
+                onPlayNextClick();
+                break;
+            case R.id.add_to_queue:
+                onAddToQueueClick();
+                break;
+            case R.id.go_to_album:
+                onGotoAlbumClick();
+                break;
         }
         return false;
     }
@@ -202,6 +217,31 @@ public class AlbumSongsListActivity extends MediaControlBaseActivity implements 
         intent.putExtra(MoreRecordsActivity.SEARCH_QUERY, String.valueOf(song.getArtistId()));
         ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this);
         startActivity(intent, options.toBundle());
+    }
+    public void onGotoAlbumClick(){
+        OfflineSong song = (OfflineSong) songList.get(selectedSongPosition);
+        Intent intent = new Intent(this, AlbumSongsListActivity.class);
+        intent.putExtra(AlbumSongsListActivity.COLUMN, AlbumTable.ALBUM);
+        intent.putExtra(AlbumSongsListActivity.COLUMN_VALUE, song.getAlbum());
+        intent.putExtra(AlbumSongsListActivity.ALBUM_ID, song.getAlbumId());
+        intent.putExtra(AlbumSongsListActivity.TITLE, song.getAlbum());
+        startActivity(intent);
+    }
+    public void onPlayNextClick(){
+        ArrayList<Song> songs = new ArrayList<>();
+        songs.add(songList.get(selectedSongPosition));
+        MusicPlayService musicPlayService = MusicPlayServiceHolder.getMusicPlayService();
+        if(musicPlayService != null){
+            musicPlayService.addToPlayNext(songs);
+        }
+    }
+    public void onAddToQueueClick(){
+        ArrayList<Song> songs = new ArrayList<>();
+        songs.add(songList.get(selectedSongPosition));
+        MusicPlayService musicPlayService = MusicPlayServiceHolder.getMusicPlayService();
+        if(musicPlayService != null){
+            musicPlayService.addToQueue(songs);
+        }
     }
 
     public void onAllPlayClicked(View view){

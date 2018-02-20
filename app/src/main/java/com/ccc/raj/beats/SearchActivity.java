@@ -324,6 +324,15 @@ public class SearchActivity extends MediaControlBaseActivity implements PopupMen
                 break;
             case R.id.goto_artist:
                 onGotoArtistClick();
+            case R.id.play_next:
+                onPlayNextClick();
+                break;
+            case R.id.add_to_queue:
+                onAddToQueueClick();
+                break;
+            case R.id.go_to_album:
+                onGotoAlbumClick();
+                break;
         }
         return false;
     }
@@ -363,6 +372,64 @@ public class SearchActivity extends MediaControlBaseActivity implements PopupMen
         }
         ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this);
         startActivity(intent, options.toBundle());
+    }
+    public void onPlayNextClick(){
+        SearchRecord searchRecord = searchRecords.get(selectedAlbumPosition);
+        ArrayList<Song> songs = new ArrayList<>();
+        switch (searchRecord.getViewType()) {
+            case SearchRecord.SONG_VIEW:
+                OfflineSong song = (OfflineSong) searchRecord.getSong();
+                songs.add(song);
+                break;
+            case SearchRecord.ALBUM_VIEW:
+                Album album = searchRecord.getOfflineAlbum();
+                songs = SongTable.getSongsFromAlbum(this,album.getAlbumTitle());
+                break;
+            case SearchRecord.ARTIST_VIEW:
+                Album albumArtist = searchRecord.getOfflineAlbum();
+                songs = SongTable.getSongsFromColumn(this,AlbumTable.ARTIST,albumArtist.getAlbumTitle()) ;
+                break;
+        }
+        MusicPlayService musicPlayService = MusicPlayServiceHolder.getMusicPlayService();
+        if(musicPlayService != null){
+            musicPlayService.addToPlayNext(songs);
+        }
+    }
+    public void onAddToQueueClick(){
+        SearchRecord searchRecord = searchRecords.get(selectedAlbumPosition);
+        ArrayList<Song> songs = new ArrayList<>();
+        switch (searchRecord.getViewType()) {
+            case SearchRecord.SONG_VIEW:
+                OfflineSong song = (OfflineSong) searchRecord.getSong();
+                songs.add(song);
+                break;
+            case SearchRecord.ALBUM_VIEW:
+                Album album = searchRecord.getOfflineAlbum();
+                songs = SongTable.getSongsFromAlbum(this,album.getAlbumTitle());
+                break;
+            case SearchRecord.ARTIST_VIEW:
+                Album albumArtist = searchRecord.getOfflineAlbum();
+                songs = SongTable.getSongsFromColumn(this,AlbumTable.ARTIST,albumArtist.getAlbumTitle()) ;
+                break;
+        }
+        MusicPlayService musicPlayService = MusicPlayServiceHolder.getMusicPlayService();
+        if(musicPlayService != null){
+            musicPlayService.addToQueue(songs);
+        }
+    }
+    public void onGotoAlbumClick(){
+        SearchRecord searchRecord = searchRecords.get(selectedAlbumPosition);
+        switch (searchRecord.getViewType()) {
+            case SearchRecord.SONG_VIEW:
+                OfflineSong song = (OfflineSong) searchRecord.getSong();
+                Intent intent = new Intent(this, AlbumSongsListActivity.class);
+                intent.putExtra(AlbumSongsListActivity.COLUMN, AlbumTable.ALBUM);
+                intent.putExtra(AlbumSongsListActivity.COLUMN_VALUE, song.getAlbum());
+                intent.putExtra(AlbumSongsListActivity.ALBUM_ID, song.getAlbumId());
+                intent.putExtra(AlbumSongsListActivity.TITLE, song.getAlbum());
+                startActivity(intent);
+                break;
+        }
     }
 
     public void setSearchBar(){

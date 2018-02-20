@@ -21,10 +21,13 @@ import android.widget.Toast;
 
 import com.ccc.raj.beats.AlbumListAdapter;
 import com.ccc.raj.beats.AlbumSongsListActivity;
+import com.ccc.raj.beats.MusicPlayService;
+import com.ccc.raj.beats.MusicPlayServiceHolder;
 import com.ccc.raj.beats.PlayListSelectionPopup;
 import com.ccc.raj.beats.R;
 import com.ccc.raj.beats.Utitlity;
 import com.ccc.raj.beats.model.Album;
+import com.ccc.raj.beats.model.OfflineAlbum;
 import com.ccc.raj.beats.model.PlayListAlbum;
 import com.ccc.raj.beats.model.PlayListTable;
 import com.ccc.raj.beats.model.Song;
@@ -113,6 +116,12 @@ public class PlaylistsFragment extends Fragment implements PopupMenu.OnMenuItemC
             case R.id.edit_playlist:
                 onEditPlaylistClick();
                 break;
+            case R.id.play_next:
+                onPlayNextClick();
+                break;
+            case R.id.add_to_queue:
+                onAddToQueueClick();
+                break;
         }
         return false;
     }
@@ -120,6 +129,23 @@ public class PlaylistsFragment extends Fragment implements PopupMenu.OnMenuItemC
         Album album =  playList.get(selectedAlbumPosition);
         ArrayList<Song> songs = SongTable.getSongsFromAlbum(getContext(),album.getAlbumTitle());
         new PlayListSelectionPopup(getContext(),songs).showPopup();
+    }
+
+    public void onPlayNextClick(){
+        Album album =  playList.get(selectedAlbumPosition);
+        ArrayList<Song> songs = PlayListTable.getSongsFromPlayLists(getContext(),album.getAlbumId());
+        MusicPlayService musicPlayService = MusicPlayServiceHolder.getMusicPlayService();
+        if(musicPlayService != null){
+            musicPlayService.addToPlayNext(songs);
+        }
+    }
+    public void onAddToQueueClick(){
+        Album album =  playList.get(selectedAlbumPosition);
+        ArrayList<Song> songs = PlayListTable.getSongsFromPlayLists(getContext(),album.getAlbumId());
+        MusicPlayService musicPlayService = MusicPlayServiceHolder.getMusicPlayService();
+        if(musicPlayService != null){
+            musicPlayService.addToQueue(songs);
+        }
     }
 
     public void onDeleteOptionClick(){

@@ -157,6 +157,12 @@ public class OfflineFragment extends Fragment implements PopupMenu.OnMenuItemCli
             case R.id.goto_artist:
                 onGotoArtistClick();
                 break;
+            case R.id.play_next:
+                onPlayNextClick();
+                break;
+            case R.id.add_to_queue:
+                onAddToQueueClick();
+                break;
         }
         return false;
     }
@@ -173,6 +179,23 @@ public class OfflineFragment extends Fragment implements PopupMenu.OnMenuItemCli
         intent.putExtra(MoreRecordsActivity.SEARCH_QUERY, String.valueOf(ArtistTable.getArtistIdByArtist(getContext(),album.getArtist())));
         ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(getActivity());
         startActivity(intent, options.toBundle());
+    }
+
+    public void onPlayNextClick(){
+        OfflineAlbum album = (OfflineAlbum) mAlbumArrayList.get(selectedAlbumPosition);
+        ArrayList<Song> songs = SongTable.getSongsFromAlbum(getContext(),album.getAlbumTitle());
+        MusicPlayService musicPlayService = MusicPlayServiceHolder.getMusicPlayService();
+        if(musicPlayService != null){
+            musicPlayService.addToPlayNext(songs);
+        }
+    }
+    public void onAddToQueueClick(){
+        OfflineAlbum album = (OfflineAlbum) mAlbumArrayList.get(selectedAlbumPosition);
+        ArrayList<Song> songs = SongTable.getSongsFromAlbum(getContext(),album.getAlbumTitle());
+        MusicPlayService musicPlayService = MusicPlayServiceHolder.getMusicPlayService();
+        if(musicPlayService != null){
+            musicPlayService.addToQueue(songs);
+        }
     }
 
     public void setMusicPlayService(MusicPlayService musicPlayService) {
