@@ -1,5 +1,7 @@
 package com.ccc.raj.beats;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.app.SearchManager;
@@ -7,6 +9,9 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.database.Cursor;
+import android.database.MatrixCursor;
+import android.net.Uri;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -22,15 +27,21 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewAnimationUtils;
 import android.view.ViewTreeObserver;
+import android.view.animation.AccelerateInterpolator;
+import android.widget.AutoCompleteTextView;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.MediaController;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ccc.raj.beats.listennow.ListenNowFragment;
@@ -38,16 +49,23 @@ import com.ccc.raj.beats.listennow.OfflineFragment;
 import com.ccc.raj.beats.listennow.OnlineFragment;
 import com.ccc.raj.beats.model.Song;
 import com.ccc.raj.beats.musiclibrary.MusicLibraryFragment;
+import com.ccc.raj.beats.searchresult.CursorSuggestionAdapter;
+import com.ccc.raj.beats.searchresult.CustomSuggestionsProvider;
+import com.ccc.raj.beats.searchresult.SearchSuggestionProvider;
 
 import java.util.ArrayList;
 
-public class MainActivity extends MediaControlBaseActivity implements NavigationView.OnNavigationItemSelectedListener{
+public class MainActivity extends MediaControlBaseActivity implements NavigationView.OnNavigationItemSelectedListener,SearchView.OnSuggestionListener,SearchView.OnQueryTextListener{
     Toolbar toolbar;
     public  MusicPlayService musicPlayService;
     private ArrayList<Song> songsList;
     DrawerLayout drawerLayout;
     ListenNowFragment listenNowFragment;
     FrameLayout mediaViewContainer;
+
+    SearchView searchView;
+    CursorSuggestionAdapter mCursorSuggestionAdapter;
+    SearchSuggestionProvider mSearchSuggestionProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +95,8 @@ public class MainActivity extends MediaControlBaseActivity implements Navigation
 
         mediaViewContainer = findViewById(R.id.media_container);
         musicController.setAnchorView(mediaViewContainer);
+
+        setSearchBar();
 
     }
 
@@ -141,11 +161,117 @@ public class MainActivity extends MediaControlBaseActivity implements Navigation
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.options_menu,menu);
-        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        /*SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        searchView.setBackgroundResource(R.drawable.rectangle);
+        searchView.setBackgroundResource(R.drawable.rectangle);*/
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Toast.makeText(this,"Search Clickd",Toast.LENGTH_SHORT).show();
+        searchBarRevealAnimation(item.getActionView());
+        return true;
+    }
+
+    public void setSearchBar(){
+        searchView = findViewById(R.id.search_bar_edit_text);
+        searchView.setOnQueryTextListener(this);
+        searchView.setOnSuggestionListener(this);
+        ArrayList<String> list = new ArrayList<>();
+        mCursorSuggestionAdapter = new CursorSuggestionAdapter(this,null,true);
+        mCursorSuggestionAdapter.setOnSuggessionClickListener(new CursorSuggestionAdapter.OnSuggessionClickListener() {
+            @Override
+            public void onSuggessionSelect(String text,String action) {
+                Intent intent = new Intent(MainActivity.this, SearchActivity.class);
+                intent.setAction(action);
+                intent.setData(Uri.parse(text));
+                startActivity(intent);
+            }
+        });
+        searchView.setSuggestionsAdapter(mCursorSuggestionAdapter);
+        mSearchSuggestionProvider = new SearchSuggestionProvider(this);
+        formattSuggestionView();
+    }
+    public void searchBarRevealAnimation(View view) {
+        final LinearLayout searchBar = findViewById(R.id.search_container_main);
+        int centerX = (searchBar.getLeft() + searchBar.getRight());
+        int centerY = (searchBar.getTop() + searchBar.getBottom())/2;
+        float radius = Math.max(searchBar.getWidth(), searchBar.getHeight()) * 2.0f;
+        if (searchBar.getVisibility() == View.INVISIBLE) {
+            searchBar.setVisibility(View.VISIBLE);
+            Animator reveal = ViewAnimationUtils.createCircularReveal(searchBar, centerX, centerY, 0, radius);
+            reveal.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+                    searchView.setFocusable(true);
+                }
+            });
+            reveal.setDuration(300);
+            reveal.setInterpolator(new AccelerateInterpolator());
+            reveal.start();
+        } else {
+            Animator reveal = ViewAnimationUtils.createCircularReveal(searchBar, centerX, centerY, radius, 0);
+            reveal.setDuration(500);
+            reveal.setInterpolator(new AccelerateInterpolator());
+            reveal.addListener(new AnimatorListenerAdapter(){
+                public void onAnimationEnd(Animator animation) {
+                    searchBar.setVisibility(View.INVISIBLE);
+                }
+            });
+            reveal.start();
+        }
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        Intent intent = new Intent(this,SearchActivity.class);
+        intent.setAction(Intent.ACTION_SEARCH);
+        intent.putExtra(SearchManager.QUERY,query);
+        startActivity(intent);
+        searchView.clearFocus();
+        searchView.setQuery("",false);
+        searchBarRevealAnimation(new View(this));
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        Cursor cursor = mSearchSuggestionProvider.getSearchSuggestionCursor(newText); //getCursor(list);
+        mCursorSuggestionAdapter.changeCursor(cursor);
+        return true;
+    }
+
+    @Override
+    public boolean onSuggestionSelect(int position) {
+        Toast.makeText(this,"select",Toast.LENGTH_SHORT).show();
+        return false;
+    }
+
+    @Override
+    public boolean onSuggestionClick(int position) {
+        Toast.makeText(this,"click",Toast.LENGTH_SHORT).show();
+        return false;
+    }
+
+    private void formattSuggestionView(){
+        int searchEditTextId = R.id.search_src_text;
+        final AutoCompleteTextView searchEditText = (AutoCompleteTextView) searchView.findViewById(searchEditTextId);
+        final View dropDownAnchor = searchView.findViewById(searchEditText.getDropDownAnchor());
+
+        if (dropDownAnchor != null) {
+            dropDownAnchor.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+                @Override
+                public void onLayoutChange(View v, int left, int top, int right, int bottom,
+                                           int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                    int screenWidthPixel = MainActivity.this.getResources().getDisplayMetrics().widthPixels;
+                    final LinearLayout searchBar = findViewById(R.id.search_container_main);
+                    searchEditText.setDropDownWidth(screenWidthPixel);
+                }
+            });
+        }
     }
 }
 

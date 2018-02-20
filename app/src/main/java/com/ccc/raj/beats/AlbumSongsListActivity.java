@@ -1,5 +1,6 @@
 package com.ccc.raj.beats;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.AnimationDrawable;
@@ -17,8 +18,10 @@ import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
+import com.ccc.raj.beats.model.Album;
 import com.ccc.raj.beats.model.GenresTable;
 import com.ccc.raj.beats.model.OfflineDataProvider;
+import com.ccc.raj.beats.model.OfflineSong;
 import com.ccc.raj.beats.model.PlayListTable;
 import com.ccc.raj.beats.model.Song;
 import com.ccc.raj.beats.model.SongTable;
@@ -172,6 +175,9 @@ public class AlbumSongsListActivity extends MediaControlBaseActivity implements 
             case R.id.remove_from_playlist:
                 onRemoveFromPlaylistClicked();
                 break;
+            case R.id.goto_artist:
+                onGotoArtistClick();
+                break;
         }
         return false;
     }
@@ -188,6 +194,14 @@ public class AlbumSongsListActivity extends MediaControlBaseActivity implements 
         ArrayList<Song> songs = new ArrayList<>();
         songs.add(songList.get(position));
         new PlayListSelectionPopup(this,songs).showPopup();
+    }
+    public void onGotoArtistClick(){
+        OfflineSong song = (OfflineSong) songList.get(selectedSongPosition);
+        Intent intent = new Intent(this, MoreRecordsActivity.class);
+        intent.putExtra(MoreRecordsActivity.VIEW_TYPE, MoreRecordsActivity.ARTIST_ALBUM);
+        intent.putExtra(MoreRecordsActivity.SEARCH_QUERY, String.valueOf(song.getArtistId()));
+        ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this);
+        startActivity(intent, options.toBundle());
     }
 
     public void onAllPlayClicked(View view){

@@ -1,15 +1,10 @@
-
 package com.ccc.raj.beats.searchresult;
 
 import android.app.SearchManager;
-import android.content.ContentProvider;
-import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.MatrixCursor;
-import android.net.Uri;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.ccc.raj.beats.R;
@@ -22,14 +17,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Raj on 1/24/2018.
+ * Created by Raj on 2/18/2018.
  */
 
-public class CustomSuggestionsProvider extends ContentProvider {
-
-    public static final String AUTHORITY = "in.wptrafficanalyzer.searchdialogdemo.CountryContentProvider";
+public class SearchSuggestionProvider {
     public  static final String TAG = CustomSuggestionsProvider.class.getSimpleName();
-    public  static  final Uri CONTENT_URI = Uri.parse("content://" + AUTHORITY + "/countries" );
     public static  final String COLUMNS[] = new String[]{
             "_id",
             SearchManager.SUGGEST_COLUMN_TEXT_1,
@@ -37,16 +29,14 @@ public class CustomSuggestionsProvider extends ContentProvider {
             SearchManager.SUGGEST_COLUMN_INTENT_DATA,
             SearchManager.SUGGEST_COLUMN_ICON_1
     };
+    public Context context;
     SearchDataProvider searchDataProvider = new SearchDataProvider();
-    @Override
-    public boolean onCreate() {
-        return false;
+
+    public SearchSuggestionProvider(Context context){
+        this.context = context;
     }
 
-    @Nullable
-    @Override
-    public Cursor query(@NonNull Uri uri, @Nullable String[] strings, @Nullable String s, @Nullable String[] strings1, @Nullable String s1) {
-        String query = uri.getLastPathSegment();
+    public Cursor getSearchSuggestionCursor(String query) {
         MatrixCursor cursor = new MatrixCursor(COLUMNS);
         if (query == null || query.length() == 0) {
             return cursor;
@@ -92,44 +82,23 @@ public class CustomSuggestionsProvider extends ContentProvider {
         }
         return cursor;
     }
-    public  ArrayList<Song> getSongsData(String query){
+    public ArrayList<Song> getSongsData(String query){
         String where = MediaStore.Audio.Media.ALBUM +" Like '%" + query +"%' OR "+MediaStore.Audio.Media.TITLE +" Like '%" + query +"%' OR "+MediaStore.Audio.Media.COMPOSER +" Like '%" + query +"%') GROUP BY (" +
                 MediaStore.Audio.Media.TITLE;/*+","+MediaStore.Audio.Media.TITLE+","+MediaStore.Audio.Media.COMPOSER*/;
         where = MediaStore.Audio.Media.TITLE +" Like '%" + query+"%') GROUP BY (" + MediaStore.Audio.Media.TITLE;
-        ArrayList<Song> songsSearchData = searchDataProvider.searchSongs(getContext(),query, MediaStore.Audio.Media.TITLE,true,where);
+        ArrayList<Song> songsSearchData = searchDataProvider.searchSongs(context,query, MediaStore.Audio.Media.TITLE,true,where);
         return  songsSearchData;
     }
 
     private ArrayList<Album> getAlbumData(String query){
         String where = AlbumTable.ALBUM +" Like '%" + query+"%') GROUP BY (" + AlbumTable.ALBUM;
-        ArrayList<Album> albumsSearchData = searchDataProvider.searchAlbums(getContext(),query, AlbumTable.ALBUM,true,where);
+        ArrayList<Album> albumsSearchData = searchDataProvider.searchAlbums(context,query, AlbumTable.ALBUM,true,where);
         return albumsSearchData;
     }
 
     private ArrayList<Album> getArtistData(String query){
         String where = AlbumTable.ARTIST +" Like '%" + query+"%') GROUP BY (" + AlbumTable.ARTIST;
-        ArrayList<Album> artistSearchData = searchDataProvider.searchAlbums(getContext(),query, AlbumTable.ALBUM,true,where);
+        ArrayList<Album> artistSearchData = searchDataProvider.searchAlbums(context,query, AlbumTable.ALBUM,true,where);
         return artistSearchData;
-    }
-    @Nullable
-    @Override
-    public String getType(@NonNull Uri uri) {
-        return null;
-    }
-
-    @Nullable
-    @Override
-    public Uri insert(@NonNull Uri uri, @Nullable ContentValues contentValues) {
-        return null;
-    }
-
-    @Override
-    public int delete(@NonNull Uri uri, @Nullable String s, @Nullable String[] strings) {
-        return 0;
-    }
-
-    @Override
-    public int update(@NonNull Uri uri, @Nullable ContentValues contentValues, @Nullable String s, @Nullable String[] strings) {
-        return 0;
     }
 }

@@ -85,4 +85,29 @@ public class ArtistTable {
         cursor.close();
         return artistAlbum;
     }
+    public static int getArtistIdByArtist(Context context,String artist){
+        Utitlity.Log("Inside getArtistIdByArtist");
+        Utitlity.Log("artistId:"+artist);
+        ContentResolver contentResolver = context.getContentResolver();
+        Uri uri = TABLE_URI;
+        String where = NAME + "=?";
+        String whereVal[] = {
+                String.valueOf(artist)
+        };
+        ArtistAlbum artistAlbum = new ArtistAlbum();
+        Cursor cursor = contentResolver.query(uri,null,where,whereVal,null);
+        if(cursor!=null&&cursor.moveToFirst()){
+            int idColumn = cursor.getColumnIndex(ID);
+            int nameColumn = cursor.getColumnIndex(NAME);
+            do{
+                int id = cursor.getInt(idColumn);
+                String name = cursor.getString(nameColumn);
+                artistAlbum.setArtistId(id);
+                artistAlbum.setArtistName(name);
+                artistAlbum.setAlbumArt(getAlbumsForArtistId(context,id).get(0).getAlbumArt());
+            }while (cursor.moveToNext());
+        }
+        cursor.close();
+        return artistAlbum.getAlbumId();
+    }
 }

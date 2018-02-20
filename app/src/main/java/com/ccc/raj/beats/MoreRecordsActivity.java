@@ -26,9 +26,11 @@ import com.ccc.raj.beats.model.ArtistTable;
 import com.ccc.raj.beats.model.GenresAlbum;
 import com.ccc.raj.beats.model.GenresTable;
 import com.ccc.raj.beats.model.OfflineAlbum;
+import com.ccc.raj.beats.model.OfflineSong;
 import com.ccc.raj.beats.model.Song;
 import com.ccc.raj.beats.model.SongTable;
 import com.ccc.raj.beats.searchresult.SearchDataProvider;
+import com.ccc.raj.beats.searchresult.SearchRecord;
 
 import java.util.ArrayList;
 
@@ -228,6 +230,9 @@ public class MoreRecordsActivity extends MediaControlBaseActivity implements Pop
             case R.id.add_to_playlist:
                 onAddToPlayListClick(selectedAlbumPosition);
                 break;
+            case R.id.goto_artist:
+                onGotoArtistClick(selectedAlbumPosition);
+                break;
         }
         return false;
     }
@@ -238,14 +243,28 @@ public class MoreRecordsActivity extends MediaControlBaseActivity implements Pop
                 songs.add(songList.get(position));
                 new PlayListSelectionPopup(this,songs).showPopup();
                 break;
-            case ALBUM:
+            default:
                 Album album =  albumList.get(position);
                 songs = SongTable.getSongsFromAlbum(this,album.getAlbumTitle());
                 new PlayListSelectionPopup(this,songs).showPopup();
-                break;
         }
     }
 
+    public void onGotoArtistClick(int position){
+        Intent intent = new Intent(this, MoreRecordsActivity.class);
+        intent.putExtra(MoreRecordsActivity.VIEW_TYPE, MoreRecordsActivity.ARTIST_ALBUM);
+        switch (getViewType()) {
+            case SONG:
+                OfflineSong song = (OfflineSong) songList.get(position);
+                intent.putExtra(MoreRecordsActivity.SEARCH_QUERY, String.valueOf(song.getArtistId()));
+                break;
+            default:
+                Album album = albumList.get(position);
+                intent.putExtra(MoreRecordsActivity.SEARCH_QUERY, String.valueOf(ArtistTable.getArtistIdByArtist(this,album.getArtist())));
+        }
+        ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this);
+        startActivity(intent, options.toBundle());
+    }
 
     public void setActionBar(){
         toolbar = findViewById(R.id.toolbar_more_records);

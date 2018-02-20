@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="45dp"
+    android:background="@android:color/white"
+    android:orientation="horizontal">
+
+    <ImageButton
+        android:id="@+id/suggestion_icon"
+        android:layout_width="32dp"
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent"
+        app:srcCompat="@drawable/ic_search_grey" />
+
+    <TextView
+        android:id="@+id/suggestion_text"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@android:color/transparent"
+        android:gravity="center_vertical"
+        android:paddingStart="8dp"
+        android:text="Hello" />
+</LinearLayout>

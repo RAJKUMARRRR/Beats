@@ -26,12 +26,14 @@ import android.widget.Toast;
 import com.ccc.raj.beats.AlbumListAdapter;
 import com.ccc.raj.beats.AlbumSongsListActivity;
 import com.ccc.raj.beats.MainActivity;
+import com.ccc.raj.beats.MoreRecordsActivity;
 import com.ccc.raj.beats.MusicPlayService;
 import com.ccc.raj.beats.MusicPlayServiceHolder;
 import com.ccc.raj.beats.PlayListSelectionPopup;
 import com.ccc.raj.beats.R;
 import com.ccc.raj.beats.model.Album;
 import com.ccc.raj.beats.model.AlbumTable;
+import com.ccc.raj.beats.model.ArtistTable;
 import com.ccc.raj.beats.model.OfflineAlbum;
 import com.ccc.raj.beats.model.OfflineDataProvider;
 import com.ccc.raj.beats.model.Song;
@@ -152,6 +154,9 @@ public class OfflineFragment extends Fragment implements PopupMenu.OnMenuItemCli
             case R.id.add_to_playlist:
                 onAddToPlayListClick(selectedAlbumPosition);
                 break;
+            case R.id.goto_artist:
+                onGotoArtistClick();
+                break;
         }
         return false;
     }
@@ -159,6 +164,15 @@ public class OfflineFragment extends Fragment implements PopupMenu.OnMenuItemCli
         Album album =  mAlbumArrayList.get(position);
         ArrayList<Song> songs = SongTable.getSongsFromAlbum(getContext(),album.getAlbumTitle());
         new PlayListSelectionPopup(getContext(),songs).showPopup();
+    }
+
+    public void onGotoArtistClick(){
+        OfflineAlbum album = (OfflineAlbum) mAlbumArrayList.get(selectedAlbumPosition);
+        Intent intent = new Intent(getContext(), MoreRecordsActivity.class);
+        intent.putExtra(MoreRecordsActivity.VIEW_TYPE, MoreRecordsActivity.ARTIST_ALBUM);
+        intent.putExtra(MoreRecordsActivity.SEARCH_QUERY, String.valueOf(ArtistTable.getArtistIdByArtist(getContext(),album.getArtist())));
+        ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(getActivity());
+        startActivity(intent, options.toBundle());
     }
 
     public void setMusicPlayService(MusicPlayService musicPlayService) {

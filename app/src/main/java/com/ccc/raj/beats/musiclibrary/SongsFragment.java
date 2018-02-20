@@ -1,6 +1,8 @@
 package com.ccc.raj.beats.musiclibrary;
 
 
+import android.app.ActivityOptions;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -14,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
+import com.ccc.raj.beats.MoreRecordsActivity;
 import com.ccc.raj.beats.MusicPlayService;
 import com.ccc.raj.beats.MusicPlayServiceHolder;
 import com.ccc.raj.beats.PlayListSelectionPopup;
@@ -101,6 +104,9 @@ public class SongsFragment extends Fragment implements PopupMenu.OnMenuItemClick
             case R.id.add_to_playlist:
                 onAddToPlayListClick(selectedSongPosition);
                 break;
+            case R.id.goto_artist:
+                onGotoArtistClick();
+                break;
         }
         return false;
     }
@@ -111,6 +117,14 @@ public class SongsFragment extends Fragment implements PopupMenu.OnMenuItemClick
         new PlayListSelectionPopup(getContext(),songs).showPopup();
     }
 
+    public void onGotoArtistClick(){
+        OfflineSong song = (OfflineSong) songsList.get(selectedSongPosition);
+        Intent intent = new Intent(getContext(), MoreRecordsActivity.class);
+        intent.putExtra(MoreRecordsActivity.VIEW_TYPE, MoreRecordsActivity.ARTIST_ALBUM);
+        intent.putExtra(MoreRecordsActivity.SEARCH_QUERY, String.valueOf(song.getArtistId()));
+        ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(getActivity());
+        startActivity(intent, options.toBundle());
+    }
 
     class AsyncSongsFetch extends AsyncTask<Void,Void,Void>{
         @Override

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/search_container_main"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="3dp"
+    android:background="@drawable/searchbg"
+    android:orientation="vertical"
+    android:visibility="invisible"
+    android:elevation="3dp"
+    >
+
+    <LinearLayout
+        android:id="@+id/search_container"
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+
+        <ImageButton
+            android:id="@+id/search_bar_back"
+            android:layout_width="32dp"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            android:onClick="searchBarRevealAnimation"
+            app:srcCompat="@drawable/ic_back" />
+
+        <android.support.v7.widget.SearchView
+            android:id="@+id/search_bar_edit_text"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:focusedByDefault="true"
+            android:paddingStart="4dp"
+            app:iconifiedByDefault="false"
+            app:queryHint="Search Album,Artist,Song"
+            app:searchHintIcon="@null"
+            app:searchIcon="@null" />
+
+        <ImageButton
+            android:id="@+id/search_bar_voice_icon"
+            android:layout_width="32dp"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            app:srcCompat="@drawable/ic_mic" />
+
+    </LinearLayout>
+</LinearLayout>
