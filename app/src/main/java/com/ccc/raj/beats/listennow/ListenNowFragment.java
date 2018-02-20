@@ -67,7 +67,7 @@ public class ListenNowFragment extends Fragment {
         public CharSequence getPageTitle(int position) {
             switch (position){
                 case 1:
-                    return "Online";
+                    return "Now Playing";
                 case 0:
                     return "Offline";
             }

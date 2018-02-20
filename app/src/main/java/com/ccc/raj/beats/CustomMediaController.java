@@ -26,6 +26,7 @@ import java.util.Locale;
 public class CustomMediaController {
     private MediaPlayerControl mControl;
     private ImageButton playpauseButton;
+    private ImageButton playpauseButtonTwo;
     private ImageButton next;
     private ImageButton prev;
     private ImageButton thumbsUp;
@@ -104,9 +105,14 @@ public class CustomMediaController {
 
     private void initControllerView(View v) {
         playpauseButton = (ImageButton) v.findViewById(R.id.pause);
+        playpauseButtonTwo = v.findViewById(R.id.playpauseButtonTwo);
         if (playpauseButton != null) {
             playpauseButton.requestFocus();
             playpauseButton.setOnClickListener(mPauseListener);
+        }
+        if (playpauseButtonTwo != null) {
+            playpauseButtonTwo.requestFocus();
+            playpauseButtonTwo.setOnClickListener(mPauseListener);
         }
 
 
@@ -190,8 +196,10 @@ public class CustomMediaController {
         }
         if (mControl.isPlaying()) {
             playpauseButton.setImageResource(R.drawable.ic_pause);
+            playpauseButtonTwo.setImageResource(R.drawable.ic_pause_arrow);
         } else {
             playpauseButton.setImageResource(R.drawable.ic_play);
+            playpauseButtonTwo.setImageResource(R.drawable.ic_play_arrow);
         }
     }
 

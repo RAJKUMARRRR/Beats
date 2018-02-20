@@ -127,7 +127,12 @@ public class OfflineFragment extends Fragment implements PopupMenu.OnMenuItemCli
             songsListView.setDrawingCacheEnabled(true);
             songsListView.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
             songsListView.setHasFixedSize(true);*/
-        GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), 2);
+        GridLayoutManager layoutManager;
+        if(getParentFragment() instanceof ListenNowFragment){
+            layoutManager = new GridLayoutManager(getActivity(), 3);
+        }else{
+            layoutManager = new GridLayoutManager(getActivity(), 2);
+        }
         songsListView.setLayoutManager(layoutManager);
     }
 
