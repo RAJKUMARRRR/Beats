@@ -12,6 +12,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -38,6 +39,7 @@ import com.ccc.raj.beats.searchresult.SearchDataProvider;
 import com.ccc.raj.beats.searchresult.SearchListAdapter;
 import com.ccc.raj.beats.searchresult.SearchRecord;
 import com.ccc.raj.beats.searchresult.SearchSuggestionProvider;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
 
@@ -55,6 +57,7 @@ public class SearchActivity extends MediaControlBaseActivity implements PopupMen
     SearchSuggestionProvider mSearchSuggestionProvider;
     ImageButton searchBack;
 
+    SlidingUpPanelLayout mSlidingUpPanelLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +80,27 @@ public class SearchActivity extends MediaControlBaseActivity implements PopupMen
         searchBar.setVisibility(View.VISIBLE);
         setSearchBar();
         handleIntent(getIntent());
+        setSlidingLayout();
+    }
+    public void setSlidingLayout() {
+        mSlidingUpPanelLayout = findViewById(R.id.sliding_layout);
+        mSlidingUpPanelLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
+            @Override
+            public void onPanelSlide(View panel, float slideOffset) {
+
+            }
+
+            @Override
+            public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
+                if (SlidingUpPanelLayout.PanelState.COLLAPSED.name().equalsIgnoreCase(newState.name())) {
+                    Log.i("SlideUp", newState.name());
+                    SearchActivity.super.onSlideDown();
+                } else if (SlidingUpPanelLayout.PanelState.EXPANDED.name().equalsIgnoreCase(newState.name())) {
+                    Log.i("SlideUp", newState.name());
+                    SearchActivity.super.onSlideUp();
+                }
+            }
+        });
     }
 
     @Override

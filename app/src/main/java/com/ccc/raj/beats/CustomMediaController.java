@@ -6,12 +6,14 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.support.v7.widget.AppCompatSeekBar;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -36,6 +38,8 @@ public class CustomMediaController {
     private AppCompatSeekBar progressBar;
     private TextView time;
     private TextView currentTime;
+
+
     private View.OnClickListener prevListenr;
     private View.OnClickListener nextListenr;
     private View mRoot;
@@ -136,7 +140,9 @@ public class CustomMediaController {
         imageViewAlbum = v.findViewById(R.id.imageViewAlbum);
         mainContainer = v.findViewById(R.id.mainMediaContainer);
         installPrevNextListeners();
+
     }
+
 
     private void installPrevNextListeners() {
         if (next != null) {

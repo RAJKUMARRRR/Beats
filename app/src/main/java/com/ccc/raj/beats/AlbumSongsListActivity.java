@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,6 +27,7 @@ import com.ccc.raj.beats.model.OfflineSong;
 import com.ccc.raj.beats.model.PlayListTable;
 import com.ccc.raj.beats.model.Song;
 import com.ccc.raj.beats.model.SongTable;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
 
@@ -48,6 +50,8 @@ public class AlbumSongsListActivity extends MediaControlBaseActivity implements 
 
 
     private  MusicPlayService musicPlayService;
+
+    SlidingUpPanelLayout mSlidingUpPanelLayout;
 
     private int albumId;
     private String column;
@@ -76,8 +80,30 @@ public class AlbumSongsListActivity extends MediaControlBaseActivity implements 
 
         mediaViewContainer = findViewById(R.id.media_container);
         musicController.setAnchorView(mediaViewContainer);
+
+        setSlidingLayout();
     }
 
+    public void setSlidingLayout() {
+        mSlidingUpPanelLayout = findViewById(R.id.sliding_layout);
+        mSlidingUpPanelLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
+            @Override
+            public void onPanelSlide(View panel, float slideOffset) {
+
+            }
+
+            @Override
+            public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
+                if (SlidingUpPanelLayout.PanelState.COLLAPSED.name().equalsIgnoreCase(newState.name())) {
+                    Log.i("SlideUp", newState.name());
+                    AlbumSongsListActivity.super.onSlideDown();
+                } else if (SlidingUpPanelLayout.PanelState.EXPANDED.name().equalsIgnoreCase(newState.name())) {
+                    Log.i("SlideUp", newState.name());
+                    AlbumSongsListActivity.super.onSlideUp();
+                }
+            }
+        });
+    }
     public void setSongsListData(){
         albumSongListView = findViewById(R.id.albumSongListView);
         Intent intent = getIntent();

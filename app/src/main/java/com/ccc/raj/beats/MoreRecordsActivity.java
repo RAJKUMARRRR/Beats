@@ -11,6 +11,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.transition.Explode;
+import android.util.Log;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,6 +32,7 @@ import com.ccc.raj.beats.model.Song;
 import com.ccc.raj.beats.model.SongTable;
 import com.ccc.raj.beats.searchresult.SearchDataProvider;
 import com.ccc.raj.beats.searchresult.SearchRecord;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
 
@@ -53,6 +55,9 @@ public class MoreRecordsActivity extends MediaControlBaseActivity implements Pop
     private ArrayList<Album> albumList;
     private ArrayList<Song> songList;
 
+    SlidingUpPanelLayout mSlidingUpPanelLayout;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,6 +77,28 @@ public class MoreRecordsActivity extends MediaControlBaseActivity implements Pop
         setActionBar();
         setListData();
         initAnimation();
+        setSlidingLayout();
+    }
+
+    public void setSlidingLayout() {
+        mSlidingUpPanelLayout = findViewById(R.id.sliding_layout);
+        mSlidingUpPanelLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
+            @Override
+            public void onPanelSlide(View panel, float slideOffset) {
+
+            }
+
+            @Override
+            public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
+                if (SlidingUpPanelLayout.PanelState.COLLAPSED.name().equalsIgnoreCase(newState.name())) {
+                    Log.i("SlideUp", newState.name());
+                    MoreRecordsActivity.super.onSlideDown();
+                } else if (SlidingUpPanelLayout.PanelState.EXPANDED.name().equalsIgnoreCase(newState.name())) {
+                    Log.i("SlideUp", newState.name());
+                    MoreRecordsActivity.super.onSlideUp();
+                }
+            }
+        });
     }
 
     private void initAnimation(){

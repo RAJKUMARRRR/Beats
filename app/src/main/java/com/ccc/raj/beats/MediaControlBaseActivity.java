@@ -10,10 +10,15 @@ import android.graphics.drawable.Drawable;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.ccc.raj.beats.model.OfflineDataProvider;
 import com.ccc.raj.beats.model.OfflineSong;
@@ -21,7 +26,7 @@ import com.ccc.raj.beats.model.Song;
 
 import java.util.ArrayList;
 
-public abstract class MediaControlBaseActivity extends AppCompatActivity implements CustomMediaController.MediaPlayerControl,MusicServiceSubscriber{
+public abstract class MediaControlBaseActivity extends AppCompatActivity implements CustomMediaController.MediaPlayerControl, MusicServiceSubscriber {
 
     private MusicController controller;
     private static MusicPlayService musicPlayService;
@@ -30,6 +35,17 @@ public abstract class MediaControlBaseActivity extends AppCompatActivity impleme
     private Intent playIntent;
     private ImageView imageViewAlbum;
     private FrameLayout mainContainer;
+
+    private LinearLayout activePlayListContainer;
+    private RecyclerView activePlayListView;
+    private TextView activePlayAlbumTitle;
+    private ImageButton activePlayListButton;
+    private ImageButton playPauseButtonTwo;
+    private ImageView activeAlbumImage;
+    private ImageButton slidingWindowOptionsButton;
+    private TextView activeSongTitle;
+    private TextView activeSongArtistTitle;
+
 
     ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
@@ -84,6 +100,75 @@ public abstract class MediaControlBaseActivity extends AppCompatActivity impleme
         //controller.show();
         imageViewAlbum = findViewById(R.id.imageViewAlbum);
         mainContainer = findViewById(R.id.mainMediaContainer);
+
+        activePlayListView = findViewById(R.id.activePlayList);
+        activePlayAlbumTitle = findViewById(R.id.activePlayAlbum);
+        activePlayListButton = findViewById(R.id.activePlayListButton);
+        activePlayListContainer = findViewById(R.id.activePlayListContainer);
+        playPauseButtonTwo = findViewById(R.id.playpauseButtonTwo);
+        activeAlbumImage = findViewById(R.id.activeAlbumImage);
+        slidingWindowOptionsButton = findViewById(R.id.slidingWindowOptionsButton);
+        activeSongTitle = findViewById(R.id.activeSongTitle);
+        activeSongArtistTitle = findViewById(R.id.activeSongArtistTitle);
+        activePlayListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onActivePlayListClick();
+            }
+        });
+    }
+
+    private void onActivePlayListClick() {
+        try {
+            if (activePlayListContainer.getVisibility() == View.INVISIBLE) {
+                final MusicPlayService musicPlayService = MusicPlayServiceHolder.getMusicPlayService();
+                ArrayList<Song> songs = musicPlayService.getActivePlayList();
+                if (musicPlayService != null && songs != null) {
+                    final SongListAdapter songListAdapter = new SongListAdapter(this, songs, true);
+                    songListAdapter.setOnItemClickListener(new SongListAdapter.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(int position) {
+                            musicPlayService.setOfflineSongPosition(position);
+                            musicPlayService.playOfflineSong();
+                        }
+
+                        @Override
+                        public void onMoreButtonClick(View view, int position) {
+
+                        }
+                    });
+                    activePlayListView.setAdapter(songListAdapter);
+                    LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+                    activePlayListView.setLayoutManager(linearLayoutManager);
+                    activePlayListButton.setImageResource(R.drawable.ic_music_library_primary);
+                    activePlayListContainer.setVisibility(View.VISIBLE);
+                    OfflineSong offlineSong = (OfflineSong) musicPlayService.getActiveSong();
+                    activePlayAlbumTitle.setText(offlineSong.getAlbum());
+                    Bitmap bitmap = OfflineDataProvider.getBitmapByAlbumId(this, offlineSong.getAlbumId());
+                    activeAlbumImage.setImageBitmap(bitmap);
+                    activeAlbumImage.getLayoutParams().height = findViewById(R.id.frameActiveListHolder).getHeight();
+                }
+            } else {
+                activePlayListContainer.setVisibility(View.INVISIBLE);
+                activePlayListButton.setImageResource(R.drawable.ic_music_library);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void onSlideUp() {
+        playPauseButtonTwo.setVisibility(View.GONE);
+        activePlayListButton.setVisibility(View.VISIBLE);
+        slidingWindowOptionsButton.setVisibility(View.VISIBLE);
+    }
+
+    public void onSlideDown() {
+        playPauseButtonTwo.setVisibility(View.VISIBLE);
+        activePlayListButton.setVisibility(View.GONE);
+        slidingWindowOptionsButton.setVisibility(View.GONE);
+        activePlayListContainer.setVisibility(View.INVISIBLE);
+        activePlayListButton.setImageResource(R.drawable.ic_music_library);
     }
 
     private void setAlbumArt() {
@@ -97,13 +182,19 @@ public abstract class MediaControlBaseActivity extends AppCompatActivity impleme
                 Drawable drawable = new BitmapDrawable(getResources(), bitmap);
                 mainContainer.setBackground(drawable);
             }
+            if(activeSongTitle != null){
+                activeSongTitle.setText(song.getTitle()+"");
+            }
+            if(activeSongArtistTitle != null){
+                activeSongArtistTitle.setText(song.getArtist()+"");
+            }
         }
     }
 
     @Override
     public void updateActivePlayTrack(ArrayList<Song> songsList, int position) {
-      Log.i("BeatsSubscriber","Got Update:"+position);
-      setAlbumArt();
+        Log.i("BeatsSubscriber", "Got Update:" + position);
+        setAlbumArt();
     }
 
 

@@ -35,6 +35,7 @@
     <string name="delete">Delete</string>
     <string name="go_to_album">Go to album</string>
     <string name="remove_from_playlist">Remove from playlist</string>
+    <string name="playing_from">PLAYING FROM</string>
 
     <string name="new_playlist">NEW PLAYLIST</string>
     <string name="cancel">CANCEL</string>

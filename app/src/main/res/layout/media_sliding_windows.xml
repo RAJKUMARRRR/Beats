@@ -18,6 +18,65 @@
         android:background="@drawable/music">
 
         <LinearLayout
+            android:id="@+id/activePlayListContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="75dp"
+            android:layout_marginTop="56dp"
+            android:background="@android:color/white"
+            android:orientation="vertical"
+            android:visibility="invisible"
+            >
+
+
+            <FrameLayout
+                android:id="@+id/frameActiveListHolder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/activeAlbumImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/music" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/transperent"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/textView2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="4dp"
+                        android:text="@string/playing_from"
+                        android:textColor="@color/cardview_light_background"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/activePlayAlbum"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="4dp"
+                        android:text="TextView"
+                        android:textColor="@color/cardview_light_background"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </FrameLayout>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/activePlayList"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_margin="4dp"
+                android:layout_weight="1" />
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/media_options"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
@@ -43,6 +102,7 @@
                 android:padding="8dp">
 
                 <TextView
+                    android:id="@+id/activeSongTitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:maxLines="1"
@@ -50,6 +110,7 @@
                     android:textSize="16sp" />
 
                 <TextView
+                    android:id="@+id/activeSongArtistTitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:maxLines="1"
@@ -64,9 +125,18 @@
                 android:layout_gravity="center_vertical"
                 android:background="@android:color/transparent"
                 app:srcCompat="@drawable/ic_play_arrow" />
+            <ImageButton
+                android:id="@+id/activePlayListButton"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:background="@android:color/transparent"
+                app:srcCompat="@drawable/ic_music_library"
+                android:visibility="gone"
+                />
 
             <ImageButton
-                android:id="@+id/imageButton3"
+                android:id="@+id/slidingWindowOptionsButton"
                 android:layout_width="30dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"

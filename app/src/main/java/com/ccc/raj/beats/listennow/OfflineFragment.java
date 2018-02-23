@@ -82,9 +82,13 @@ public class OfflineFragment extends Fragment implements PopupMenu.OnMenuItemCli
                     permissionString)) {
                 Toast.makeText(context, "Permissin needed to store image", Toast.LENGTH_SHORT).show();
             } else {
-                ActivityCompat.requestPermissions(getActivity(),
+                /*ActivityCompat.requestPermissions(getActivity(),
+                        new String[]{permissionString},
+                        REQUEST_CODE);*/
+                requestPermissions(
                         new String[]{permissionString},
                         REQUEST_CODE);
+
             }
         }
         return view;

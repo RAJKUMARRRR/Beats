@@ -30,9 +30,11 @@ import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.ViewTreeObserver;
@@ -52,6 +54,7 @@ import com.ccc.raj.beats.musiclibrary.MusicLibraryFragment;
 import com.ccc.raj.beats.searchresult.CursorSuggestionAdapter;
 import com.ccc.raj.beats.searchresult.CustomSuggestionsProvider;
 import com.ccc.raj.beats.searchresult.SearchSuggestionProvider;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
 
@@ -66,6 +69,9 @@ public class MainActivity extends MediaControlBaseActivity implements Navigation
     SearchView searchView;
     CursorSuggestionAdapter mCursorSuggestionAdapter;
     SearchSuggestionProvider mSearchSuggestionProvider;
+
+    SlidingUpPanelLayout mSlidingUpPanelLayout;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,11 +103,28 @@ public class MainActivity extends MediaControlBaseActivity implements Navigation
         musicController.setAnchorView(mediaViewContainer);
 
         setSearchBar();
-
+        setSlidingLayout();
     }
 
-    public  Activity getActivity(){
-      return MainActivity.this;
+    public void setSlidingLayout() {
+        mSlidingUpPanelLayout = findViewById(R.id.sliding_layout);
+        mSlidingUpPanelLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
+            @Override
+            public void onPanelSlide(View panel, float slideOffset) {
+
+            }
+
+            @Override
+            public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
+                if (SlidingUpPanelLayout.PanelState.COLLAPSED.name().equalsIgnoreCase(newState.name())) {
+                    Log.i("SlideUp", newState.name());
+                    MainActivity.super.onSlideDown();
+                } else if (SlidingUpPanelLayout.PanelState.EXPANDED.name().equalsIgnoreCase(newState.name())) {
+                    Log.i("SlideUp", newState.name());
+                    MainActivity.super.onSlideUp();
+                }
+            }
+        });
     }
 
 
