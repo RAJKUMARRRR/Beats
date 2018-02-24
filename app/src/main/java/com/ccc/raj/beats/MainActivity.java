@@ -8,9 +8,11 @@ import android.app.SearchManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.database.MatrixCursor;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
@@ -41,6 +43,7 @@ import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.AutoCompleteTextView;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.MediaController;
 import android.widget.TextView;
@@ -71,6 +74,9 @@ public class MainActivity extends MediaControlBaseActivity implements Navigation
     SearchSuggestionProvider mSearchSuggestionProvider;
 
     SlidingUpPanelLayout mSlidingUpPanelLayout;
+
+
+
 
 
     @Override
@@ -104,6 +110,7 @@ public class MainActivity extends MediaControlBaseActivity implements Navigation
 
         setSearchBar();
         setSlidingLayout();
+
     }
 
     public void setSlidingLayout() {
@@ -296,5 +303,16 @@ public class MainActivity extends MediaControlBaseActivity implements Navigation
             });
         }
     }
+
+    @Override
+    public void onBackPressed() {
+        SlidingUpPanelLayout.PanelState panelState = mSlidingUpPanelLayout.getPanelState();
+        if (SlidingUpPanelLayout.PanelState.EXPANDED.name().equalsIgnoreCase(panelState.name())) {
+            mSlidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+        }else {
+            moveTaskToBack(false);
+        }
+    }
+
 }
 

@@ -141,6 +141,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:background="@android:color/transparent"
+                android:visibility="gone"
                 app:srcCompat="@drawable/ic_more_b" />
         </LinearLayout>
 
@@ -182,7 +183,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/mediacontroller_progress" />
 
             <ImageButton
-                android:id="@+id/imageButton5"
+                android:id="@+id/notificationUpButton"
                 android:layout_width="60dp"
                 android:layout_height="50dp"
                 android:layout_weight="1"
@@ -198,8 +199,8 @@
                 android:layout_marginStart="8dp"
                 android:orientation="horizontal"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/imageButton4"
-                app:layout_constraintStart_toEndOf="@+id/imageButton5">
+                app:layout_constraintEnd_toStartOf="@+id/notificationDownButton"
+                app:layout_constraintStart_toEndOf="@+id/notificationUpButton">
 
 
                 <ImageButton
@@ -233,7 +234,7 @@
             </LinearLayout>
 
             <ImageButton
-                android:id="@+id/imageButton4"
+                android:id="@+id/notificationDownButton"
                 android:layout_width="60dp"
                 android:layout_height="50dp"
                 android:layout_weight="1"

@@ -12,8 +12,12 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.provider.MediaStore;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
+import android.widget.RemoteViews;
 
+import com.ccc.raj.beats.model.OfflineSong;
 import com.ccc.raj.beats.model.Song;
 
 import java.io.IOException;
@@ -25,7 +29,6 @@ public class MusicPlayService extends Service implements MediaPlayer.OnPreparedL
     private MediaPlayer mediaPlayer;
     private ArrayList<Song> offlineSongsList;
     private int offlineSongPosition;
-    private static final int NOTIFY_ID = 1;
     private ArrayList<MusicServiceSubscriber> subsciberList = new ArrayList<>();
 
 
@@ -187,23 +190,8 @@ public class MusicPlayService extends Service implements MediaPlayer.OnPreparedL
 
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
-       mediaPlayer.start();
-        Intent notIntent = new Intent(this, MainActivity.class);
-        notIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendInt = PendingIntent.getActivity(this, 0,
-                notIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        Notification.Builder builder = new Notification.Builder(this);
-
-        builder.setContentIntent(pendInt)
-                .setSmallIcon(R.drawable.ic_launcher_foreground)
-                .setTicker(offlineSongsList.get(offlineSongPosition).getTitle())
-                .setOngoing(true)
-                .setContentTitle("Beats Music")
-                .setContentText(offlineSongsList.get(offlineSongPosition).getTitle());
-        Notification not = builder.build();
-
-        startForeground(NOTIFY_ID, not);
+        mediaPlayer.start();
+        NotificationHandler.showSongNotification(this,offlineSongsList.get(offlineSongPosition));
     }
 
     @Override
@@ -211,4 +199,59 @@ public class MusicPlayService extends Service implements MediaPlayer.OnPreparedL
         super.onDestroy();
         stopForeground(true);
     }
+
+  /*  public void showNotification(){
+        Intent notIntent = new Intent(this, MainActivity.class);
+        notIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent pendInt = PendingIntent.getActivity(this, 0,
+                notIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        OfflineSong offlineSong = (OfflineSong) offlineSongsList.get(offlineSongPosition);
+        RemoteViews contentView = new RemoteViews(getPackageName(), R.layout.notification);
+        contentView.setImageViewResource(R.id.notificationSongAlbumImage, R.drawable.ic_logo);
+        contentView.setTextViewText(R.id.notificationSongTitle, offlineSong.getTitle());
+        contentView.setTextViewText(R.id.notificationSongArtist, offlineSong.getArtist());
+        contentView.setTextViewText(R.id.notificationSongAlbum, offlineSong.getAlbum());
+        contentView.setImageViewResource(R.id.notificationUpButton, R.drawable.ic_thumb_up_white);
+        contentView.setImageViewResource(R.id.notificationDownButton, R.drawable.ic_thumb_down_white);
+        contentView.setImageViewResource(R.id.notificationPrev, R.drawable.ic_previous_white);
+        contentView.setImageViewResource(R.id.notificationNext, R.drawable.ic_next_white);
+        contentView.setImageViewResource(R.id.notificationPause, R.drawable.ic_play_arrow_white);
+
+        Intent actionPlayPauseIntent = new Intent(this,MediaControlBaseActivity.NotificationActionReceiver.class);
+        actionPlayPauseIntent.setAction(NotificationHandler.NOTIFICATION_PLAYPAUSE_ACTION);
+        PendingIntent pendingPlayPauseIntent = PendingIntent.getBroadcast(this, 0,
+                actionPlayPauseIntent, 0);
+        contentView.setOnClickPendingIntent(R.id.notificationPause,pendingPlayPauseIntent);
+
+
+        Intent actionPlayNextIntent = new Intent(this,MediaControlBaseActivity.NotificationActionReceiver.class);
+        actionPlayPauseIntent.setAction(NotificationHandler.NOTIFICATION_NEXT_ACTION);
+        PendingIntent pendingPlayNextIntent = PendingIntent.getBroadcast(this, 0,
+                actionPlayNextIntent, 0);
+        contentView.setOnClickPendingIntent(R.id.notificationNext,pendingPlayNextIntent);
+
+
+        Intent actionPlayPrevIntent = new Intent(this,MediaControlBaseActivity.NotificationActionReceiver.class);
+        actionPlayPauseIntent.setAction(NotificationHandler.NOTIFICATION_PREVIOUS_ACTION);
+        PendingIntent pendingPlayPrevIntent = PendingIntent.getBroadcast(this, 0,
+                actionPlayPrevIntent, 0);
+        contentView.setOnClickPendingIntent(R.id.notificationPrev,pendingPlayPrevIntent);
+
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this,"default");
+        builder.setContentIntent(pendInt)
+                .setSmallIcon(R.drawable.ic_logo)
+                .setCustomBigContentView(contentView)
+                .setCustomContentView(contentView)
+                .setCustomHeadsUpContentView(contentView)
+                .setAutoCancel(true);
+        builder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+        builder.setPriority(NotificationCompat.PRIORITY_MAX);
+        Notification not = builder.build();
+
+        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(this);
+        notificationManagerCompat.notify(NOTIFY_ID,not);
+    }
+    */
 }

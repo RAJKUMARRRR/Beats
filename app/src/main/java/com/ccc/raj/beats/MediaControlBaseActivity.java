@@ -1,12 +1,15 @@
 package com.ccc.raj.beats;
 
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.media.AudioManager;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,6 +22,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ccc.raj.beats.model.OfflineDataProvider;
 import com.ccc.raj.beats.model.OfflineSong;
@@ -46,6 +50,8 @@ public abstract class MediaControlBaseActivity extends AppCompatActivity impleme
     private TextView activeSongTitle;
     private TextView activeSongArtistTitle;
 
+    private IntentFilter intentFilter;
+    private AudioOutputChangeReceiver audioOutputChangeReceiver;
 
     ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
@@ -233,12 +239,17 @@ public abstract class MediaControlBaseActivity extends AppCompatActivity impleme
             //setController();
             paused = false;
         }
+        /*Registering receiver for change in audio output like when removing headset*/
+        intentFilter = new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
+        audioOutputChangeReceiver = new AudioOutputChangeReceiver((ImageButton) findViewById(R.id.pause),(ImageButton) findViewById(R.id.playpauseButtonTwo));
+        registerReceiver(audioOutputChangeReceiver,intentFilter);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         paused = true;
+        unregisterReceiver(audioOutputChangeReceiver);
     }
 
     @Override
@@ -312,6 +323,42 @@ public abstract class MediaControlBaseActivity extends AppCompatActivity impleme
     @Override
     public int getAudioSessionId() {
         return 0;
+    }
+
+
+    public static class NotificationActionReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            switch (intent.getAction()){
+                case NotificationHandler.NOTIFICATION_PLAYPAUSE_ACTION:
+                    if(musicPlayService != null) {
+                        if (musicPlayService.isPng()) {
+                            musicPlayService.pausePlayer();
+                            NotificationHandler.updateNotificationToPlay(context);
+                        } else {
+                            musicPlayService.go();
+                            NotificationHandler.updateNotificationToPause(context);
+                        }
+                    }
+                    break;
+                case NotificationHandler.NOTIFICATION_NEXT_ACTION:
+                    if(musicPlayService != null){
+                        musicPlayService.playNext();
+                    }
+                    break;
+                case NotificationHandler.NOTIFICATION_PREVIOUS_ACTION:
+                    if(musicPlayService != null){
+                        musicPlayService.playPrev();
+                    }
+                    break;
+                case NotificationHandler.NOTIFICATION_THUMBS_UP_ACTION:
+                    Toast.makeText(context,"Thumbs Up",Toast.LENGTH_SHORT).show();
+                    break;
+                case NotificationHandler.NOTIFICATION_THUMBS_DOWN_ACTION:
+                    Toast.makeText(context,"Thumbs Down",Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
     }
 
 }
