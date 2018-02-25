@@ -72,7 +72,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@android:color/transparent"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
                 android:paddingLeft="10dp"
                 android:paddingRight="20dp"
                 app:srcCompat="@drawable/ic_previous" />
@@ -82,7 +82,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@android:color/transparent"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
                 android:paddingLeft="25dp"
                 android:paddingRight="25dp"
                 app:srcCompat="@drawable/ic_play" />
@@ -91,8 +91,8 @@
                 android:id="@+id/notificationNext"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
                 android:layout_weight="1"
-                android:background="@android:color/transparent"
                 android:paddingLeft="20dp"
                 android:paddingRight="10dp"
                 app:srcCompat="@drawable/ic_next" />

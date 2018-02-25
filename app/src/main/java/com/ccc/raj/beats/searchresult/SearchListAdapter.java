@@ -162,7 +162,7 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
         LinearLayout container = (LinearLayout) viewHolder.itemView;
         TextView textViewTitle = container.findViewById(R.id.header);
         textViewTitle.setText(searchRecord.getSectionData().getTitleSection());
-        Button textViewSubTitle = container.findViewById(R.id.subHeader);
+        TextView textViewSubTitle = container.findViewById(R.id.subHeader);
         if(!searchRecord.getSectionData().getSubTitleSection().isEmpty()) {
             textViewSubTitle.setText(searchRecord.getSectionData().getSubTitleSection());
             textViewSubTitle.setOnClickListener(new View.OnClickListener() {

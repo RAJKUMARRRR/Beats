@@ -14,7 +14,6 @@
     sothree:umanoScrollableView="@+id/list"
     sothree:umanoShadowHeight="4dp"
     tools:context="com.ccc.raj.beats.SearchActivity"
-    android:background="@color/grey"
     >
 
     <LinearLayout

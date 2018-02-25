@@ -44,11 +44,13 @@ public abstract class MediaControlBaseActivity extends AppCompatActivity impleme
     private RecyclerView activePlayListView;
     private TextView activePlayAlbumTitle;
     private ImageButton activePlayListButton;
-    private ImageButton playPauseButtonTwo;
+    public static ImageButton playPauseButtonTwo;
+    public static ImageButton playPauseButton;
     private ImageView activeAlbumImage;
     private ImageButton slidingWindowOptionsButton;
     private TextView activeSongTitle;
     private TextView activeSongArtistTitle;
+    private ImageView imageAlbumSlidingBackground;
 
     private IntentFilter intentFilter;
     private AudioOutputChangeReceiver audioOutputChangeReceiver;
@@ -106,12 +108,14 @@ public abstract class MediaControlBaseActivity extends AppCompatActivity impleme
         //controller.show();
         imageViewAlbum = findViewById(R.id.imageViewAlbum);
         mainContainer = findViewById(R.id.mainMediaContainer);
+        imageAlbumSlidingBackground = findViewById(R.id.imageAlbumSlidingBackground);
 
         activePlayListView = findViewById(R.id.activePlayList);
         activePlayAlbumTitle = findViewById(R.id.activePlayAlbum);
         activePlayListButton = findViewById(R.id.activePlayListButton);
         activePlayListContainer = findViewById(R.id.activePlayListContainer);
         playPauseButtonTwo = findViewById(R.id.playpauseButtonTwo);
+        playPauseButton = findViewById(R.id.pause);
         activeAlbumImage = findViewById(R.id.activeAlbumImage);
         slidingWindowOptionsButton = findViewById(R.id.slidingWindowOptionsButton);
         activeSongTitle = findViewById(R.id.activeSongTitle);
@@ -184,9 +188,10 @@ public abstract class MediaControlBaseActivity extends AppCompatActivity impleme
             if (imageViewAlbum != null) {
                 imageViewAlbum.setImageBitmap(bitmap);
             }
-            if (mainContainer != null) {
-                Drawable drawable = new BitmapDrawable(getResources(), bitmap);
-                mainContainer.setBackground(drawable);
+            if (imageAlbumSlidingBackground != null) {
+                //Drawable drawable = new BitmapDrawable(getResources(), bitmap);
+                //mainContainer.setBackground(drawable);
+                imageAlbumSlidingBackground.setImageBitmap(bitmap);
             }
             if(activeSongTitle != null){
                 activeSongTitle.setText(song.getTitle()+"");
@@ -262,6 +267,7 @@ public abstract class MediaControlBaseActivity extends AppCompatActivity impleme
     public void start() {
         musicPlayService.go();
         setAlbumArt();
+        NotificationHandler.updateNotificationToPause(this);
     }
 
 
@@ -269,6 +275,7 @@ public abstract class MediaControlBaseActivity extends AppCompatActivity impleme
     public void pause() {
         musicPlayService.pausePlayer();
         playbackPaused = true;
+        NotificationHandler.updateNotificationToPlay(this);
     }
 
     @Override
@@ -335,9 +342,21 @@ public abstract class MediaControlBaseActivity extends AppCompatActivity impleme
                         if (musicPlayService.isPng()) {
                             musicPlayService.pausePlayer();
                             NotificationHandler.updateNotificationToPlay(context);
+                            if(playPauseButton != null) {
+                                playPauseButton.setImageResource(R.drawable.ic_play);
+                            }
+                            if(playPauseButtonTwo != null) {
+                                playPauseButtonTwo.setImageResource(R.drawable.ic_play_arrow);
+                            }
                         } else {
                             musicPlayService.go();
                             NotificationHandler.updateNotificationToPause(context);
+                            if(playPauseButton != null) {
+                                playPauseButton.setImageResource(R.drawable.ic_pause);
+                            }
+                            if(playPauseButtonTwo != null) {
+                                playPauseButtonTwo.setImageResource(R.drawable.ic_pause_arrow);
+                            }
                         }
                     }
                     break;

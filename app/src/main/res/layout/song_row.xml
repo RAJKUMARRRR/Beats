@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="5dp"
-    android:background="@android:color/background_light"
+    android:background="?android:attr/selectableItemBackground"
+    android:clickable="true"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:padding="3dp">
@@ -75,13 +76,11 @@
 
     <ImageButton
         android:id="@+id/imageOptions"
-        style="@style/Widget.AppCompat.ImageButton"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_gravity="center_vertical"
         android:layout_weight="1"
         android:adjustViewBounds="false"
-        android:background="@color/cardview_shadow_end_color"
         android:cropToPadding="false"
         app:srcCompat="@drawable/ic_more" />
 </LinearLayout>

@@ -6,8 +6,54 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        
+        <item name="android:colorBackground">@color/colorBackground</item>
+
         <item name="android:windowContentTransitions">true</item>
+
+        <!-- For ripple effect -->
+        <item name="android:colorControlHighlight">@color/colorPrimary</item>
+        <item name="imageButtonStyle">@style/ImageButtonCustomStyle</item>
     </style>
+
+    <style name="ImageButtonCustomStyle" parent="android:style/Widget.Material.Light.ImageButton">
+       <item name="android:background">?android:attr/selectableItemBackgroundBorderless</item>
+    </style>
+
+
+    <style name="OrangeMagic" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimaryOrange</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkOrange</item>
+        <item name="colorAccent">@color/colorPrimary</item>
+        <item name="android:windowContentTransitions">true</item>
+
+        <!-- For ripple effect -->
+        <item name="android:colorControlHighlight">@color/colorPrimaryOrange</item>
+        <item name="imageButtonStyle">@style/ImageButtonCustomStyle</item>
+    </style>
+
+    <style name="PurpleMagic" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimaryPurple</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkPurple</item>
+        <item name="colorAccent">@color/colorPrimaryOrange</item>
+        <item name="android:statusBarColor">@color/colorPrimaryDarkPurple</item>
+        <item name="android:windowContentTransitions">true</item>
+
+        <!-- For ripple effect -->
+        <item name="android:colorControlHighlight">@color/colorPrimaryPurple</item>
+        <item name="imageButtonStyle">@style/ImageButtonCustomStyle</item>
+    </style>
+
+    <style name="GreyMagic" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimaryGrey</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDarkGrey</item>
+        <item name="colorAccent">@color/colorPrimaryGrey</item>
+        <item name="android:colorBackground">@color/colorBackgroundGrey</item>
+        <item name="android:windowContentTransitions">true</item>
+
+        <!-- For ripple effect -->
+        <item name="android:colorControlHighlight">@color/colorPrimaryGrey</item>
+        <item name="imageButtonStyle">@style/ImageButtonCustomStyle</item>
+    </style>
+
 
 </resources>

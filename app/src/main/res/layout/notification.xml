@@ -81,7 +81,7 @@
             android:layout_width="60dp"
             android:layout_height="50dp"
             android:layout_weight="1"
-            android:background="@android:color/transparent"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:srcCompat="@drawable/ic_thumb_up" />
@@ -101,8 +101,8 @@
                 android:id="@+id/notificationPrev"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
                 android:layout_weight="1"
-                android:background="@android:color/transparent"
                 android:paddingLeft="10dp"
                 android:paddingRight="20dp"
                 app:srcCompat="@drawable/ic_previous" />
@@ -111,8 +111,8 @@
                 android:id="@+id/notificationPause"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
                 android:layout_weight="1"
-                android:background="@android:color/transparent"
                 android:paddingLeft="25dp"
                 android:paddingRight="25dp"
                 app:srcCompat="@drawable/ic_play" />
@@ -121,11 +121,12 @@
                 android:id="@+id/notificationNext"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
                 android:layout_weight="1"
-                android:background="@android:color/transparent"
                 android:paddingLeft="20dp"
                 android:paddingRight="10dp"
-                app:srcCompat="@drawable/ic_next" />
+                app:srcCompat="@drawable/ic_next"
+                />
 
         </LinearLayout>
 
@@ -134,7 +135,7 @@
             android:layout_width="60dp"
             android:layout_height="50dp"
             android:layout_weight="1"
-            android:background="@android:color/transparent"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:srcCompat="@drawable/ic_thumb_down" />

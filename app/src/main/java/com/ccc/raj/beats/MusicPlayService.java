@@ -123,11 +123,11 @@ public class MusicPlayService extends Service implements MediaPlayer.OnPreparedL
     }
 
     public void addToQueue(ArrayList<Song> songs){
-        offlineSongsList.addAll(offlineSongPosition,songs);
+        offlineSongsList.addAll(songs);
     }
 
     public void addToPlayNext(ArrayList<Song> songs){
-        offlineSongsList.addAll(songs);
+        offlineSongsList.addAll(offlineSongPosition+1,songs);
     }
 
     public void setOfflineSongPosition(int position){

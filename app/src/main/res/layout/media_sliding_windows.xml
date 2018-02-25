@@ -14,8 +14,14 @@
     <FrameLayout
         android:id="@+id/mainMediaContainer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/music">
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/imageAlbumSlidingBackground"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            app:srcCompat="@drawable/music" />
 
         <LinearLayout
             android:id="@+id/activePlayListContainer"
@@ -25,8 +31,7 @@
             android:layout_marginTop="56dp"
             android:background="@android:color/white"
             android:orientation="vertical"
-            android:visibility="invisible"
-            >
+            android:visibility="invisible">
 
 
             <FrameLayout
@@ -120,27 +125,24 @@
 
             <ImageButton
                 android:id="@+id/playpauseButtonTwo"
-                android:layout_width="50dp"
-                android:layout_height="wrap_content"
+                android:layout_width="60dp"
+                android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
-                android:background="@android:color/transparent"
                 app:srcCompat="@drawable/ic_play_arrow" />
+
             <ImageButton
                 android:id="@+id/activePlayListButton"
                 android:layout_width="50dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
-                android:background="@android:color/transparent"
-                app:srcCompat="@drawable/ic_music_library"
                 android:visibility="gone"
-                />
+                app:srcCompat="@drawable/ic_music_library" />
 
             <ImageButton
                 android:id="@+id/slidingWindowOptionsButton"
                 android:layout_width="30dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
-                android:background="@android:color/transparent"
                 android:visibility="gone"
                 app:srcCompat="@drawable/ic_more_b" />
         </LinearLayout>
@@ -187,7 +189,6 @@
                 android:layout_width="60dp"
                 android:layout_height="50dp"
                 android:layout_weight="1"
-                android:background="@android:color/transparent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:srcCompat="@drawable/ic_thumb_up" />
@@ -207,28 +208,27 @@
                     android:id="@+id/prev"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_marginLeft="20dp"
                     android:layout_weight="1"
-                    android:background="@android:color/transparent"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="15dp"
                     app:srcCompat="@drawable/ic_previous" />
 
                 <ImageButton
                     android:id="@+id/pause"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_marginLeft="30dp"
-                    android:layout_marginRight="30dp"
                     android:layout_weight="1"
-                    android:background="@android:color/transparent"
+                    android:paddingLeft="25dp"
+                    android:paddingRight="25dp"
                     app:srcCompat="@drawable/ic_play" />
 
                 <ImageButton
                     android:id="@+id/next"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_marginRight="20dp"
                     android:layout_weight="1"
-                    android:background="@android:color/transparent"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="10dp"
                     app:srcCompat="@drawable/ic_next" />
 
             </LinearLayout>
@@ -238,7 +238,6 @@
                 android:layout_width="60dp"
                 android:layout_height="50dp"
                 android:layout_weight="1"
-                android:background="@android:color/transparent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:srcCompat="@drawable/ic_thumb_down" />

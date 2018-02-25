@@ -3,7 +3,22 @@
     <color name="colorPrimary">#3f51b5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#ff4081</color>
+    <color name="colorBackground">#f7f7f7</color>
+
     <color name="transperent">#4e080808</color>
     <color name="white_transperent">#ecffffff</color>
     <color name="grey">#f1f1f1</color>
+
+    <!-- primary -500
+         primarydarj-700/800-->
+    <color name="colorPrimaryOrange">#ff5722</color>
+    <color name="colorPrimaryDarkOrange">#DD2C00</color>
+
+    <color name="colorPrimaryPurple">#673AB7</color>
+    <color name="colorPrimaryDarkPurple">#512DA8</color>
+
+    <color name="colorPrimaryGrey">#9E9E9E</color>
+    <color name="colorPrimaryDarkGrey">#616161</color>
+    <color name="colorBackgroundGrey">#E0E0E0</color>
+
 </resources>
