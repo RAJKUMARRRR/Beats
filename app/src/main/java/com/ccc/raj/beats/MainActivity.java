@@ -57,6 +57,7 @@ import com.ccc.raj.beats.musiclibrary.MusicLibraryFragment;
 import com.ccc.raj.beats.searchresult.CursorSuggestionAdapter;
 import com.ccc.raj.beats.searchresult.CustomSuggestionsProvider;
 import com.ccc.raj.beats.searchresult.SearchSuggestionProvider;
+import com.ccc.raj.beats.settings.SettingsActivity;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
@@ -161,6 +162,8 @@ public class MainActivity extends MediaControlBaseActivity implements Navigation
                 fragment = new MusicLibraryFragment();
                 //((MusicLibraryFragment)fragment).setMusicPlayService(musicPlayService);
                 break;
+            case R.id.settings:
+                intent = new Intent(this, SettingsActivity.class);
             /*case R.id.nav_sent:
                 fragment = new InboxFragment();
                 break;
@@ -178,8 +181,8 @@ public class MainActivity extends MediaControlBaseActivity implements Navigation
             FragmentTransaction fragmentTransaction= getSupportFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.main_container,fragment);
             fragmentTransaction.commit();
-        }else{
-            //startActivity(intent);
+        }else if(intent != null){
+                startActivity(intent);
         }
         DrawerLayout drawerLayout = findViewById(R.id.drawer_view);
         drawerLayout.closeDrawer(GravityCompat.START);

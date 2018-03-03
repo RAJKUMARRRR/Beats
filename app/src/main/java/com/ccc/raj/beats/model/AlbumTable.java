@@ -66,6 +66,23 @@ public class AlbumTable {
         return albumArrayList;
     }
 
+    public static Album getAlbumsByAlbumId(Context context,int albumId) {
+        ArrayList<Album> albumArrayList = new ArrayList<>();
+        ContentResolver musicResolver = context.getContentResolver();
+        Uri musicUri = TABLE_URI;
+        String where = ID + "=?";
+        String whereVal[] = {
+                String.valueOf(albumId)
+        };
+        Cursor musicCursor = musicResolver.query(musicUri, null, where, whereVal, null);
+        albumArrayList = getOfflineAlbumsFromCursor(musicCursor);
+        musicCursor.close();
+        if(albumArrayList.size()>0){
+            return albumArrayList.get(0);
+        }
+        return null;
+    }
+
     public static void addAlbumToResent() {
 
     }

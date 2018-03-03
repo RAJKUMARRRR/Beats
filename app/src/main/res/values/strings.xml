@@ -49,7 +49,6 @@
     <string name="removed_from_playlist">removed from playlist</string>
 
 
-
     <!--Shared transition values-->
     <string name="image_transition">AlbumImage:Transition</string>
 </resources>

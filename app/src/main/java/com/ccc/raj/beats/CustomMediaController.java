@@ -80,9 +80,11 @@ public class CustomMediaController {
         handler.post(new Runnable() {
             @Override
             public void run() {
-                if (mControl != null && mControl.isPlaying()) {
-                    setProgress();
-                    updatePausePlay();
+                if (mControl != null) {
+                    if(mControl.isPlaying()) {
+                        setProgress();
+                        updatePausePlay();
+                    }
                 }
                 handler.postDelayed(this, 1000);
             }

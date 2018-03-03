@@ -7,6 +7,7 @@ import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -20,7 +21,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.PopupMenu;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ccc.raj.beats.AlbumListAdapter;
@@ -38,6 +41,8 @@ import com.ccc.raj.beats.model.OfflineAlbum;
 import com.ccc.raj.beats.model.OfflineDataProvider;
 import com.ccc.raj.beats.model.Song;
 import com.ccc.raj.beats.model.SongTable;
+import com.ccc.raj.beats.model.sqlite.DatabaseHelper;
+import com.ccc.raj.beats.searchresult.SearchRecord;
 
 import java.util.ArrayList;
 
@@ -73,6 +78,7 @@ public class OfflineFragment extends Fragment implements PopupMenu.OnMenuItemCli
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        new AlbumAsync().execute();
         View view = inflater.inflate(R.layout.fragment_offline, container, false);
         songsListView = view.findViewById(R.id.offlineTrackListView);
         if (checkPermission()) {
@@ -82,20 +88,57 @@ public class OfflineFragment extends Fragment implements PopupMenu.OnMenuItemCli
                     permissionString)) {
                 Toast.makeText(context, "Permissin needed to store image", Toast.LENGTH_SHORT).show();
             } else {
-                /*ActivityCompat.requestPermissions(getActivity(),
-                        new String[]{permissionString},
-                        REQUEST_CODE);*/
                 requestPermissions(
                         new String[]{permissionString},
                         REQUEST_CODE);
 
             }
         }
+        if(getParentFragment() instanceof ListenNowFragment){
+            TextView buttonMore = (TextView) view.findViewById(R.id.buttomMore);
+            buttonMore.setVisibility(View.VISIBLE);
+            buttonMore.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(getContext(), MoreRecordsActivity.class);
+                    intent.putExtra(MoreRecordsActivity.VIEW_TYPE, MoreRecordsActivity.ALBUM);
+                    intent.putExtra(MoreRecordsActivity.SEARCH_QUERY, "*");
+                    startActivity(intent);
+                }
+            });
+        }else{
+            view.findViewById(R.id.buttomMore).setVisibility(View.GONE);
+        }
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        DatabaseHelper databaseHelper = DatabaseHelper.getDatabaseHelper(getContext());
+        if(getParentFragment() instanceof ListenNowFragment){
+            mAlbumArrayList = databaseHelper.getRecentAlbums(6);
+        }
+        AlbumListAdapter albumListAdapter = (AlbumListAdapter) songsListView.getAdapter();
+        albumListAdapter.albumList = mAlbumArrayList;
+        albumListAdapter.notifyDataSetChanged();
+    }
+
     private void setMusicAlbumData() {
-        mAlbumArrayList = AlbumTable.getAllAlbums(context);
+        DatabaseHelper databaseHelper = DatabaseHelper.getDatabaseHelper(getContext());
+        if(getParentFragment() instanceof ListenNowFragment){
+            ArrayList<Album> list = databaseHelper.getRecentAlbums(6);//AlbumTable.getAllAlbums(context);
+            mAlbumArrayList = list; /*new ArrayList<>();*/
+            /*if(list.size()>5) {
+                for (int i = 0; i < 6; i++) {
+                    mAlbumArrayList.add(list.get(i));
+                }
+            }else{
+                mAlbumArrayList.addAll(list);
+            }*/
+        }else{
+            mAlbumArrayList = AlbumTable.getAllAlbums(context);
+        }
         final AlbumListAdapter albumListAdapter = new AlbumListAdapter(mAlbumArrayList, context);
         albumListAdapter.setOnItemClickListener(new AlbumListAdapter.OnItemClickListener() {
             @Override
@@ -209,10 +252,9 @@ public class OfflineFragment extends Fragment implements PopupMenu.OnMenuItemCli
 
     public void setMusicPlayService(MusicPlayService musicPlayService) {
         this.musicPlayService = musicPlayService;
-        if (mAlbumArrayList != null) {
+        if (mAlbumArrayList != null && mAlbumArrayList.size()>0) {
             OfflineAlbum album = (OfflineAlbum) mAlbumArrayList.get(0);
             this.musicPlayService.setOfflineSongsList(SongTable.getSongsFromAlbum(context, album.getAlbumTitle()));
-            //this.musicPlayService.playOfflineSong();
         }
     }
 
@@ -238,6 +280,18 @@ public class OfflineFragment extends Fragment implements PopupMenu.OnMenuItemCli
                 }
                 return;
             }
+        }
+    }
+
+    public class AlbumAsync extends AsyncTask<Void,Void,Void>{
+        @Override
+        protected Void doInBackground(Void... voids) {
+            ArrayList<Album> albums = AlbumTable.getAllAlbums(getContext());
+            DatabaseHelper databaseHelper = DatabaseHelper.getDatabaseHelper(getContext());
+            for(Album album : albums){
+                databaseHelper.addRecentAlbum(getContext(),album.getAlbumId(),false);
+            }
+            return null;
         }
     }
 }

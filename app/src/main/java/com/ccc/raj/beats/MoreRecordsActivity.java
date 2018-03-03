@@ -30,6 +30,7 @@ import com.ccc.raj.beats.model.OfflineAlbum;
 import com.ccc.raj.beats.model.OfflineSong;
 import com.ccc.raj.beats.model.Song;
 import com.ccc.raj.beats.model.SongTable;
+import com.ccc.raj.beats.model.sqlite.DatabaseHelper;
 import com.ccc.raj.beats.searchresult.SearchDataProvider;
 import com.ccc.raj.beats.searchresult.SearchRecord;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
@@ -114,7 +115,11 @@ public class MoreRecordsActivity extends MediaControlBaseActivity implements Pop
                if(searchQuery.isEmpty()) {
                    albumList = AlbumTable.getAllAlbums(this);
                }else{
-                   albumList =  new SearchDataProvider().searchAlbums(this,searchQuery, AlbumTable.ALBUM,false,null);
+                   if(searchQuery.equalsIgnoreCase("*")){
+                       albumList = DatabaseHelper.getDatabaseHelper(this).getRecentAlbums(-1);
+                   }else {
+                       albumList = new SearchDataProvider().searchAlbums(this, searchQuery, AlbumTable.ALBUM, false, null);
+                   }
                }
                handleAlbumData();
                setTitle("Albums");

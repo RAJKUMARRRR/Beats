@@ -69,7 +69,7 @@ public class ListenNowFragment extends Fragment {
                 case 1:
                     return "Now Playing";
                 case 0:
-                    return "Offline";
+                    return "Recent";
             }
             return null;
         }

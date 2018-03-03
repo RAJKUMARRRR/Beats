@@ -3,7 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/transperent"
+    >
 
 
     <LinearLayout
@@ -37,7 +39,9 @@
                 android:text="TextView"
                 android:textColor="@android:color/white"
                 android:textSize="16sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:maxLines="1"
+                />
 
             <TextView
                 android:id="@+id/notificationSongArtist"
@@ -47,6 +51,7 @@
                 android:text="TextView"
                 android:textColor="@android:color/white"
                 style="@style/TextAppearance.Compat.Notification.Title"
+                android:maxLines="1"
                 android:textSize="12sp" />
 
             <TextView
@@ -57,6 +62,7 @@
                 android:text="TextView"
                 android:textColor="@android:color/white"
                 style="@style/TextAppearance.Compat.Notification.Title"
+                android:maxLines="1"
                 android:textSize="12sp" />
         </LinearLayout>
     </LinearLayout>

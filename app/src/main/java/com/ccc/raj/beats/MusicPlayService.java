@@ -19,6 +19,7 @@ import android.widget.RemoteViews;
 
 import com.ccc.raj.beats.model.OfflineSong;
 import com.ccc.raj.beats.model.Song;
+import com.ccc.raj.beats.model.sqlite.DatabaseHelper;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -120,6 +121,10 @@ public class MusicPlayService extends Service implements MediaPlayer.OnPreparedL
         }
         mediaPlayer.prepareAsync();
         notifyAllSubscribers();
+
+        /**Adding to RecentAlbums**/
+        OfflineSong offlineSong = (OfflineSong) song;
+        DatabaseHelper.getDatabaseHelper(this).addRecentAlbum(this,offlineSong.getAlbumId(),true);
     }
 
     public void addToQueue(ArrayList<Song> songs){

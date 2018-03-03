@@ -21,4 +21,10 @@
     <color name="colorPrimaryDarkGrey">#616161</color>
     <color name="colorBackgroundGrey">#E0E0E0</color>
 
+    <color name="colorPrimaryBlack">#000000</color>
+    <color name="colorPrimaryDarkBlack">#000000</color>
+    <color name="colorBackgroundBlack">#000000</color>
+    <color name="colorGreyBlack">#141414</color>
+    <color name="colorAccentBlack">#fbc93e</color>
+
 </resources>

@@ -27,6 +27,7 @@ import android.widget.Toast;
 import com.ccc.raj.beats.model.OfflineDataProvider;
 import com.ccc.raj.beats.model.OfflineSong;
 import com.ccc.raj.beats.model.Song;
+import com.ccc.raj.beats.settings.ThemeData;
 
 import java.util.ArrayList;
 
@@ -75,6 +76,7 @@ public abstract class MediaControlBaseActivity extends AppCompatActivity impleme
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(ThemeData.theme);
         super.onCreate(savedInstanceState);
         playIntent = new Intent(this, MusicPlayService.class);
         bindService(playIntent, serviceConnection, Context.BIND_AUTO_CREATE);
