@@ -29,7 +29,7 @@
             android:layout_height="match_parent"
             android:layout_marginBottom="75dp"
             android:layout_marginTop="56dp"
-            android:background="@android:color/white"
+            android:background="@color/transperent"
             android:orientation="vertical"
             android:visibility="invisible">
 
@@ -77,8 +77,9 @@
                 android:id="@+id/activePlayList"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_margin="4dp"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                android:background="?attr/cardBackgroundColor"
+                />
         </LinearLayout>
 
         <LinearLayout
@@ -86,7 +87,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:layout_gravity="top"
-            android:background="@color/white_transperent"
+            android:background="?attr/cardBackgroundColor"
             android:elevation="8dp"
             android:orientation="horizontal">
 
@@ -151,7 +152,7 @@
             android:layout_width="match_parent"
             android:layout_height="75dp"
             android:layout_gravity="bottom"
-            android:background="@color/white_transperent"
+            android:background="?attr/cardBackgroundColor"
             android:elevation="8dp">
 
 
@@ -159,7 +160,7 @@
                 android:id="@+id/mediacontroller_progress"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:background="@android:color/white"
+                android:background="?attr/cardBackgroundColor"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

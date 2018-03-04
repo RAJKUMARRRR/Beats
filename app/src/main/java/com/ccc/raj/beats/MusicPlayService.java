@@ -125,6 +125,7 @@ public class MusicPlayService extends Service implements MediaPlayer.OnPreparedL
         /**Adding to RecentAlbums**/
         OfflineSong offlineSong = (OfflineSong) song;
         DatabaseHelper.getDatabaseHelper(this).addRecentAlbum(this,offlineSong.getAlbumId(),true);
+        DatabaseHelper.getDatabaseHelper(this).addToFrequentList(this,offlineSong);
     }
 
     public void addToQueue(ArrayList<Song> songs){

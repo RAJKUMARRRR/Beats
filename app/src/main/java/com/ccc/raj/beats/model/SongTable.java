@@ -7,6 +7,8 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
 
+import com.ccc.raj.beats.model.sqlite.DatabaseHelper;
+
 import java.util.ArrayList;
 
 /**
@@ -114,6 +116,8 @@ public class SongTable {
             int dateModifiedColumn = musicCursor.getColumnIndex(DATE_MODIFIED);
             int yearColumn = musicCursor.getColumnIndex(YEAR);
             int sizeColumn = musicCursor.getColumnIndex(SIZE);
+
+            int frequencyColumnIndex = musicCursor.getColumnIndex(DatabaseHelper.SONG_PLAY_FREQUENCY);
             do {
                 long thisId = musicCursor.getLong(idColumn);
                 String thisTitle = musicCursor.getString(titleColumn);
@@ -138,6 +142,11 @@ public class SongTable {
                 int year = musicCursor.getInt(yearColumn);
                 long size = musicCursor.getLong(sizeColumn);
 
+                int frequency = 0;
+                if(frequencyColumnIndex>0){
+                    frequency = musicCursor.getInt(frequencyColumnIndex);
+                }
+
 
                 if (duration > 60000) {
                     OfflineSong song = new OfflineSong(thisId, thisTitle, thisArtist, fullPath);
@@ -158,6 +167,7 @@ public class SongTable {
                     song.setDateModified(dateModified);
                     song.setYear(year);
                     song.setSize(size);
+                    song.setFrequency(frequency);
                     songList.add(song);
                 }
             }

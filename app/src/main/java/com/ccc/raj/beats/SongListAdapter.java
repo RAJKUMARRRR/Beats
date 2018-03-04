@@ -1,15 +1,19 @@
 package com.ccc.raj.beats;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.ccc.raj.beats.model.OfflineDataProvider;
 import com.ccc.raj.beats.model.OfflineSong;
 import com.ccc.raj.beats.model.Song;
 
@@ -61,10 +65,11 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.ViewHo
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
         LinearLayout container = holder.container;
-        TextView songOrder = container.findViewById(R.id.order);
+        //TextView songOrder = container.findViewById(R.id.order);
         TextView songTitle = container.findViewById(R.id.titleSong);
         TextView artistTitle = container.findViewById(R.id.titleArtist);
         TextView songDuration = container.findViewById(R.id.duration);
+        TextView titleCount = container.findViewById(R.id.titleCount);
         OfflineSong offlineSong = (OfflineSong) songList.get(position);
         artistTitle.setText(Utitlity.formatString(offlineSong.getArtist()+"",35));
         songDuration.setText(Utitlity.converMillisecondsToMMSS(offlineSong.getDuratio())+"");
@@ -75,12 +80,24 @@ public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.ViewHo
             }
         });
         if(!maskTitleImage){
-           songOrder.setBackgroundResource(R.drawable.music);
-           songOrder.setText("");
+           //songOrder.setBackgroundResource(R.drawable.music);
+           //songOrder.setText("");
            songTitle.setText(Utitlity.formatString(offlineSong.getTrackNumber()+"."+offlineSong.getDisplayName()+"",35));
         }else{
-           songOrder.setText(offlineSong.getTrackNumber()+"");
+           //songOrder.setText(offlineSong.getTrackNumber()+"");
            songTitle.setText(Utitlity.formatString(offlineSong.getDisplayName()+"",35));
+        }
+        if(offlineSong.getFrequency()>0){
+            if(offlineSong.getFrequency()==1){
+                titleCount.setText(offlineSong.getFrequency()+" time played");
+            }else{
+                titleCount.setText(offlineSong.getFrequency()+" times played");
+            }
+            ImageView imageTitle = container.findViewById(R.id.imageTitle);
+            Bitmap bitmap = OfflineDataProvider.getBitmapBySongId(mContext,offlineSong.getId());
+            imageTitle.setImageBitmap(bitmap);
+        }else{
+            titleCount.setVisibility(View.GONE);
         }
         ImageButton imageButton = container.findViewById(R.id.imageOptions);
         imageButton.setOnClickListener(new View.OnClickListener() {

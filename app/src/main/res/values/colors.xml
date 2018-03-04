@@ -24,7 +24,11 @@
     <color name="colorPrimaryBlack">#000000</color>
     <color name="colorPrimaryDarkBlack">#000000</color>
     <color name="colorBackgroundBlack">#000000</color>
-    <color name="colorGreyBlack">#141414</color>
+    <color name="colorGreyBlack">#232323</color>   <!--FF141414-->
     <color name="colorAccentBlack">#fbc93e</color>
+    <color name="colorPrimaryTextBlack">#f7f7f7</color>
+
+
+    <color name="colorCompleteTransperent">#00f7f7f7</color>
 
 </resources>

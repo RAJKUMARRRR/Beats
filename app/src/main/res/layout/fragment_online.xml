@@ -5,9 +5,10 @@
     tools:context="com.ccc.raj.beats.listennow.OnlineFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/frequentSongList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Online Fragment" />
-
+        android:layout_marginBottom="?attr/actionBarSize" />
 </FrameLayout>

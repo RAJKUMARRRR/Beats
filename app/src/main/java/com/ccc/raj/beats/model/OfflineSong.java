@@ -31,6 +31,8 @@ public class OfflineSong extends Song{
     private String date;
     private int trackNumber;
     private String composer;
+
+    private int frequency = 0;
     OfflineSong(long id, String title, String artist,String albumFullPath) {
         super(id, title, artist);
         this.albumFullPath = albumFullPath;
@@ -177,5 +179,13 @@ public class OfflineSong extends Song{
 
     public void setSize(long size) {
         this.size = size;
+    }
+
+    public int getFrequency() {
+        return frequency;
+    }
+
+    public void setFrequency(int frequency) {
+        this.frequency = frequency;
     }
 }

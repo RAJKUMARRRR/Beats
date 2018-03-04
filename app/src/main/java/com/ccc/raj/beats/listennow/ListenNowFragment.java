@@ -67,7 +67,7 @@ public class ListenNowFragment extends Fragment {
         public CharSequence getPageTitle(int position) {
             switch (position){
                 case 1:
-                    return "Now Playing";
+                    return "Frequently Played";
                 case 0:
                     return "Recent";
             }
