@@ -52,7 +52,9 @@ import android.widget.Toast;
 import com.ccc.raj.beats.listennow.ListenNowFragment;
 import com.ccc.raj.beats.listennow.OfflineFragment;
 import com.ccc.raj.beats.listennow.OnlineFragment;
+import com.ccc.raj.beats.model.OfflineSong;
 import com.ccc.raj.beats.model.Song;
+import com.ccc.raj.beats.model.localstorage.SessionStorageManager;
 import com.ccc.raj.beats.musiclibrary.MusicLibraryFragment;
 import com.ccc.raj.beats.searchresult.CursorSuggestionAdapter;
 import com.ccc.raj.beats.searchresult.CustomSuggestionsProvider;
@@ -113,6 +115,7 @@ public class MainActivity extends MediaControlBaseActivity implements Navigation
         setSlidingLayout();
 
     }
+
 
     public void setSlidingLayout() {
         mSlidingUpPanelLayout = findViewById(R.id.sliding_layout);

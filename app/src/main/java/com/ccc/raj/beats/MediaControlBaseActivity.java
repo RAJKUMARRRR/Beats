@@ -29,6 +29,7 @@ import android.widget.Toast;
 import com.ccc.raj.beats.model.OfflineDataProvider;
 import com.ccc.raj.beats.model.OfflineSong;
 import com.ccc.raj.beats.model.Song;
+import com.ccc.raj.beats.model.localstorage.SessionStorageManager;
 import com.ccc.raj.beats.settings.ThemeData;
 
 import java.util.ArrayList;
@@ -67,6 +68,7 @@ public abstract class MediaControlBaseActivity extends AppCompatActivity impleme
             musicBound = true;
             onMusicServiceBind(musicPlayService);
             musicPlayService.subscribeForService(MediaControlBaseActivity.this);
+            setAlbumArt();
         }
 
         @Override
@@ -94,6 +96,8 @@ public abstract class MediaControlBaseActivity extends AppCompatActivity impleme
         super.onDestroy();
         unbindService(serviceConnection);
     }
+
+
 
     protected abstract void onMusicServiceBind(MusicPlayService musicPlayService);
 
@@ -161,7 +165,7 @@ public abstract class MediaControlBaseActivity extends AppCompatActivity impleme
                     activePlayListButton.setImageResource(R.drawable.ic_music_library_primary);
                     activePlayListContainer.setVisibility(View.VISIBLE);
                     OfflineSong offlineSong = (OfflineSong) musicPlayService.getActiveSong();
-                    activePlayAlbumTitle.setText(offlineSong.getAlbum());
+                    activePlayAlbumTitle.setText(musicPlayService.getActiveAlbumTitle());
                     Bitmap bitmap = OfflineDataProvider.getBitmapByAlbumId(this, offlineSong.getAlbumId());
                     activeAlbumImage.setImageBitmap(bitmap);
                     activeAlbumImage.getLayoutParams().height = findViewById(R.id.frameActiveListHolder).getHeight();
@@ -191,21 +195,23 @@ public abstract class MediaControlBaseActivity extends AppCompatActivity impleme
 
     private void setAlbumArt() {
         if (musicPlayService != null) {
-            OfflineSong song = (OfflineSong) musicPlayService.getActiveSong();
-            Bitmap bitmap = OfflineDataProvider.getBitmapByAlbumId(this, song.getAlbumId());
-            if (imageViewAlbum != null) {
-                imageViewAlbum.setImageBitmap(bitmap);
-            }
-            if (imageAlbumSlidingBackground != null) {
-                //Drawable drawable = new BitmapDrawable(getResources(), bitmap);
-                //mainContainer.setBackground(drawable);
-                imageAlbumSlidingBackground.setImageBitmap(bitmap);
-            }
-            if(activeSongTitle != null){
-                activeSongTitle.setText(song.getTitle()+"");
-            }
-            if(activeSongArtistTitle != null){
-                activeSongArtistTitle.setText(song.getArtist()+"");
+            if( musicPlayService.getActiveSong() != null) {
+                OfflineSong song = (OfflineSong) musicPlayService.getActiveSong();
+                Bitmap bitmap = OfflineDataProvider.getBitmapByAlbumId(this, song.getAlbumId());
+                if (imageViewAlbum != null) {
+                    imageViewAlbum.setImageBitmap(bitmap);
+                }
+                if (imageAlbumSlidingBackground != null) {
+                    imageAlbumSlidingBackground.setImageBitmap(bitmap);
+                }
+                if (activeSongTitle != null) {
+                    activeSongTitle.setText(song.getTitle() + "");
+                }
+                if (activeSongArtistTitle != null) {
+                    activeSongArtistTitle.setText(song.getArtist() + "");
+                }
+            }else{
+
             }
         }
     }
@@ -269,6 +275,14 @@ public abstract class MediaControlBaseActivity extends AppCompatActivity impleme
     protected void onStop() {
         //controller.hide();
         super.onStop();
+        /*******Storing session(current play album in local storage to retrieve state after next launch)******/
+        MusicPlayService musicPlayService = MusicPlayServiceHolder.getMusicPlayService();
+        if(musicPlayService != null) {
+            Utitlity.Log("onTaskRemoved");
+            OfflineSong offlineSong = (OfflineSong) musicPlayService.getActiveSong();
+            Utitlity.Log("Position" + musicPlayService.getPosn());
+            SessionStorageManager.storeSessionData(this, musicPlayService.getActiveAlbumId(),musicPlayService.getActiveAlbumType(), musicPlayService.getOfflineSongPosition(), musicPlayService.getPosn(),musicPlayService.getActiveAlbumTitle());
+        }
     }
 
     @Override

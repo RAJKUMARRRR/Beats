@@ -17,7 +17,7 @@ public class OfflineSong extends Song{
     private long artistId;
     private String artistKey;
     private long id;
-    private long bookmark;
+    private int bookmark;
     private String title;
     private String titleKey;
     private String dateModified;
@@ -136,11 +136,11 @@ public class OfflineSong extends Song{
         this.id = id;
     }
 
-    public long getBookmark() {
+    public int getBookmark() {
         return bookmark;
     }
 
-    public void setBookmark(long bookmark) {
+    public void setBookmark(int bookmark) {
         this.bookmark = bookmark;
     }
 

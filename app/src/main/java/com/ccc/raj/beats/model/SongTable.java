@@ -136,7 +136,7 @@ public class SongTable {
                 String artist = musicCursor.getString(artistColumn);
                 long artistId = musicCursor.getLong(artistIdColumn);
                 String artistKey = musicCursor.getString(artistKeyColumn);
-                long bookmark = musicCursor.getLong(bookmarkColumn);
+                int bookmark = musicCursor.getInt(bookmarkColumn);
                 String titleKey = musicCursor.getString(titleKeyColumn);
                 String dateModified = musicCursor.getString(dateModifiedColumn);
                 int year = musicCursor.getInt(yearColumn);

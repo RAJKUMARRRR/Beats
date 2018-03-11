@@ -27,6 +27,7 @@ import com.ccc.raj.beats.model.OfflineSong;
 import com.ccc.raj.beats.model.PlayListTable;
 import com.ccc.raj.beats.model.Song;
 import com.ccc.raj.beats.model.SongTable;
+import com.ccc.raj.beats.model.localstorage.SessionStorageManager;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
@@ -227,6 +228,7 @@ public class AlbumSongsListActivity extends MediaControlBaseActivity implements 
         if(songList.size()>0) {
             musicPlayService.setOfflineSongsList(songList);
             musicPlayService.setOfflineSongPosition(position);
+            musicPlayService.setActiveAlbumDetails(getIntent().getIntExtra(ALBUM_ID,0), getIntent().getIntExtra(ALBUM_TYPE,0),title);
             musicPlayService.playOfflineSong();
         }
     }

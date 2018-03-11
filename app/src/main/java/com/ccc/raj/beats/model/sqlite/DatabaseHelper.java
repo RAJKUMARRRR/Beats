@@ -112,8 +112,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(AlbumTable.NUMBER_OF_SONGS_FOR_ARTIST,offlineAlbum.getNumberOfSongsForArtist());
         long timemillsecs = new Date().getTime();
         contentValues.put(DATE_ADDED,timemillsecs);
-        long id = db.insert(TABLE_RECENT_ALBUM,null,contentValues);
-        if(id == -1 && isRecent){
+        if(!isExistInRecentAlbum(context,albumId)){
+            long id = db.insert(TABLE_RECENT_ALBUM,null,contentValues);
+        }else if(isRecent){
             String where = AlbumTable.ID +"=?";
             String[] values = {
                     String.valueOf(offlineAlbum.getId())
@@ -123,6 +124,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.update(TABLE_RECENT_ALBUM,contentValues,where,values);
         }
         db.close();
+    }
+
+    public boolean isExistInRecentAlbum(Context context,int albumId){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String[] values = {String.valueOf(albumId)};
+        Cursor cursor = db.query(TABLE_RECENT_ALBUM,null,AlbumTable.ALBUM_ID +"=?",values,null,null,null);
+        if(cursor.moveToFirst()){
+            return true;
+        }
+        return false;
     }
 
 

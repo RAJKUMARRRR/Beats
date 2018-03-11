@@ -36,11 +36,15 @@ import com.ccc.raj.beats.PlayListSelectionPopup;
 import com.ccc.raj.beats.R;
 import com.ccc.raj.beats.model.Album;
 import com.ccc.raj.beats.model.AlbumTable;
+import com.ccc.raj.beats.model.ArtistAlbum;
 import com.ccc.raj.beats.model.ArtistTable;
+import com.ccc.raj.beats.model.GenresTable;
 import com.ccc.raj.beats.model.OfflineAlbum;
 import com.ccc.raj.beats.model.OfflineDataProvider;
+import com.ccc.raj.beats.model.PlayListTable;
 import com.ccc.raj.beats.model.Song;
 import com.ccc.raj.beats.model.SongTable;
+import com.ccc.raj.beats.model.localstorage.SessionStorageManager;
 import com.ccc.raj.beats.model.sqlite.DatabaseHelper;
 import com.ccc.raj.beats.searchresult.SearchRecord;
 
@@ -78,7 +82,6 @@ public class OfflineFragment extends Fragment implements PopupMenu.OnMenuItemCli
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        new AlbumAsync().execute();
         View view = inflater.inflate(R.layout.fragment_offline, container, false);
         songsListView = view.findViewById(R.id.offlineTrackListView);
         if (checkPermission()) {
@@ -115,16 +118,19 @@ public class OfflineFragment extends Fragment implements PopupMenu.OnMenuItemCli
     @Override
     public void onResume() {
         super.onResume();
-        DatabaseHelper databaseHelper = DatabaseHelper.getDatabaseHelper(getContext());
-        if(getParentFragment() instanceof ListenNowFragment){
-            mAlbumArrayList = databaseHelper.getRecentAlbums(6);
+        if(checkPermission()) {
+            DatabaseHelper databaseHelper = DatabaseHelper.getDatabaseHelper(getContext());
+            if (getParentFragment() instanceof ListenNowFragment) {
+                mAlbumArrayList = databaseHelper.getRecentAlbums(6);
+            }
+            AlbumListAdapter albumListAdapter = (AlbumListAdapter) songsListView.getAdapter();
+            albumListAdapter.albumList = mAlbumArrayList;
+            albumListAdapter.notifyDataSetChanged();
         }
-        AlbumListAdapter albumListAdapter = (AlbumListAdapter) songsListView.getAdapter();
-        albumListAdapter.albumList = mAlbumArrayList;
-        albumListAdapter.notifyDataSetChanged();
     }
 
     private void setMusicAlbumData() {
+        new AlbumAsync().execute();
         DatabaseHelper databaseHelper = DatabaseHelper.getDatabaseHelper(getContext());
         if(getParentFragment() instanceof ListenNowFragment){
             ArrayList<Album> list = databaseHelper.getRecentAlbums(6);//AlbumTable.getAllAlbums(context);
@@ -160,6 +166,7 @@ public class OfflineFragment extends Fragment implements PopupMenu.OnMenuItemCli
                 if (songsAlbum.size() > 0) {
                     musicPlayService.setOfflineSongsList(songsAlbum);
                     musicPlayService.setOfflineSongPosition(0);
+                    musicPlayService.setActiveAlbumDetails(album.getAlbumId(),AlbumSongsListActivity.OFFLINE_ALBUM,album.getAlbumTitle());
                     musicPlayService.playOfflineSong();
                 }
             }
@@ -252,9 +259,44 @@ public class OfflineFragment extends Fragment implements PopupMenu.OnMenuItemCli
 
     public void setMusicPlayService(MusicPlayService musicPlayService) {
         this.musicPlayService = musicPlayService;
-        if (mAlbumArrayList != null && mAlbumArrayList.size()>0) {
-            OfflineAlbum album = (OfflineAlbum) mAlbumArrayList.get(0);
-            this.musicPlayService.setOfflineSongsList(SongTable.getSongsFromAlbum(context, album.getAlbumTitle()));
+        int albumId = SessionStorageManager.getStoredAlbumId(getContext());
+        if(albumId >0){
+            ArrayList<Song> songs = new ArrayList<>();
+            int albumType = SessionStorageManager.getStoredAlbumType(getContext());
+            String albumTitle = SessionStorageManager.getStoredAlbumTitle(getContext());
+            switch (albumType){
+                case AlbumSongsListActivity.OFFLINE_ALBUM:
+                    OfflineAlbum album = (OfflineAlbum) AlbumTable.getAlbumsByAlbumId(getContext(),albumId);
+                    songs = SongTable.getSongsFromAlbum(context, album.getAlbumTitle());
+                    break;
+                case AlbumSongsListActivity.PLAYLIST_ALBUM:
+                    songs = PlayListTable.getSongsFromPlayLists(getContext(),albumId);
+                    break;
+                case AlbumSongsListActivity.ARTIST_ALBUM:
+                    ArtistAlbum artistAlbum = (ArtistAlbum) ArtistTable.getArtistAlbumForArtistId(getContext(),albumId);
+                    songs = SongTable.getSongsFromColumn(getContext(), SongTable.ARTIST_ID, artistAlbum.getAlbumId()+"");
+                    break;
+                case AlbumSongsListActivity.GENRES_ALBUM:
+                    songs = GenresTable.getSongsFromGeneres(getContext(),albumId);
+                    break;
+                default:
+                    songs = SongTable.getAllSongs(getContext());
+            }
+            this.musicPlayService.setOfflineSongsList(songs);
+            int songPos = SessionStorageManager.getStoredSongPosition(getContext());
+            int bookmark = SessionStorageManager.getStoredBookmark(getContext());
+            Toast.makeText(getContext(),"Bookmark:"+bookmark+",AlbumId:"+albumId+",songPos:"+songPos,Toast.LENGTH_SHORT).show();
+            if(songPos >=0){
+                this.musicPlayService.setOfflineSongPosition(songPos);
+                this.musicPlayService.setActiveAlbumDetails(albumId,albumType,albumTitle);
+                this.musicPlayService.restoreOldPlaySession(bookmark);
+            }
+        }else{
+            if (mAlbumArrayList != null && mAlbumArrayList.size()>0) {
+                OfflineAlbum album = (OfflineAlbum) mAlbumArrayList.get(0);
+                this.musicPlayService.setOfflineSongsList(SongTable.getSongsFromAlbum(context, album.getAlbumTitle()));
+                this.musicPlayService.setActiveAlbumDetails(album.getAlbumId(),AlbumSongsListActivity.OFFLINE_ALBUM, album.getAlbumTitle());
+            }
         }
     }
 

@@ -36,7 +36,8 @@
         <service
             android:name=".MusicPlayService"
             android:enabled="true"
-            android:exported="false" />
+            android:exported="false"
+            />
 
         <activity
             android:name=".AlbumSongsListActivity"
